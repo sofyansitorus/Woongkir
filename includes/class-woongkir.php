@@ -141,8 +141,8 @@ class Woongkir extends WC_Shipping_Method {
 				),
 			),
 			'show_eta'           => array(
-				'title'       => __( 'Show ETA', 'woogosend' ),
-				'label'       => __( 'Yes', 'woogosend' ),
+				'title'       => __( 'Show ETA', 'woongkir' ),
+				'label'       => __( 'Yes', 'woongkir' ),
 				'type'        => 'checkbox',
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 				'desc_tip'    => true,
