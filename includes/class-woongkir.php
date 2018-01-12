@@ -483,28 +483,35 @@ class Woongkir extends WC_Shipping_Method {
 	 * @param array $package Order package data.
 	 */
 	public function calculate_shipping( $package = array() ) {
+		$params = array();
 
-		$origin = $this->get_origin_info();
-		if ( empty( $origin ) ) {
+		$params['origin'] = $this->get_origin_info();
+		if ( empty( $params['origin'] ) ) {
 			return;
 		}
 
-		$destination = $this->get_destination_info( $package['destination'] );
-		if ( ! $destination || ! array_filter( $destination ) ) {
+		$params['destination'] = $this->get_destination_info( $package['destination'] );
+		if ( ! $params['destination'] || ! array_filter( $params['destination'] ) ) {
 			return;
 		}
 
-		$dimension_weight = $this->get_dimension_weight( $package['contents'] );
-		if ( ! $dimension_weight || ! array_filter( $dimension_weight ) ) {
+		$params['dimension_weight'] = $this->get_dimension_weight( $package['contents'] );
+		if ( ! $params['dimension_weight'] || ! array_filter( $params['dimension_weight'] ) ) {
 			return;
 		}
 
-		$courier = $destination['country'] ? array_keys( $this->international ) : array_keys( $this->domestic );
-		if ( empty( $courier ) ) {
+		$params['courier'] = $params['destination']['country'] ? array_keys( $this->international ) : array_keys( $this->domestic );
+		if ( empty( $params['courier'] ) ) {
 			return;
 		}
 
-		$couriers = $this->api->get_cost( $destination, $origin, $dimension_weight, $courier );
+		$cache_key = preg_replace( '/[^\da-z]/i', '_', wp_json_encode( $params ) );
+
+		$couriers = wp_cache_get( $cache_key, $this->id );
+		if ( false === $couriers ) {
+			$couriers = $this->api->get_cost( $params['destination'], $params['origin'], $params['dimension_weight'], $params['courier'] );
+			wp_cache_set( $cache_key, $couriers, $this->id, 3600 ); // Store response data for 1 hour.
+		}
 		if ( ! $couriers || ! is_array( $couriers ) || is_wp_error( $couriers ) ) {
 			if ( is_wp_error( $couriers ) ) {
 				$this->show_debug( $couriers->get_error_message() );
@@ -512,7 +519,7 @@ class Woongkir extends WC_Shipping_Method {
 			return;
 		}
 
-		$zone = empty( $destination['country'] ) ? 'domestic' : 'international';
+		$zone = empty( $params['destination']['country'] ) ? 'domestic' : 'international';
 
 		$exchange = false;
 
