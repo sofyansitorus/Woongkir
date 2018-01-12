@@ -356,16 +356,11 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return string
 	 */
 	public function validate_origin_field( $key, $value ) {
-		try {
-			if ( empty( $value ) ) {
-				// translators: Shipping origin location type.
-				throw new Exception( sprintf( __( 'Shipping origin %s field is required.', 'woongkir' ), str_replace( 'origin_', '', $key ) ) );
-			}
-			return $value;
-		} catch ( Exception $e ) {
-			$this->add_error( $e->getMessage() );
-			return $this->{$key};
+		if ( empty( $value ) ) {
+			// Translators: Shipping origin location type.
+			throw new Exception( sprintf( __( 'Shipping origin %s field is required.', 'woongkir' ), str_replace( 'origin_', '', $key ) ) );
 		}
+		return $value;
 	}
 
 	/**
