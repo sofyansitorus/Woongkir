@@ -337,18 +337,13 @@ class Woongkir extends WC_Shipping_Method {
 	 * @throws Exception If field value is not valid.
 	 */
 	public function validate_account_type_field( $key, $value ) {
-		try {
-			if ( empty( $value ) ) {
-				throw new Exception( __( 'Account type field is required.', 'woongkir' ) );
-			}
-			if ( ! $this->api->get_account( $value ) ) {
-				throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
-			}
-			return $value;
-		} catch ( Exception $e ) {
-			$this->add_error( $e->getMessage() );
-			return $this->account_type;
+		if ( empty( $value ) ) {
+			throw new Exception( __( 'Account type field is required.', 'woongkir' ) );
 		}
+		if ( ! $this->api->get_account( $value ) ) {
+			throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
+		}
+		return $value;
 	}
 
 	/**
