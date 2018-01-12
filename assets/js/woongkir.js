@@ -343,9 +343,9 @@
         $form.find('.woongkir-origin-province-select').trigger('change');
     }
 
-    woongkirStoreProvince();
-    woongkirStoreCity();
-    woongkirStoreSubdistrict();
+    woongkirStoreProvince(); // Store custom province data to local storage.
+    woongkirStoreCity(); // Store custom city data to local storage.
+    woongkirStoreSubdistrict(); // Store custom subdistrict data to local storage.
 
     $(document).ready(function () {
         $(document.body).on('country_to_state_changed', function (e, country, wrapper) {
