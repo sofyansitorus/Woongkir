@@ -73,9 +73,7 @@ class Woongkir extends WC_Shipping_Method {
 		);
 
 		// Save settings in admin if you have any defined.
-		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
-		add_action( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( $this, 'populate_setting_values' ) );
-		add_action( 'woocommerce_settings_api_sanitized_fields_' . $this->id, array( $this, 'populate_setting_values' ) );
+		add_action( 'woocommerce_settings_api_sanitized_fields_' . $this->id, array( $this, 'sanitize_setting_values' ) );
 
 		add_filter( 'woocommerce_default_address_fields', array( $this, 'default_address_fields_priority' ) );
 		add_filter( 'woocommerce_billing_fields', array( $this, 'billing_fields_priority' ), 10, 2 );
@@ -191,18 +189,15 @@ class Woongkir extends WC_Shipping_Method {
 	}
 
 	/**
-	 * Populate setting values to previous version if there was and error on validation.
+	 * Sanitize setting values to previous version if there was and error on validation.
 	 *
 	 * @since 1.0.0
 	 * @param array $settings_values New settings values array.
 	 */
-	public function populate_setting_values( $settings_values ) {
+	public function sanitize_setting_values( $settings_values ) {
 		if ( $this->get_errors() ) {
-			foreach ( $this->default_options as $key => $value ) {
-				$settings_values[ $key ] = $value;
-			}
+			return $this->default_options;
 		}
-
 		return $settings_values;
 	}
 
@@ -333,6 +328,18 @@ class Woongkir extends WC_Shipping_Method {
 		try {
 			if ( empty( $value ) ) {
 				throw new Exception( __( 'API Key is required.', 'woongkir' ) );
+			}
+			$account_type = $this->posted_field_value( 'account_type' );
+			if ( $value !== $this->api_key || ( $account_type && $account_type !== $this->account_type ) ) {
+				$this->api->set_option( 'api_key', $value );
+				$this->api->set_option( 'account_type', $account_type );
+				$account_valid = $this->api->validate_account();
+				if ( ! $account_valid ) {
+					throw new Exception( 'Error Processing Request', 1 );
+				}
+				if ( is_wp_error( $account_valid ) ) {
+					throw new Exception( $account_valid->get_error_message(), 1 );
+				}
 			}
 			return $value;
 		} catch ( Exception $e ) {

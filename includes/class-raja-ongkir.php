@@ -421,6 +421,92 @@ class Raja_Ongkir {
 	}
 
 	/**
+	 * Validate API account.
+	 *
+	 * @since 1.0.0
+	 */
+	public function validate_account() {
+
+		switch ( $this->get_option( 'account_type' ) ) {
+
+			case 'pro':
+				$destination = array(
+					'country'     => 0,
+					'province'    => 0,
+					'city'        => 0,
+					'subdistrict' => 574,
+				);
+
+				$origin = array(
+					'province'    => 0,
+					'city'        => 501,
+					'subdistrict' => 0,
+				);
+
+				$dimension_weight = array(
+					'width'  => 0,
+					'length' => 0,
+					'height' => 0,
+					'weight' => 1700,
+				);
+
+				$courier = array( 'jne', 'tiki' );
+				break;
+
+			case 'basic':
+				$destination = array(
+					'country'     => 0,
+					'province'    => 0,
+					'city'        => 114,
+					'subdistrict' => 0,
+				);
+
+				$origin = array(
+					'province'    => 0,
+					'city'        => 501,
+					'subdistrict' => 0,
+				);
+
+				$dimension_weight = array(
+					'width'  => 0,
+					'length' => 0,
+					'height' => 0,
+					'weight' => 1700,
+				);
+
+				$courier = array( 'jne', 'tiki' );
+				break;
+
+			default:
+				$destination = array(
+					'country'     => 0,
+					'province'    => 0,
+					'city'        => 114,
+					'subdistrict' => 0,
+				);
+
+				$origin = array(
+					'province'    => 0,
+					'city'        => 501,
+					'subdistrict' => 0,
+				);
+
+				$dimension_weight = array(
+					'width'  => 0,
+					'length' => 0,
+					'height' => 0,
+					'weight' => 1700,
+				);
+
+				$courier = array( 'jne' );
+				break;
+
+		}
+
+		return $this->get_cost( $destination, $origin, $dimension_weight, $courier );
+	}
+
+	/**
 	 * Get API request URL.
 	 *
 	 * @since 1.0.0
