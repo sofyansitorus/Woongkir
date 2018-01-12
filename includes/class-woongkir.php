@@ -506,6 +506,9 @@ class Woongkir extends WC_Shipping_Method {
 
 		$couriers = $this->api->get_cost( $destination, $origin, $dimension_weight, $courier );
 		if ( ! $couriers || ! is_array( $couriers ) || is_wp_error( $couriers ) ) {
+			if( is_wp_error( $couriers ) ) {
+				$this->show_debug( $couriers->get_error_message() );
+			}
 			return;
 		}
 
