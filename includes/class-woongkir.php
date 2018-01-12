@@ -373,57 +373,53 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return array
 	 */
 	public function validate_couriers_list_field( $key, $value ) {
-		try {
-			if ( is_string( $value ) ) {
-				$value = array_map( 'trim', explode( ',', $value ) );
-			}
 
-			// Format the value as associative array courier => services.
-			if ( $value && is_array( $value ) ) {
-				$format_value = array();
-				foreach ( $value as $val ) {
-					$parts = explode( '_', $val );
-					if ( count( $parts ) === 2 ) {
-						$format_value[ $parts[0] ][] = $parts[1];
-					}
-				}
-				$value = $format_value;
-			}
-
-			if ( $value ) {
-				$account_type = $this->posted_field_value( 'account_type' );
-
-				$account = $this->api->get_account( $account_type );
-				if ( ! $account ) {
-					throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
-				}
-
-				$couriers    = $this->api->get_courier( $key );
-				$not_allowed = array();
-				foreach ( $value as $courier_id => $courier ) {
-					if ( ! in_array( $account_type, $couriers[ $courier_id ]['account'], true ) ) {
-						array_push( $not_allowed, strtoupper( $courier_id ) );
-					}
-				}
-
-				$field = $this->instance_form_fields[ $key ];
-
-				if ( ! empty( $not_allowed ) ) {
-					// Translators: %1$s Shipping zone name, %2$s Account label, %3$s Couriers name.
-					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account['label'], implode( ', ', $not_allowed ) ) );
-				}
-
-				if ( ! $account['multiple'] && count( $value ) > 1 ) {
-					// Translators: %1$s Shipping zone name, %2$s Account label.
-					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account['label'] ) );
-				}
-			}
-
-			return $value;
-		} catch ( Exception $e ) {
-			$this->add_error( $e->getMessage() );
-			return $this->{$key};
+		if ( is_string( $value ) ) {
+			$value = array_map( 'trim', explode( ',', $value ) );
 		}
+
+		// Format the value as associative array courier => services.
+		if ( $value && is_array( $value ) ) {
+			$format_value = array();
+			foreach ( $value as $val ) {
+				$parts = explode( '_', $val );
+				if ( count( $parts ) === 2 ) {
+					$format_value[ $parts[0] ][] = $parts[1];
+				}
+			}
+			$value = $format_value;
+		}
+
+		if ( $value ) {
+			$account_type = $this->posted_field_value( 'account_type' );
+
+			$account = $this->api->get_account( $account_type );
+			if ( ! $account ) {
+				throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
+			}
+
+			$couriers    = $this->api->get_courier( $key );
+			$not_allowed = array();
+			foreach ( $value as $courier_id => $courier ) {
+				if ( ! in_array( $account_type, $couriers[ $courier_id ]['account'], true ) ) {
+					array_push( $not_allowed, strtoupper( $courier_id ) );
+				}
+			}
+
+			$field = $this->instance_form_fields[ $key ];
+
+			if ( ! empty( $not_allowed ) ) {
+				// Translators: %1$s Shipping zone name, %2$s Account label, %3$s Couriers name.
+				throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account['label'], implode( ', ', $not_allowed ) ) );
+			}
+
+			if ( ! $account['multiple'] && count( $value ) > 1 ) {
+				// Translators: %1$s Shipping zone name, %2$s Account label.
+				throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account['label'] ) );
+			}
+		}
+
+		return $value;
 	}
 
 	/**
