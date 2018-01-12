@@ -201,6 +201,7 @@
         $form.find('.woongkir-account-type').bind('change', function (e) {
 
             var account_type = $(e.currentTarget).val(),
+                accounts = $(e.currentTarget).data('accounts'),
                 couriers = $(e.currentTarget).data('couriers');
 
             for (var zone_id in couriers) {
@@ -213,7 +214,7 @@
                         $('#woongkir-couriers-list-' + zone_id).show();
                         $('#woongkir-courier-box-' + zone_id + '-' + courier_id).show();
                     }
-                    if (couriers[zone_id][courier_id].multiple.indexOf(account_type) === -1) {
+                    if (!accounts[account_type].multiple) {
                         if (multiple) {
                             $('#woongkir-courier-box-' + zone_id + '-' + courier_id).find('.woongkir-service').prop('checked', false);
                         }
@@ -230,10 +231,11 @@
             var zone_id = $(this).closest('.woongkir-couriers-list').data('id');
             var courier_id = $(this).closest('.woongkir-courier-box').data('id');
             var account_type = $form.find('.woongkir-account-type').val();
+            var accounts = $form.find('.woongkir-account-type').data('accounts');
             var couriers = $form.find('.woongkir-account-type').data('couriers');
             if (this.checked) {
                 $table.find('.woongkir-service.single').prop('checked', true);
-                if (couriers[zone_id][courier_id].multiple.indexOf(account_type) === -1) {
+                if (!accounts[account_type].multiple) {
                     $form.find('.woongkir-courier-box').not('.' + courier_id).find('.woongkir-service').prop('checked', false);
                 }
             } else {
@@ -246,12 +248,13 @@
             var zone_id = $(this).closest('.woongkir-couriers-list').data('id');
             var courier_id = $(this).closest('.woongkir-courier-box').data('id');
             var account_type = $form.find('.woongkir-account-type').val();
+            var accounts = $form.find('.woongkir-account-type').data('accounts');
             var couriers = $form.find('.woongkir-account-type').data('couriers');
             if (this.checked) {
                 $table.find('.woongkir-service.bulk').prop({
                     checked: true
                 });
-                if (couriers[zone_id][courier_id].multiple.indexOf(account_type) === -1) {
+                if (!accounts[account_type].multiple) {
                     $form.find('.woongkir-courier-box').not('.' + courier_id).find('.woongkir-service').prop('checked', false);
                 }
             } else {
@@ -360,9 +363,9 @@
         $(document.body).on('updated_shipping_method', function (e) {
             $(':input.country_to_state').change();
         });
-        
+
         // Bind settings form on click .wc-shipping-zone-method-settings.
         $(document).on('click', '.wc-shipping-zone-method-settings', woongkirFormSettings);
     });
-    
+
 })(jQuery, window);
