@@ -46,6 +46,14 @@ class Woongkir extends WC_Shipping_Method {
 	private $default_options = array();
 
 	/**
+	 * Posted values of settings fields.
+	 *
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $posted_field_values;
+
+	/**
 	 * Constructor for your shipping class
 	 *
 	 * @since 1.0.0
@@ -393,6 +401,7 @@ class Woongkir extends WC_Shipping_Method {
 				$value = array_map( 'trim', explode( ',', $value ) );
 			}
 
+			// Format the value as associative array courier => services.
 			if ( $value && is_array( $value ) ) {
 				$format_value = array();
 				foreach ( $value as $val ) {
@@ -403,6 +412,34 @@ class Woongkir extends WC_Shipping_Method {
 				}
 				$value = $format_value;
 			}
+
+			if ( $value ) {
+				$account_type = $this->posted_field_value( 'account_type' );
+
+				$account = $this->api->get_account( $account_type );
+				if ( ! $account ) {
+					throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
+				}
+
+				$couriers    = $this->api->get_courier( $key );
+				$not_allowed = array();
+				foreach ( $value as $courier_id => $courier ) {
+					if ( ! in_array( $account_type, $couriers[ $courier_id ]['account'], true ) ) {
+						array_push( $not_allowed, strtoupper( $courier_id ) );
+					}
+				}
+
+				if ( ! empty( $not_allowed ) ) {
+					// Translators: %1$s Shipping zone name, %2$s Account label, %3$s Couriers name.
+					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), ucfirst( $key ), $account['label'], json_encode( $not_allowed ) ) );
+				}
+
+				if ( ! $account['multiple'] && count( $value ) > 1 ) {
+					// Translators: %1$s Shipping zone name, %2$s Account label.
+					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), ucfirst( $key ), $account['label'] ) );
+				}
+			}
+
 			return $value;
 		} catch ( Exception $e ) {
 			$this->add_error( $e->getMessage() );
@@ -875,6 +912,24 @@ class Woongkir extends WC_Shipping_Method {
 		}
 
 		return $shipping_fields;
+	}
+
+	/**
+	 * Get posted settings field value.
+	 *
+	 * @since 1.0.0
+	 * @param string $key Settings field key.
+	 * @param string $default Default value if the settings field is not exists.
+	 * @return mixed
+	 */
+	private function posted_field_value( $key, $default = null ) {
+		if ( is_null( $this->posted_field_values ) ) {
+			$this->posted_field_values = $this->get_post_data();
+		}
+
+		$field_key = $this->get_field_key( $key );
+
+		return array_key_exists( $field_key, $this->posted_field_values ) ? $this->posted_field_values[ $field_key ] : $default;
 	}
 
 	/**
