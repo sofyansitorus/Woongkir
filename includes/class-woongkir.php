@@ -72,9 +72,6 @@ class Woongkir extends WC_Shipping_Method {
 			'instance-settings-modal',
 		);
 
-		// Save settings in admin if you have any defined.
-		add_action( 'woocommerce_settings_api_sanitized_fields_' . $this->id, array( $this, 'sanitize_setting_values' ) );
-
 		add_filter( 'woocommerce_default_address_fields', array( $this, 'default_address_fields_priority' ) );
 		add_filter( 'woocommerce_billing_fields', array( $this, 'billing_fields_priority' ), 10, 2 );
 		add_filter( 'woocommerce_shipping_fields', array( $this, 'shipping_fields_priority' ), 10, 2 );
@@ -186,19 +183,6 @@ class Woongkir extends WC_Shipping_Method {
 		}
 
 		$this->instance_form_fields = $settings;
-	}
-
-	/**
-	 * Sanitize setting values to previous version if there was and error on validation.
-	 *
-	 * @since 1.0.0
-	 * @param array $settings_values New settings values array.
-	 */
-	public function sanitize_setting_values( $settings_values ) {
-		if ( $this->get_errors() ) {
-			return $this->default_options;
-		}
-		return $settings_values;
 	}
 
 	/**
