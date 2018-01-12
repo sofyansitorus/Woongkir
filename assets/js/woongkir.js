@@ -348,14 +348,20 @@
     woongkirStoreSubdistrict(); // Store custom subdistrict data to local storage.
 
     $(document).ready(function () {
+        // Bind checkout form on country_to_state_changed event.
         $(document.body).on('country_to_state_changed', function (e, country, wrapper) {
             woongkirFormCheckout(country, wrapper);
         });
+        // Bind checkout form on updated_wc_div event.
         $(document.body).on('updated_wc_div', function (e) {
-            $(function () {
-                $(':input.country_to_state').change();
-            });
+            $(':input.country_to_state').change();
         });
+        // Bind checkout form on updated_shipping_method event.
+        $(document.body).on('updated_shipping_method', function (e) {
+            $(':input.country_to_state').change();
+        });
+        
+        // Bind settings form on click .wc-shipping-zone-method-settings.
         $(document).on('click', '.wc-shipping-zone-method-settings', woongkirFormSettings);
     });
     
