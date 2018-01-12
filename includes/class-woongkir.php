@@ -334,11 +334,11 @@ class Woongkir extends WC_Shipping_Method {
 				$this->api->set_option( 'api_key', $value );
 				$this->api->set_option( 'account_type', $account_type );
 				$account_valid = $this->api->validate_account();
-				if ( ! $account_valid ) {
-					throw new Exception( 'Error Processing Request', 1 );
-				}
 				if ( is_wp_error( $account_valid ) ) {
 					throw new Exception( $account_valid->get_error_message(), 1 );
+				}
+				if ( ! $account_valid ) {
+					throw new Exception( 'API Key or Account type is invalid', 1 );
 				}
 			}
 			return $value;
