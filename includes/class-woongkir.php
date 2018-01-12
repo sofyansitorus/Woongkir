@@ -38,14 +38,6 @@ class Woongkir extends WC_Shipping_Method {
 	private $api;
 
 	/**
-	 * Default options.
-	 *
-	 * @since 1.0.0
-	 * @var array
-	 */
-	private $default_options = array();
-
-	/**
 	 * Posted values of settings fields.
 	 *
 	 * @since 1.0.0
@@ -107,8 +99,6 @@ class Woongkir extends WC_Shipping_Method {
 			$option  = $this->get_option( $field_id, $default );
 
 			$this->{$field_id} = $option;
-
-			$this->default_options[ $field_id ] = $option;
 		}
 
 		$this->api->set_option( 'api_key', $this->api_key );
