@@ -78,10 +78,6 @@ class Raja_Ongkir {
 					'basic',
 					'pro',
 				),
-				'multiple' => array(
-					'basic',
-					'pro',
-				),
 			),
 			'tiki' => array(
 				'label'    => 'Citra Van Titipan Kilat',
@@ -95,10 +91,6 @@ class Raja_Ongkir {
 				),
 				'account'  => array(
 					'starter',
-					'basic',
-					'pro',
-				),
-				'multiple' => array(
 					'basic',
 					'pro',
 				),
@@ -121,10 +113,6 @@ class Raja_Ongkir {
 					'basic',
 					'pro',
 				),
-				'multiple' => array(
-					'basic',
-					'pro',
-				),
 			),
 			'pcp'  => array(
 				'label'    => 'Priority Cargo and Package',
@@ -134,10 +122,6 @@ class Raja_Ongkir {
 					'REG',
 				),
 				'account'  => array(
-					'basic',
-					'pro',
-				),
-				'multiple' => array(
 					'basic',
 					'pro',
 				),
@@ -156,10 +140,6 @@ class Raja_Ongkir {
 					'basic',
 					'pro',
 				),
-				'multiple' => array(
-					'basic',
-					'pro',
-				),
 			),
 		),
 		'international' => array(
@@ -169,10 +149,6 @@ class Raja_Ongkir {
 					'INTL',
 				),
 				'account'  => array(
-					'basic',
-					'pro',
-				),
-				'multiple' => array(
 					'basic',
 					'pro',
 				),
@@ -186,10 +162,6 @@ class Raja_Ongkir {
 					'PAKETPOS BIASA LN',
 				),
 				'account'  => array(
-					'basic',
-					'pro',
-				),
-				'multiple' => array(
 					'basic',
 					'pro',
 				),
