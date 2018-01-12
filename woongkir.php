@@ -101,6 +101,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						'select_city'        => __( 'Select city', 'woongkir' ),
 						'select_subdistrict' => __( 'Select subdistrict', 'woongkir' ),
 					),
+					'debug'    => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
 				)
 			);
 		}
