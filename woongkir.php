@@ -14,8 +14,8 @@
  * @wordpress-plugin
  * Plugin Name:       Woongkir
  * Plugin URI:        https://github.com/sofyansitorus/Woongkir
- * Description:       WooCommerce per kilometer shipping rates calculator for GoSend courier from Go-Jek Indonesia.
- * Version:           1.0.1
+ * Description:       WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP and RPX to Domestic and International shipment.
+ * Version:           1.0.0
  * Author:            Sofyan Sitorus
  * Author URI:        https://github.com/sofyansitorus
  * License:           GPL-2.0+
