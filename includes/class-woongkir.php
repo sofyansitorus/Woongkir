@@ -309,27 +309,23 @@ class Woongkir extends WC_Shipping_Method {
 	 * @throws Exception Error message.
 	 */
 	public function validate_api_key_field( $key, $value ) {
-		try {
-			if ( empty( $value ) ) {
-				throw new Exception( __( 'API Key is required.', 'woongkir' ) );
-			}
-			$account_type = $this->validate_account_type_field( 'account_type', $this->posted_field_value( 'account_type' ) );
-			if ( $value !== $this->api_key || ( $account_type && $account_type !== $this->account_type ) ) {
-				$this->api->set_option( 'api_key', $value );
-				$this->api->set_option( 'account_type', $account_type );
-				$account_valid = $this->api->validate_account();
-				if ( is_wp_error( $account_valid ) ) {
-					throw new Exception( $account_valid->get_error_message(), 1 );
-				}
-				if ( ! $account_valid ) {
-					throw new Exception( 'API Key or Account type is invalid', 1 );
-				}
-			}
-			return $value;
-		} catch ( Exception $e ) {
-			$this->add_error( $e->getMessage() );
-			return $this->api_key;
+		if ( empty( $value ) ) {
+			throw new Exception( __( 'API Key is required.', 'woongkir' ) );
 		}
+
+		$account_type = $this->validate_account_type_field( 'account_type', $this->posted_field_value( 'account_type' ) );
+		if ( $value !== $this->api_key || ( $account_type && $account_type !== $this->account_type ) ) {
+			$this->api->set_option( 'api_key', $value );
+			$this->api->set_option( 'account_type', $account_type );
+			$account_valid = $this->api->validate_account();
+			if ( is_wp_error( $account_valid ) ) {
+				throw new Exception( $account_valid->get_error_message(), 1 );
+			}
+			if ( ! $account_valid ) {
+				throw new Exception( 'API Key or Account type is invalid', 1 );
+			}
+		}
+		return $value;
 	}
 
 	/**
