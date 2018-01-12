@@ -521,7 +521,7 @@ class Woongkir extends WC_Shipping_Method {
 
 		$zone = empty( $params['destination']['country'] ) ? 'domestic' : 'international';
 
-		$exchange = false;
+		$currency_exchange = false;
 
 		foreach ( $couriers as $courier ) {
 			if ( empty( $courier->costs ) ) {
@@ -533,18 +533,18 @@ class Woongkir extends WC_Shipping_Method {
 					continue;
 				}
 
-				$currency = isset( $service->currency ) ? $service->currency : 'IDR';
+				$currency_code = isset( $service->currency ) ? $service->currency : 'IDR';
 
-				if ( 'IDR' !== $currency && empty( $exchange ) ) {
-					$exchange = $this->api->get_currency();
+				if ( 'IDR' !== $currency_code && empty( $currency_exchange ) ) {
+					$currency_exchange = $this->api->get_currency();
 				}
 
-				if ( 'IDR' !== $currency && ! isset( $exchange->value ) ) {
+				if ( 'IDR' !== $currency_code && ! isset( $currency_exchange->value ) ) {
 					continue;
 				}
 
 				$rate = is_array( $service->cost ) ? $service->cost[0]->value : $service->cost;
-				$cost = ( 'IDR' === $currency ) ? $rate : ( $exchange->value * $rate );
+				$cost = ( 'IDR' === $currency_code ) ? $rate : ( $currency_exchange->value * $rate );
 
 				$rate_id    = $this->get_rate_id( $courier->code . ':' . $service->service );
 				$rate_label = sprintf( '%s - %s', strtoupper( $courier->code ), $service->service );
