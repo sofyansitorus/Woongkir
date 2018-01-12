@@ -79,7 +79,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	 * @param string $hook Passed screen ID in admin area.
 	 */
 	function woongkir_enqueue_scripts( $hook = null ) {
-		if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) || is_woocommerce() || is_cart() || is_checkout() ) {
+		if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) || is_account_page() || is_cart() || is_checkout() ) {
 			wp_register_script( 'store.js', WONGKIR_URL . 'assets/js/store.min.js' );
 			wp_enqueue_script( 'woongkir', WONGKIR_URL . 'assets/js/woongkir.min.js', array( 'jquery', 'store.js' ) );
 			wp_localize_script(
