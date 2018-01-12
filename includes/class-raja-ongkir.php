@@ -45,7 +45,7 @@ class Raja_Ongkir {
 		'basic'   => array(
 			'label'       => 'Basic',
 			'api_url'     => 'http://api.rajaongkir.com/basic',
-			'subdistrict' => true,
+			'subdistrict' => false,
 			'multiple'    => true,
 		),
 		'pro'     => array(
