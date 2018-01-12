@@ -436,14 +436,16 @@ class Woongkir extends WC_Shipping_Method {
 					}
 				}
 
+				$field = $this->instance_form_fields[ $key ];
+
 				if ( ! empty( $not_allowed ) ) {
 					// Translators: %1$s Shipping zone name, %2$s Account label, %3$s Couriers name.
-					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), ucfirst( $key ), $account['label'], json_encode( $not_allowed ) ) );
+					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account['label'], implode( ', ', $not_allowed ) ) );
 				}
 
 				if ( ! $account['multiple'] && count( $value ) > 1 ) {
 					// Translators: %1$s Shipping zone name, %2$s Account label.
-					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), ucfirst( $key ), $account['label'] ) );
+					throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account['label'] ) );
 				}
 			}
 
