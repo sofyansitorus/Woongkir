@@ -450,7 +450,7 @@ class Raja_Ongkir {
 					'weight' => 1700,
 				);
 
-				$courier = array( 'jne', 'tiki' );
+				$courier = array( 'jne', 'tiki', 'pos' );
 				break;
 
 			case 'basic':
@@ -474,7 +474,7 @@ class Raja_Ongkir {
 					'weight' => 1700,
 				);
 
-				$courier = array( 'jne', 'tiki' );
+				$courier = array( 'jne', 'tiki', 'pos' );
 				break;
 
 			default:
