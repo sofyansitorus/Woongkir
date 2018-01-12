@@ -65,7 +65,7 @@ class Woongkir extends WC_Shipping_Method {
 		$this->instance_id        = absint( $instance_id );
 		$this->method_title       = 'Woongkir';
 		$this->title              = 'Woongkir';
-		$this->method_description = __( 'Use JNE, TIKI, POS, PCP and RPX for shipping from Indonesia to Domestic and International using RajaOngkir.com API.', 'woongkir' );
+		$this->method_description = __( 'Shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP and RPX to Domestic and International shipment.', 'woongkir' );
 		$this->supports           = array(
 			'shipping-zones',
 			'instance-settings',
