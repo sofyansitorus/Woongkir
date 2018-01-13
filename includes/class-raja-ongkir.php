@@ -141,6 +141,15 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
+			'jnt'  => array(
+				'label'    => 'J&T',
+				'services' => array(
+					'EZ',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
 		),
 		'international' => array(
 			'pos' => array(
