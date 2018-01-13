@@ -64,7 +64,7 @@ class Raja_Ongkir {
 	 */
 	private $couriers = array(
 		'domestic'      => array(
-			'pos'  => array(
+			'pos'     => array(
 				'label'    => 'POS Indonesia (POS)',
 				'services' => array(
 					'Surat Kilat Khusus',
@@ -83,7 +83,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'tiki' => array(
+			'tiki'    => array(
 				'label'    => 'Citra Van Titipan Kilat (TIKI)',
 				'services' => array(
 					'TRC',
@@ -99,7 +99,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'jne'  => array(
+			'jne'     => array(
 				'label'    => 'Jalur Nugraha Ekakurir (JNE)',
 				'services' => array(
 					'CTC',
@@ -114,7 +114,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'rpx'  => array(
+			'rpx'     => array(
 				'label'    => 'RPX Holding (RPX)',
 				'services' => array(
 					'SDP',
@@ -129,7 +129,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'pcp'  => array(
+			'pcp'     => array(
 				'label'    => 'Priority Cargo Package (PCP)',
 				'services' => array(
 					'ONS',
@@ -141,7 +141,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'star'  => array(
+			'star'    => array(
 				'label'    => 'Star Cargo (STAR)',
 				'services' => array(
 					'Express',
@@ -154,7 +154,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'sicepat'  => array(
+			'sicepat' => array(
 				'label'    => 'SiCepat Express (SICEPAT)',
 				'services' => array(
 					'REG',
@@ -165,7 +165,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'jet'  => array(
+			'jet'     => array(
 				'label'    => 'JET Express (JET)',
 				'services' => array(
 					'CRG',
@@ -176,16 +176,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'jnt'  => array(
-				'label'    => 'J&T Express (J&T)',
-				'services' => array(
-					'EZ',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
-			'pandu'  => array(
+			'pandu'   => array(
 				'label'    => 'Pandu Logistics (PANDU)',
 				'services' => array(
 					'REG',
@@ -194,9 +185,18 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
+			'jnt'     => array(
+				'label'    => 'J&T Express (J&T)',
+				'services' => array(
+					'EZ',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
 		),
 		'international' => array(
-			'pos' => array(
+			'pos'      => array(
 				'label'    => 'POS Indonesia (POS)',
 				'services' => array(
 					'Surat R LN',
@@ -209,7 +209,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'tiki' => array(
+			'tiki'     => array(
 				'label'    => 'Citra Van Titipan Kilat (TIKI)',
 				'services' => array(
 					'Dokumen',
@@ -221,7 +221,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'jne' => array(
+			'jne'      => array(
 				'label'    => 'Jalur Nugraha Ekakurir (JNE)',
 				'services' => array(
 					'INTL',
@@ -230,7 +230,7 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'slis' => array(
+			'slis'     => array(
 				'label'    => 'Solusi Ekspres (SLIS)',
 				'services' => array(
 					'PACKAGE',
