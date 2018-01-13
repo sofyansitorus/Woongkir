@@ -170,6 +170,17 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
+			'jet'  => array(
+				'label'    => 'JET Express',
+				'services' => array(
+					'CRG',
+					'PRI',
+					'REG',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
 		),
 		'international' => array(
 			'pos' => array(
