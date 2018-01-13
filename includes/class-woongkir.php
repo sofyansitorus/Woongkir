@@ -555,34 +555,15 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return array
 	 */
 	private function get_origin_info() {
-		$origin_info = array();
-
-		if ( ! empty( $this->origin_province ) && ! empty( $this->origin_city ) && ! empty( $this->origin_subdistrict ) ) {
-			$origin_info = array(
-				'province'    => absint( $this->origin_province ),
-				'city'        => absint( $this->origin_city ),
-				'subdistrict' => absint( $this->origin_subdistrict ),
-			);
+		if ( empty( $this->origin_province ) || empty( $this->origin_city ) || empty( $this->origin_subdistrict ) ) {
+			return false;
 		}
 
-		/**
-		 * Developers can modify the origin info via filter hooks.
-		 *
-		 * @since 1.0.1
-		 *
-		 * This example shows how you can modify the shipping origin info via custom function:
-		 *
-		 *      add_action( 'woocommerce_woongkir_shipping_origin_info', 'modify_shipping_origin_info', 10, 2 );
-		 *
-		 *      function modify_shipping_origin_info( $origin_info, $method ) {
-		 *          return array(
-		 *              'province' => 1,
-		 *              'city' => 2,
-		 *              'subdistrict' => 3,
-		 *           );
-		 *      }
-		 */
-		return apply_filters( 'woocommerce_' . $this->id . '_shipping_origin_info', $origin_info, $this );
+		return array(
+			'province'    => absint( $this->origin_province ),
+			'city'        => absint( $this->origin_city ),
+			'subdistrict' => absint( $this->origin_subdistrict ),
+		);
 	}
 
 	/**
