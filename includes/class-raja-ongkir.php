@@ -378,6 +378,7 @@ class Raja_Ongkir {
 		$args = wp_parse_args(
 			$params,
 			array(
+				'timeout' => 10,
 				'headers' => array(
 					'key' => $this->get_option( 'api_key' ),
 				),
@@ -400,6 +401,7 @@ class Raja_Ongkir {
 	public function remote_post( $endpoint, $body = array() ) {
 
 		$args = array(
+			'timeout' => 10,
 			'headers' => array(
 				'key'          => $this->get_option( 'api_key' ),
 				'content-type' => 'application/x-www-form-urlencoded',
@@ -423,6 +425,7 @@ class Raja_Ongkir {
 	public function remote_get( $endpoint, $query_url = array() ) {
 
 		$args = array(
+			'timeout' => 10,
 			'headers' => array(
 				'key' => $this->get_option( 'api_key' ),
 			),
