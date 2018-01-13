@@ -594,7 +594,7 @@ class Woongkir extends WC_Shipping_Method {
 	 */
 	private function get_destination_info( $data = array() ) {
 		// Default destination data.
-		$info = array(
+		$destination = array(
 			'country'     => 0,
 			'province'    => 0,
 			'city'        => 0,
@@ -602,86 +602,76 @@ class Woongkir extends WC_Shipping_Method {
 		);
 
 		// Get country ID data.
-		if ( ! empty( $data['country'] ) ) {
+		if ( ! empty( $data['country'] ) && 'ID' !== $data['country'] ) {
 			$country = $this->get_json_data(
 				'country',
 				array(
 					'country_code' => $data['country'],
 				)
 			);
-			if ( 'ID' !== $data['country'] && $country && array_key_exists( 'country_id', $country ) ) {
-				$info['country'] = absint( $country['country_id'] );
+			if ( $country && isset( $country['country_id'] ) ) {
+				$destination['country'] = absint( $country['country_id'] );
 			}
+		}
+
+		// Check if international shipping or data not complete.
+		if ( ! empty( $destination['country'] ) || empty( $data['state'] ) || empty( $data['city'] ) ) {
+			return $destination;
 		}
 
 		// Get province ID data.
-		if ( ! empty( $data['state'] ) && empty( $info['country'] ) ) {
-			$province = $this->get_json_data(
-				'province',
-				array(
-					'code' => $data['state'],
-				)
-			);
-			if ( $province && array_key_exists( 'province_id', $province ) ) {
-				$info['province'] = absint( $province['province_id'] );
-			}
+		$province = $this->get_json_data(
+			'province',
+			array(
+				'code' => $data['state'],
+			)
+		);
+
+		// Check if province ID found.
+		if ( empty( $province ) && ! isset( $province['province_id'] ) ) {
+			return $destination;
 		}
+
+		$destination['province'] = absint( $province['province_id'] );
 
 		// Get city ID data.
-		if ( ! empty( $data['city'] ) && empty( $info['country'] ) ) {
-			$city_parts = explode( ' ', $data['city'] );
-			$city_type  = $city_parts[0];
-			$city_name  = str_replace( $city_type . ' ', '', $data['city'] );
+		$city_parts = explode( ' ', $data['city'] );
+		$city_type  = $city_parts[0];
+		$city_name  = str_replace( $city_type . ' ', '', $data['city'] );
 
-			$city = $this->get_json_data(
-				'city',
-				array(
-					'type'        => $city_type,
-					'city_name'   => $city_name,
-					'province_id' => $info['province'],
-				)
-			);
+		$city = $this->get_json_data(
+			'city',
+			array(
+				'type'        => $city_type,
+				'city_name'   => $city_name,
+				'province_id' => $destination['province'],
+			)
+		);
 
-			if ( $city && array_key_exists( 'city_id', $city ) ) {
-				$info['city'] = absint( $city['city_id'] );
-			}
+		// Check if city ID found.
+		if ( empty( $city ) && ! isset( $city['city_id'] ) ) {
+			return $destination;
 		}
 
+		$destination['city'] = absint( $city['city_id'] );
+
 		// Get subdistrict ID data.
-		if ( ! empty( $data['address_2'] ) && empty( $info['country'] ) ) {
+		if ( ! empty( $data['address_2'] ) ) {
 			$subdistrict = $this->get_json_data(
 				'subdistrict',
 				array(
 					'subdistrict_name' => $data['address_2'],
-					'city_id'          => $info['city'],
-					'province_id'      => $info['province'],
+					'city_id'          => $destination['city'],
+					'province_id'      => $destination['province'],
 				)
 			);
 
-			if ( $subdistrict && array_key_exists( 'subdistrict_id', $subdistrict ) ) {
-				$info['subdistrict'] = $subdistrict['subdistrict_id'];
+			if ( $subdistrict && isset( $subdistrict['subdistrict_id'] ) ) {
+				$destination['subdistrict'] = $subdistrict['subdistrict_id'];
 			}
 		}
 
-		/**
-		 * Developers can modify the destination info via filter hooks.
-		 *
-		 * @since 1.0.1
-		 *
-		 * This example shows how you can modify the shipping destination info via custom function:
-		 *
-		 *      add_action( 'woocommerce_woongkir_shipping_destination_info', 'modify_shipping_destination_info', 10, 2 );
-		 *
-		 *      function modify_shipping_destination_info( $info, $method ) {
-		 *          return array(
-		 *              'country' => 0,
-		 *              'province' => 1,
-		 *              'city' => 2,
-		 *              'subdistrict' => 3,
-		 *           );
-		 *      }
-		 */
-		return apply_filters( 'woocommerce_' . $this->id . '_shipping_destination_info', $info, $this );
+		return $destination;
 	}
 
 	/**
