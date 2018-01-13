@@ -114,18 +114,6 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'pcp'  => array(
-				'label'    => 'Priority Cargo and Package',
-				'services' => array(
-					'ONS',
-					'NFS',
-					'REG',
-				),
-				'account'  => array(
-					'basic',
-					'pro',
-				),
-			),
 			'rpx'  => array(
 				'label'    => 'RPX Holding',
 				'services' => array(
@@ -141,10 +129,26 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'jnt'  => array(
-				'label'    => 'J&T Express',
+			'pcp'  => array(
+				'label'    => 'Priority Cargo and Package',
 				'services' => array(
-					'EZ',
+					'ONS',
+					'NFS',
+					'REG',
+				),
+				'account'  => array(
+					'basic',
+					'pro',
+				),
+			),
+			'star'  => array(
+				'label'    => 'Star Cargo',
+				'services' => array(
+					'Express',
+					'Reguler',
+					'Dokumen',
+					'MOTOR',
+					'MOTOR 150 - 250 CC',
 				),
 				'account'  => array(
 					'pro',
@@ -161,15 +165,6 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'pandu'  => array(
-				'label'    => 'Pandu Logistics',
-				'services' => array(
-					'REG',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
 			'jet'  => array(
 				'label'    => 'JET Express',
 				'services' => array(
@@ -181,14 +176,19 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'star'  => array(
-				'label'    => 'Star Cargo',
+			'jnt'  => array(
+				'label'    => 'J&T Express',
 				'services' => array(
-					'Express',
-					'Reguler',
-					'Dokumen',
-					'MOTOR',
-					'MOTOR 150 - 250 CC',
+					'EZ',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'pandu'  => array(
+				'label'    => 'Pandu Logistics',
+				'services' => array(
+					'REG',
 				),
 				'account'  => array(
 					'pro',
