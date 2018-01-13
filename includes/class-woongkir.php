@@ -489,7 +489,7 @@ class Woongkir extends WC_Shipping_Method {
 				continue;
 			}
 			$courier_code = strtolower( str_replace( '&', 'n', $courier->code ) );
-			$selected = isset( $this->{$zone}[ $courier_code ] ) ? $this->{$zone}[ $courier_code ] : array();
+			$selected     = isset( $this->{$zone}[ $courier_code ] ) ? $this->{$zone}[ $courier_code ] : array();
 			foreach ( $courier->costs as $service ) {
 				if ( ! in_array( $service->service, $selected, true ) || empty( $service->cost ) ) {
 					continue;
