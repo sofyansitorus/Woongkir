@@ -87,6 +87,11 @@ You can either create ticket at plugin support forum or GitHub repository:
 
 == Changelog ==
 
+= 1.1.1 - 2018-01-14 =
+
+* Fix - Prevent request to API server if the destination adddress is not complete.
+* Improvemnets - Set timeout parameter for remote request: 10 seconds.
+
 = 1.1.0 - 2018-01-13 =
 
 * Feature - Add new domestic shipping couriers: STAR, SICEPAT, JET, PANDU, J&T.
