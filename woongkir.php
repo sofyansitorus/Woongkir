@@ -15,7 +15,7 @@
  * Plugin Name:       Woongkir
  * Plugin URI:        https://github.com/sofyansitorus/Woongkir
  * Description:       WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO to Domestic and International shipment.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            Sofyan Sitorus
  * Author URI:        https://github.com/sofyansitorus
  * License:           GPL-2.0+
