@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Woongkir\n"
-"POT-Creation-Date: 2018-01-12 18:29+0700\n"
-"PO-Revision-Date: 2018-01-12 18:29+0700\n"
+"POT-Creation-Date: 2018-01-13 17:02+0700\n"
+"PO-Revision-Date: 2018-01-13 17:02+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,110 +21,126 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: includes/class-raja-ongkir.php:371
+#: includes/class-raja-ongkir.php:458
 msgid "API response is empty."
 msgstr ""
 
-#: includes/class-raja-ongkir.php:377
+#: includes/class-raja-ongkir.php:464
 msgid "API response is invalid."
 msgstr ""
 
-#: includes/class-raja-ongkir.php:392
+#: includes/class-raja-ongkir.php:479
 msgid "Unknown error"
 msgstr ""
 
-#: includes/class-woongkir.php:68
+#: includes/class-woongkir.php:60
 msgid ""
 "Shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, "
-"PCP and RPX to Domestic and International shipment."
+"PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO to Domestic and "
+"International shipment."
 msgstr ""
 
-#: includes/class-woongkir.php:129
+#: includes/class-woongkir.php:116
 msgid "Shipping Origin Province"
 msgstr ""
 
-#: includes/class-woongkir.php:133
+#: includes/class-woongkir.php:120
 msgid "Shipping Origin City"
 msgstr ""
 
-#: includes/class-woongkir.php:137
+#: includes/class-woongkir.php:124
 msgid "Shipping Origin Subdistrict"
 msgstr ""
 
-#: includes/class-woongkir.php:141
+#: includes/class-woongkir.php:128
 msgid "Tax Status"
 msgstr ""
 
-#: includes/class-woongkir.php:145
+#: includes/class-woongkir.php:132
 msgid "Taxable"
 msgstr ""
 
-#: includes/class-woongkir.php:146
+#: includes/class-woongkir.php:133
 msgctxt "Tax status"
 msgid "None"
 msgstr ""
 
-#: includes/class-woongkir.php:150
+#: includes/class-woongkir.php:137
 msgid "Show ETA"
 msgstr ""
 
-#: includes/class-woongkir.php:151
+#: includes/class-woongkir.php:138
 msgid "Yes"
 msgstr ""
 
-#: includes/class-woongkir.php:153
+#: includes/class-woongkir.php:140
 msgid "Show estimated time of arrival during checkout."
 msgstr ""
 
-#: includes/class-woongkir.php:157
+#: includes/class-woongkir.php:144
 msgid "RajaOngkir API Key"
 msgstr ""
 
-#: includes/class-woongkir.php:160
+#: includes/class-woongkir.php:147
 msgid ""
 "<a href=\"http://www.rajaongkir.com\" target=\"_blank\">Click here</a> to "
 "get RajaOngkir.com API Key."
 msgstr ""
 
-#: includes/class-woongkir.php:164
+#: includes/class-woongkir.php:151
 msgid "RajaOngkir Account Type"
 msgstr ""
 
-#: includes/class-woongkir.php:175
+#: includes/class-woongkir.php:162
 msgid "Domestic Shipping"
 msgstr ""
 
-#: includes/class-woongkir.php:179
+#: includes/class-woongkir.php:166
 msgid "International Shipping"
 msgstr ""
 
-#: includes/class-woongkir.php:330
+#: includes/class-woongkir.php:308
 msgid "API Key is required."
 msgstr ""
 
-#: includes/class-woongkir.php:362
+#: includes/class-woongkir.php:336
 msgid "Account type field is required."
 msgstr ""
 
-#: includes/class-woongkir.php:365 includes/class-woongkir.php:428
+#: includes/class-woongkir.php:339 includes/class-woongkir.php:393
 msgid "Account type field is invalid."
 msgstr ""
 
-#. translators: Shipping origin location type.
-#: includes/class-woongkir.php:387
+#: includes/class-woongkir.php:356
 #, php-format
 msgid "Shipping origin %s field is required."
 msgstr ""
 
-#: includes/class-woongkir.php:443
+#: includes/class-woongkir.php:408
 #, php-format
 msgid "%1$s Shipping: Account type %2$s is not allowed to select courier %3$s."
 msgstr ""
 
-#: includes/class-woongkir.php:448
+#: includes/class-woongkir.php:413
 #, php-format
 msgid ""
 "%1$s Shipping: Account type %2$s is not allowed to select multiple couriers."
+msgstr ""
+
+#: includes/class-woongkir.php:533
+msgid "Hour"
+msgstr ""
+
+#: includes/class-woongkir.php:533
+msgid "Hours"
+msgstr ""
+
+#: includes/class-woongkir.php:533
+msgid "Day"
+msgstr ""
+
+#: includes/class-woongkir.php:533
+msgid "Days"
 msgstr ""
 
 #: woongkir.php:99
@@ -154,7 +170,8 @@ msgstr ""
 #. Description of the plugin/theme
 msgid ""
 "WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, "
-"TIKI, POS, PCP and RPX to Domestic and International shipment."
+"TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO to "
+"Domestic and International shipment."
 msgstr ""
 
 #. Author of the plugin/theme
