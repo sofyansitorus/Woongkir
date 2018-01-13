@@ -149,6 +149,17 @@ class Raja_Ongkir {
 					'INTL',
 				),
 				'account'  => array(
+					'pro',
+				),
+			),
+			'tiki' => array(
+				'label'    => 'Citra Van Titipan Kilat',
+				'services' => array(
+					'Dokumen',
+					'Paket',
+					'Dokumen / Paket',
+				),
+				'account'  => array(
 					'basic',
 					'pro',
 				),
