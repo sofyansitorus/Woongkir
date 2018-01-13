@@ -65,7 +65,7 @@ class Raja_Ongkir {
 	private $couriers = array(
 		'domestic'      => array(
 			'pos'  => array(
-				'label'    => 'POS Indonesia',
+				'label'    => 'POS Indonesia (POS)',
 				'services' => array(
 					'Surat Kilat Khusus',
 					'Paketpos Biasa',
@@ -84,7 +84,7 @@ class Raja_Ongkir {
 				),
 			),
 			'tiki' => array(
-				'label'    => 'Citra Van Titipan Kilat',
+				'label'    => 'Citra Van Titipan Kilat (TIKI)',
 				'services' => array(
 					'TRC',
 					'REG',
@@ -100,7 +100,7 @@ class Raja_Ongkir {
 				),
 			),
 			'jne'  => array(
-				'label'    => 'Jalur Nugraha Ekakurir',
+				'label'    => 'Jalur Nugraha Ekakurir (JNE)',
 				'services' => array(
 					'CTC',
 					'CTCYES',
@@ -115,7 +115,7 @@ class Raja_Ongkir {
 				),
 			),
 			'rpx'  => array(
-				'label'    => 'RPX Holding',
+				'label'    => 'RPX Holding (RPX)',
 				'services' => array(
 					'SDP',
 					'MDP',
@@ -130,7 +130,7 @@ class Raja_Ongkir {
 				),
 			),
 			'pcp'  => array(
-				'label'    => 'Priority Cargo and Package',
+				'label'    => 'Priority Cargo Package (PCP)',
 				'services' => array(
 					'ONS',
 					'NFS',
@@ -142,7 +142,7 @@ class Raja_Ongkir {
 				),
 			),
 			'star'  => array(
-				'label'    => 'Star Cargo',
+				'label'    => 'Star Cargo (STAR)',
 				'services' => array(
 					'Express',
 					'Reguler',
@@ -155,7 +155,7 @@ class Raja_Ongkir {
 				),
 			),
 			'sicepat'  => array(
-				'label'    => 'SiCepat Express',
+				'label'    => 'SiCepat Express (SICEPAT)',
 				'services' => array(
 					'REG',
 					'BEST',
@@ -166,7 +166,7 @@ class Raja_Ongkir {
 				),
 			),
 			'jet'  => array(
-				'label'    => 'JET Express',
+				'label'    => 'JET Express (JET)',
 				'services' => array(
 					'CRG',
 					'PRI',
@@ -177,7 +177,7 @@ class Raja_Ongkir {
 				),
 			),
 			'jnt'  => array(
-				'label'    => 'J&T Express',
+				'label'    => 'J&T Express (J&T)',
 				'services' => array(
 					'EZ',
 				),
@@ -186,7 +186,7 @@ class Raja_Ongkir {
 				),
 			),
 			'pandu'  => array(
-				'label'    => 'Pandu Logistics',
+				'label'    => 'Pandu Logistics (PANDU)',
 				'services' => array(
 					'REG',
 				),
@@ -197,7 +197,7 @@ class Raja_Ongkir {
 		),
 		'international' => array(
 			'pos' => array(
-				'label'    => 'POS Indonesia',
+				'label'    => 'POS Indonesia (POS)',
 				'services' => array(
 					'Surat R LN',
 					'EMS BARANG',
@@ -210,7 +210,7 @@ class Raja_Ongkir {
 				),
 			),
 			'tiki' => array(
-				'label'    => 'Citra Van Titipan Kilat',
+				'label'    => 'Citra Van Titipan Kilat (TIKI)',
 				'services' => array(
 					'Dokumen',
 					'Paket',
@@ -222,7 +222,7 @@ class Raja_Ongkir {
 				),
 			),
 			'jne' => array(
-				'label'    => 'Jalur Nugraha Ekakurir',
+				'label'    => 'Jalur Nugraha Ekakurir (JNE)',
 				'services' => array(
 					'INTL',
 				),
@@ -231,7 +231,7 @@ class Raja_Ongkir {
 				),
 			),
 			'slis' => array(
-				'label'    => 'Solusi Ekspres',
+				'label'    => 'Solusi Ekspres (SLIS)',
 				'services' => array(
 					'PACKAGE',
 					'COSMETIC/FOOD',
@@ -241,7 +241,7 @@ class Raja_Ongkir {
 				),
 			),
 			'expedito' => array(
-				'label'    => 'Expedito',
+				'label'    => 'Expedito (EXPEDITO)',
 				'services' => array(
 					'CityLink',
 					'DHL Indonesia',
