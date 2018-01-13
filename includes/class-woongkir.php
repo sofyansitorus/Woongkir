@@ -252,18 +252,22 @@ class Woongkir extends WC_Shipping_Method {
 			<table class="form-table" width="100%">
 				<tr>
 				<?php
+				$i = 0;
 				foreach ( $couriers as $courier_id => $courier ) :
 					if ( empty( $courier['services'] ) ) :
 						continue;
 					endif;
+					if ( $i && 0 === $i % 5 ) {
+						echo '</tr><tr>';
+					}
 				?>
-				<td style="vertical-align:top !important;" id="woongkir-courier-box-<?php echo esc_attr( $key ); ?>-<?php echo esc_attr( $courier_id ); ?>" class="woongkir-courier-box <?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>">
+				<td style="vertical-align:top !important; width: 20%;" id="woongkir-courier-box-<?php echo esc_attr( $key ); ?>-<?php echo esc_attr( $courier_id ); ?>" class="woongkir-courier-box <?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>">
 					<table class="form-table" width="100%" style="border:1px solid #f8f8f8;">
 						<thead style="background-color:#f1f1f1;">
 							<tr>
 								<td>
 									<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
-									<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" style="font-weight:bold;"><?php echo wp_kses_post( strtoupper( $courier_id ) ); ?></label>
+									<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle"><?php echo wp_kses_post( $courier['label'] ); ?></label>
 								</td>
 							</tr>
 						</thead>
@@ -280,6 +284,7 @@ class Woongkir extends WC_Shipping_Method {
 					</table>
 				</td>
 				<?php
+					$i++;
 				endforeach;
 				?>
 				</tr>
@@ -483,7 +488,8 @@ class Woongkir extends WC_Shipping_Method {
 			if ( empty( $courier->costs ) ) {
 				continue;
 			}
-			$selected = isset( $this->{$zone}[ $courier->code ] ) ? $this->{$zone}[ $courier->code ] : array();
+			$courier_code = strtolower( str_replace( '&', 'n', $courier->code ) );
+			$selected = isset( $this->{$zone}[ $courier_code ] ) ? $this->{$zone}[ $courier_code ] : array();
 			foreach ( $courier->costs as $service ) {
 				if ( ! in_array( $service->service, $selected, true ) || empty( $service->cost ) ) {
 					continue;
@@ -502,7 +508,7 @@ class Woongkir extends WC_Shipping_Method {
 				$rate = is_array( $service->cost ) ? $service->cost[0]->value : $service->cost;
 				$cost = ( 'IDR' === $currency_code ) ? $rate : ( $currency_exchange->value * $rate );
 
-				$rate_id    = $this->get_rate_id( $courier->code . ':' . $service->service );
+				$rate_id    = $this->get_rate_id( $courier_code . ':' . $service->service );
 				$rate_label = sprintf( '%s - %s', strtoupper( $courier->code ), $service->service );
 
 				if ( 'yes' === $this->show_eta ) {
