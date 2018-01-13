@@ -150,6 +150,17 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
+			'sicepat'  => array(
+				'label'    => 'J&T',
+				'services' => array(
+					'REG',
+					'BEST',
+					'Priority',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
 		),
 		'international' => array(
 			'pos' => array(
