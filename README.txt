@@ -8,17 +8,17 @@ Stable tag: trunk
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP and RPX to Domestic and International shipment.
+WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO to Domestic and International shipment.
 
 == Description ==
-WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP and RPX to Domestic and International shipment.
+WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO to Domestic and International shipment.
 
 Please note that this plugin is using RajaOngkir.com API as the data source. You must have RajaOngkir.com API Key to use this plugin. [Click here](https://rajaongkir.com) to get RajaOngkir.com API Key. It is free.
 
 = Features =
 
-* Support multiple couriers for domestic shipping: JNE, TIKI, POS, PCP, RPX.
-* Support multiple couriers for international shipping: JNE, POS.
+* Support multiple couriers for domestic shipping: JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T.
+* Support multiple couriers for international shipping: JNE, TIKI, POS, SLIS, EXPEDITO.
 * Support shipping rates calculation from and to subdistrict location for domestic shipping.
 * Support shipping rates calculation based on dimensions and weight.
 * Enable or disable any of shipping services provided by each couriers.
@@ -52,6 +52,32 @@ In the search field type “Woongkir” and click Search Plugins. You can instal
 1. Upload the plugin zip file, the plugin will now be installed
 1. After installation has finished, click the ‘activate plugin’ link
 
+== Frequently Asked Questions ==
+= How to set the plugin settings? =
+You can setup the plugin setting from the Shipping Zones settings. Please check the following video tutorial how to setup the WooCommerce Shipping Zones:
+
+https://www.youtube.com/watch?v=eThWmrnBP38
+
+Credits: [InMotion Hosting](https://www.inmotionhosting.com/)
+
+= Where can I get support? =
+You can either create ticket at plugin support forum or GitHub repository:
+
+* [Plugin Support Forum](https://wordpress.org/support/plugin/woongkir)
+* [Plugin GitHub Repository](https://github.com/sofyansitorus/Woongkir)
+
+= Where can I report bugs? =
+You can either create ticket at plugin support forum or GitHub repository:
+
+* [Plugin Support Forum](https://wordpress.org/support/plugin/woongkir)
+* [Plugin GitHub Repository](https://github.com/sofyansitorus/Woongkir)
+
+= Where can I request a feature? =
+You can either create ticket at plugin support forum or GitHub repository:
+
+* [Plugin Support Forum](https://wordpress.org/support/plugin/woongkir)
+* [Plugin GitHub Repository](https://github.com/sofyansitorus/Woongkir)
+
 == Screenshots ==
 1. Settings panel: General Options
 2. Settings panel: Domestic Shipping Options
@@ -60,6 +86,13 @@ In the search field type “Woongkir” and click Search Plugins. You can instal
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.1.0 - 2018-01-13 =
+
+* Feature - Add new domestic shipping couriers: STAR, SICEPAT, JET, PANDU, J&T.
+* Feature - Add new international shipping couriers: TIKI, SLIS, EXPEDITO.
+* Improvemnts - Tweak settings panel.
+* Improvemnts - Tweak estimated time of arrival label.
 
 = 1.0.0 - 2018-01-12 =
 
