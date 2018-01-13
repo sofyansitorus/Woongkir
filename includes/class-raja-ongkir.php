@@ -181,6 +181,19 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
+			'star'  => array(
+				'label'    => 'Star Cargo',
+				'services' => array(
+					'Express',
+					'Reguler',
+					'Dokumen',
+					'MOTOR',
+					'MOTOR 150 - 250 CC',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
 		),
 		'international' => array(
 			'pos' => array(
