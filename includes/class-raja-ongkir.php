@@ -142,7 +142,7 @@ class Raja_Ongkir {
 				),
 			),
 			'jnt'  => array(
-				'label'    => 'J&T',
+				'label'    => 'J&T Express',
 				'services' => array(
 					'EZ',
 				),
@@ -151,7 +151,7 @@ class Raja_Ongkir {
 				),
 			),
 			'sicepat'  => array(
-				'label'    => 'J&T',
+				'label'    => 'SiCepat Express',
 				'services' => array(
 					'REG',
 					'BEST',
