@@ -161,6 +161,15 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
+			'pandu'  => array(
+				'label'    => 'Pandu Logistics',
+				'services' => array(
+					'REG',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
 		),
 		'international' => array(
 			'pos' => array(
