@@ -64,21 +64,6 @@ class Raja_Ongkir {
 	 */
 	private $couriers = array(
 		'domestic'      => array(
-			'jne'  => array(
-				'label'    => 'Jalur Nugraha Ekakurir',
-				'services' => array(
-					'CTC',
-					'CTCYES',
-					'OKE',
-					'REG',
-					'YES',
-				),
-				'account'  => array(
-					'starter',
-					'basic',
-					'pro',
-				),
-			),
 			'tiki' => array(
 				'label'    => 'Citra Van Titipan Kilat',
 				'services' => array(
@@ -107,6 +92,21 @@ class Raja_Ongkir {
 					'Express Next Day Barang',
 					'Paketpos Dangerous Goods',
 					'Paketpos Valuable Goods',
+				),
+				'account'  => array(
+					'starter',
+					'basic',
+					'pro',
+				),
+			),
+			'jne'  => array(
+				'label'    => 'Jalur Nugraha Ekakurir',
+				'services' => array(
+					'CTC',
+					'CTCYES',
+					'OKE',
+					'REG',
+					'YES',
 				),
 				'account'  => array(
 					'starter',
@@ -143,15 +143,6 @@ class Raja_Ongkir {
 			),
 		),
 		'international' => array(
-			'jne' => array(
-				'label'    => 'Jalur Nugraha Ekakurir',
-				'services' => array(
-					'INTL',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
 			'tiki' => array(
 				'label'    => 'Citra Van Titipan Kilat',
 				'services' => array(
@@ -174,6 +165,25 @@ class Raja_Ongkir {
 				),
 				'account'  => array(
 					'basic',
+					'pro',
+				),
+			),
+			'jne' => array(
+				'label'    => 'Jalur Nugraha Ekakurir',
+				'services' => array(
+					'INTL',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'slis' => array(
+				'label'    => 'Solusi Ekspres',
+				'services' => array(
+					'PACKAGE',
+					'COSMETIC/FOOD',
+				),
+				'account'  => array(
 					'pro',
 				),
 			),
