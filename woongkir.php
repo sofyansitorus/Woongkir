@@ -108,6 +108,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	}
 	add_action( 'admin_enqueue_scripts', 'woongkir_enqueue_scripts' );
 	add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_scripts' );
+
+	// Show city field in the shipping calculator form.
+	add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
+
 }
 
 
