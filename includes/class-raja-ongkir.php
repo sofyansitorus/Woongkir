@@ -64,22 +64,6 @@ class Raja_Ongkir {
 	 */
 	private $couriers = array(
 		'domestic'      => array(
-			'tiki' => array(
-				'label'    => 'Citra Van Titipan Kilat',
-				'services' => array(
-					'TRC',
-					'REG',
-					'ECO',
-					'ONS',
-					'SDS',
-					'HDS',
-				),
-				'account'  => array(
-					'starter',
-					'basic',
-					'pro',
-				),
-			),
 			'pos'  => array(
 				'label'    => 'POS Indonesia',
 				'services' => array(
@@ -92,6 +76,22 @@ class Raja_Ongkir {
 					'Express Next Day Barang',
 					'Paketpos Dangerous Goods',
 					'Paketpos Valuable Goods',
+				),
+				'account'  => array(
+					'starter',
+					'basic',
+					'pro',
+				),
+			),
+			'tiki' => array(
+				'label'    => 'Citra Van Titipan Kilat',
+				'services' => array(
+					'TRC',
+					'REG',
+					'ECO',
+					'ONS',
+					'SDS',
+					'HDS',
 				),
 				'account'  => array(
 					'starter',
@@ -143,18 +143,6 @@ class Raja_Ongkir {
 			),
 		),
 		'international' => array(
-			'tiki' => array(
-				'label'    => 'Citra Van Titipan Kilat',
-				'services' => array(
-					'Dokumen',
-					'Paket',
-					'Dokumen / Paket',
-				),
-				'account'  => array(
-					'basic',
-					'pro',
-				),
-			),
 			'pos' => array(
 				'label'    => 'POS Indonesia',
 				'services' => array(
@@ -162,6 +150,18 @@ class Raja_Ongkir {
 					'EMS BARANG',
 					'PAKETPOS CEPAT LN',
 					'PAKETPOS BIASA LN',
+				),
+				'account'  => array(
+					'basic',
+					'pro',
+				),
+			),
+			'tiki' => array(
+				'label'    => 'Citra Van Titipan Kilat',
+				'services' => array(
+					'Dokumen',
+					'Paket',
+					'Dokumen / Paket',
 				),
 				'account'  => array(
 					'basic',
@@ -182,6 +182,19 @@ class Raja_Ongkir {
 				'services' => array(
 					'PACKAGE',
 					'COSMETIC/FOOD',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'expedito' => array(
+				'label'    => 'Expedito',
+				'services' => array(
+					'CityLink',
+					'DHL Indonesia',
+					'DPEX',
+					'FIRST FLIGHT',
+					'TNT | Fedex',
 				),
 				'account'  => array(
 					'pro',
