@@ -517,6 +517,7 @@ class Woongkir extends WC_Shipping_Method {
 						$eta = $service->cost[0]->etd;
 					}
 					if ( $eta ) {
+						$eta = strtoupper( $eta );
 						if ( '1-1' === $eta ) {
 							$eta = '1';
 						}
@@ -529,7 +530,8 @@ class Woongkir extends WC_Shipping_Method {
 						if ( false !== strpos( $eta, 'JAM' ) ) {
 							$eta = ( str_replace( ' JAM', '', $eta ) === '1' ) ? str_replace( 'JAM', '{hour}', $eta ) : str_replace( 'JAM', '{hours}', $eta );
 						}
-						$eta        = str_replace( array( '{hour}', '{hours}', '{day}', '{days}' ), array( __( 'Hour', 'woongkir' ), __( 'Hours', 'woongkir' ), __( 'Day', 'woongkir' ), __( 'Days', 'woongkir' ) ), $eta );
+						$eta = str_replace( array( '{hour}', '{hours}', '{day}', '{days}' ), array( __( 'Hour', 'woongkir' ), __( 'Hours', 'woongkir' ), __( 'Day', 'woongkir' ), __( 'Days', 'woongkir' ) ), $eta );
+
 						$rate_label = sprintf( '%s (%s)', $rate_label, $eta );
 					}
 				}
