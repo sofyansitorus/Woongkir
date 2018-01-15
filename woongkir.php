@@ -62,6 +62,28 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	add_action( 'woocommerce_shipping_init', 'woongkir_load_dependencies' );
 
 	/**
+	 * Add plugin action links.
+	 *
+	 * Add a link to the settings page on the plugins.php page.
+	 *
+	 * @since 1.1.3
+	 *
+	 * @param  array $links List of existing plugin action links.
+	 * @return array         List of modified plugin action links.
+	 */
+	function woongkir_plugin_action_links( $links ) {
+		$links = array_merge(
+			array(
+				'<a href="' . esc_url( wp_nonce_url( admin_url( 'admin.php?page=wc-settings&tab=shipping&zone_id=0&wongkir_settings=1' ), 'wongkir_settings' ) ) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
+			), $links
+		);
+
+		return $links;
+	}
+	add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'woongkir_plugin_action_links' );
+
+
+	/**
 	 * Register shipping method to WooCommerce.
 	 *
 	 * @since 1.0.0
