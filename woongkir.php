@@ -106,11 +106,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	function woongkir_enqueue_scripts( $hook = null ) {
 		if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) || ! is_admin() ) {
 			wp_register_script( 'store.js', WOONGKIR_URL . 'assets/js/store.min.js' );
-			wp_enqueue_script( 'woongkir', WOONGKIR_URL . 'assets/js/woongkir.min.js', array( 'jquery', 'store.js' ) );
+			wp_enqueue_script( 'woongkir', WOONGKIR_URL . 'assets/js/woongkir.min.js', array( 'jquery', 'store.js' ), '', true );
 			wp_localize_script(
 				'woongkir', 'woongkir_params', array(
-					'ajax_url' => admin_url( 'ajax.php' ),
-					'json'     => array(
+					'ajax_url'      => admin_url( 'ajax.php' ),
+					'json'          => array(
 						'country_url'     => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/country.json' ),
 						'country_key'     => 'woongkir_country_data',
 						'province_url'    => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/province.json' ),
@@ -120,19 +120,20 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						'subdistrict_url' => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/subdistrict.json' ),
 						'subdistrict_key' => 'woongkir_subdistrict_data',
 					),
-					'text'     => array(
+					'text'          => array(
 						'select_country'     => __( 'Select country', 'woongkir' ),
 						'select_province'    => __( 'Select province', 'woongkir' ),
 						'select_city'        => __( 'Select city', 'woongkir' ),
 						'select_subdistrict' => __( 'Select subdistrict', 'woongkir' ),
 					),
-					'debug'    => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
+					'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
+					'show_settings' => ( isset( $_GET['wongkir_settings'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'wongkir_settings' ) && is_admin() ),
 				)
 			);
 		}
 	}
-	add_action( 'admin_enqueue_scripts', 'woongkir_enqueue_scripts' );
-	add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_scripts' );
+	add_action( 'admin_enqueue_scripts', 'woongkir_enqueue_scripts', 999 );
+	add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_scripts', 999 );
 
 	// Show city field in the shipping calculator form.
 	add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
