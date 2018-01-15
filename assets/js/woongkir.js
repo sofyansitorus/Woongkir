@@ -362,6 +362,25 @@
 
         // Bind settings form on click .wc-shipping-zone-method-settings.
         $(document).on('click', '.wc-shipping-zone-method-settings', woongkirFormSettings);
+
+        // Try show settings modal on settings page.
+        if (woongkir_params.show_settings) {
+            setTimeout(function () {
+                var methodAdded = false;
+                var rows = $(document).find('.wc-shipping-zone-method-title > a.wc-shipping-zone-method-settings');
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    if ($(row).text() == 'Woongkir') {
+                        $(row).trigger('click');
+                        methodAdded = true;
+                        return;
+                    }
+                }
+                if (!methodAdded) {
+                    $(document).find('.wc-shipping-zone-add-method').trigger('click');
+                }
+            }, 300);
+        }
     });
 
 })(jQuery, window);
