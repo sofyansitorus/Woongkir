@@ -2,21 +2,19 @@
 
     "use strict";
 
-    function woongkirStoreProvince(callback) {
-        var data = w.store.get(woongkir_params.json.province_key);
-        if (typeof data == 'undefined' || data == 'undefined' || !data) {
+    // Store province data.
+    function woongkirStoreProvince() {
+        if (!woongkirGetProvince().length) {
             $.getJSON(woongkir_params.json.province_url, function (data) {
                 data.sort(function (a, b) {
                     return (a.province_name > b.province_name) ? 1 : ((b.province_name > a.province_name) ? -1 : 0);
                 });
                 w.store.set(woongkir_params.json.province_key, data);
-                if (typeof callback === 'function') {
-                    callback(data);
-                }
             });
         }
     }
 
+    // Get province data.
     function woongkirGetProvince() {
         var data = w.store.get(woongkir_params.json.province_key);
         if (typeof data == 'undefined' || data == 'undefined' || !data) {
@@ -25,21 +23,19 @@
         return data;
     }
 
-    function woongkirStoreCity(callback) {
-        var data = w.store.get(woongkir_params.json.city_key);
-        if (typeof data == 'undefined' || data == 'undefined' || !data) {
+    // Store city data.
+    function woongkirStoreCity() {
+        if (!woongkirGetCity().length) {
             $.getJSON(woongkir_params.json.city_url, function (data) {
                 data.sort(function (a, b) {
                     return (a.city_name > b.city_name) ? 1 : ((b.city_name > a.city_name) ? -1 : 0);
                 });
                 w.store.set(woongkir_params.json.city_key, data);
-                if (typeof callback === 'function') {
-                    callback(data);
-                }
             });
         }
     }
 
+    // Get city data.
     function woongkirGetCity() {
         var data = w.store.get(woongkir_params.json.city_key);
         if (typeof data == 'undefined' || data == 'undefined' || !data) {
@@ -48,21 +44,19 @@
         return data;
     }
 
-    function woongkirStoreSubdistrict(callback) {
-        var data = w.store.get(woongkir_params.json.subdistrict_key);
-        if (typeof data == 'undefined' || data == 'undefined' || !data) {
+    // Store subdictrict data.
+    function woongkirStoreSubdistrict() {
+        if (!woongkirGetSubdistrict().length) {
             $.getJSON(woongkir_params.json.subdistrict_url, function (data) {
                 data.sort(function (a, b) {
                     return (a.subdistrict_name > b.subdistrict_name) ? 1 : ((b.subdistrict_name > a.subdistrict_name) ? -1 : 0);
                 });
                 w.store.set(woongkir_params.json.subdistrict_key, data);
-                if (typeof callback === 'function') {
-                    callback(data);
-                }
             });
         }
     }
 
+    // Get subdictrict data.
     function woongkirGetSubdistrict() {
         var data = w.store.get(woongkir_params.json.subdistrict_key);
         if (typeof data == 'undefined' || data == 'undefined' || !data) {
@@ -71,6 +65,7 @@
         return data;
     }
 
+    // Render checkout form.
     function woongkirFormCheckout(country, $wrapper) {
         if (typeof country == 'undefined' || country == 'undefined' || !country) {
             return;
@@ -190,6 +185,7 @@
         }
     }
 
+    // Render settings form.
     function woongkirFormSettings() {
 
         var provinceData = woongkirGetProvince(),
