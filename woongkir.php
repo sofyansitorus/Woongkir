@@ -74,7 +74,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	function woongkir_plugin_action_links( $links ) {
 		$links = array_merge(
 			array(
-				'<a href="' . esc_url( wp_nonce_url( admin_url( 'admin.php?page=wc-settings&tab=shipping&zone_id=0&wongkir_settings=1' ), 'wongkir_settings' ) ) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
+				'<a href="' . esc_url( wp_nonce_url( admin_url( 'admin.php?page=wc-settings&tab=shipping&zone_id=0&woongkir_settings=1' ), 'woongkir_settings' ) ) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
 			), $links
 		);
 
@@ -127,7 +127,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						'select_subdistrict' => __( 'Select subdistrict', 'woongkir' ),
 					),
 					'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
-					'show_settings' => ( isset( $_GET['wongkir_settings'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'wongkir_settings' ) && is_admin() ),
+					'show_settings' => ( isset( $_GET['woongkir_settings'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'woongkir_settings' ) && is_admin() ),
 				)
 			);
 		}
