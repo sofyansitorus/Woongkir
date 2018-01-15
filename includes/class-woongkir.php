@@ -717,7 +717,7 @@ class Woongkir extends WC_Shipping_Method {
 	public function get_json_data( $file_name, $search = array() ) {
 		global $wp_filesystem;
 
-		$file_url  = WONGKIR_URL . 'data/' . $file_name . '.json';
+		$file_url  = WOONGKIR_URL . 'data/' . $file_name . '.json';
 		$file_path = WOONGKIR_PATH . 'data/' . $file_name . '.json';
 
 		try {

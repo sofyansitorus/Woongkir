@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Defines plugin named constants.
 define( 'WOONGKIR_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WONGKIR_URL', plugin_dir_url( __FILE__ ) );
+define( 'WOONGKIR_URL', plugin_dir_url( __FILE__ ) );
 
 /**
  * Load plugin textdomain.
@@ -80,19 +80,19 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	 */
 	function woongkir_enqueue_scripts( $hook = null ) {
 		if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) || ! is_admin() ) {
-			wp_register_script( 'store.js', WONGKIR_URL . 'assets/js/store.min.js' );
-			wp_enqueue_script( 'woongkir', WONGKIR_URL . 'assets/js/woongkir.min.js', array( 'jquery', 'store.js' ) );
+			wp_register_script( 'store.js', WOONGKIR_URL . 'assets/js/store.min.js' );
+			wp_enqueue_script( 'woongkir', WOONGKIR_URL . 'assets/js/woongkir.min.js', array( 'jquery', 'store.js' ) );
 			wp_localize_script(
 				'woongkir', 'woongkir_params', array(
 					'ajax_url' => admin_url( 'ajax.php' ),
 					'json'     => array(
-						'country_url'     => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WONGKIR_URL . 'data/country.json' ),
+						'country_url'     => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/country.json' ),
 						'country_key'     => 'woongkir_country_data',
-						'province_url'    => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WONGKIR_URL . 'data/province.json' ),
+						'province_url'    => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/province.json' ),
 						'province_key'    => 'woongkir_province_data',
-						'city_url'        => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WONGKIR_URL . 'data/city.json' ),
+						'city_url'        => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/city.json' ),
 						'city_key'        => 'woongkir_city_data',
-						'subdistrict_url' => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WONGKIR_URL . 'data/subdistrict.json' ),
+						'subdistrict_url' => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/subdistrict.json' ),
 						'subdistrict_key' => 'woongkir_subdistrict_data',
 					),
 					'text'     => array(
