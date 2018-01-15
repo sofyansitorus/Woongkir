@@ -87,6 +87,10 @@ You can either create ticket at plugin support forum or GitHub repository:
 
 == Changelog ==
 
+= 1.1.3 - 2018-01-15 =
+
+* Improvemnets - Add "Settings" link on the plugins.php page.
+
 = 1.1.2 - 2018-01-15 =
 
 * Fix - The couriers is not displayed if the product weight and dimensions is empty.
@@ -117,5 +121,5 @@ You can either create ticket at plugin support forum or GitHub repository:
 
 == Upgrade Notice ==
 
-= 1.1.2 =
-This version add some improvements and fixes several minor bugs. Upgrade immediately.
+= 1.1.3 =
+This version add some improvements. Upgrade immediately.
