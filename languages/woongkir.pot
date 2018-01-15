@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Woongkir\n"
-"POT-Creation-Date: 2018-01-13 17:02+0700\n"
-"PO-Revision-Date: 2018-01-13 17:02+0700\n"
+"POT-Creation-Date: 2018-01-16 01:18+0700\n"
+"PO-Revision-Date: 2018-01-16 01:18+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,15 +21,15 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: includes/class-raja-ongkir.php:458
+#: includes/class-raja-ongkir.php:461
 msgid "API response is empty."
 msgstr ""
 
-#: includes/class-raja-ongkir.php:464
+#: includes/class-raja-ongkir.php:467
 msgid "API response is invalid."
 msgstr ""
 
-#: includes/class-raja-ongkir.php:479
+#: includes/class-raja-ongkir.php:482
 msgid "Unknown error"
 msgstr ""
 
@@ -40,122 +40,126 @@ msgid ""
 "International shipment."
 msgstr ""
 
-#: includes/class-woongkir.php:116
+#: includes/class-woongkir.php:113
 msgid "Shipping Origin Province"
 msgstr ""
 
-#: includes/class-woongkir.php:120
+#: includes/class-woongkir.php:117
 msgid "Shipping Origin City"
 msgstr ""
 
-#: includes/class-woongkir.php:124
+#: includes/class-woongkir.php:121
 msgid "Shipping Origin Subdistrict"
 msgstr ""
 
-#: includes/class-woongkir.php:128
+#: includes/class-woongkir.php:125
 msgid "Tax Status"
 msgstr ""
 
-#: includes/class-woongkir.php:132
+#: includes/class-woongkir.php:129
 msgid "Taxable"
 msgstr ""
 
-#: includes/class-woongkir.php:133
+#: includes/class-woongkir.php:130
 msgctxt "Tax status"
 msgid "None"
 msgstr ""
 
-#: includes/class-woongkir.php:137
+#: includes/class-woongkir.php:134
 msgid "Show ETA"
 msgstr ""
 
-#: includes/class-woongkir.php:138
+#: includes/class-woongkir.php:135
 msgid "Yes"
 msgstr ""
 
-#: includes/class-woongkir.php:140
+#: includes/class-woongkir.php:137
 msgid "Show estimated time of arrival during checkout."
 msgstr ""
 
-#: includes/class-woongkir.php:144
+#: includes/class-woongkir.php:141
 msgid "RajaOngkir API Key"
 msgstr ""
 
-#: includes/class-woongkir.php:147
+#: includes/class-woongkir.php:144
 msgid ""
 "<a href=\"http://www.rajaongkir.com\" target=\"_blank\">Click here</a> to "
 "get RajaOngkir.com API Key."
 msgstr ""
 
-#: includes/class-woongkir.php:151
+#: includes/class-woongkir.php:148
 msgid "RajaOngkir Account Type"
 msgstr ""
 
-#: includes/class-woongkir.php:162
+#: includes/class-woongkir.php:159
 msgid "Domestic Shipping"
 msgstr ""
 
-#: includes/class-woongkir.php:166
+#: includes/class-woongkir.php:163
 msgid "International Shipping"
 msgstr ""
 
-#: includes/class-woongkir.php:308
+#: includes/class-woongkir.php:305
 msgid "API Key is required."
 msgstr ""
 
-#: includes/class-woongkir.php:336
+#: includes/class-woongkir.php:333
 msgid "Account type field is required."
 msgstr ""
 
-#: includes/class-woongkir.php:339 includes/class-woongkir.php:393
+#: includes/class-woongkir.php:336 includes/class-woongkir.php:390
 msgid "Account type field is invalid."
 msgstr ""
 
-#: includes/class-woongkir.php:356
+#: includes/class-woongkir.php:353
 #, php-format
 msgid "Shipping origin %s field is required."
 msgstr ""
 
-#: includes/class-woongkir.php:408
+#: includes/class-woongkir.php:405
 #, php-format
 msgid "%1$s Shipping: Account type %2$s is not allowed to select courier %3$s."
 msgstr ""
 
-#: includes/class-woongkir.php:413
+#: includes/class-woongkir.php:410
 #, php-format
 msgid ""
 "%1$s Shipping: Account type %2$s is not allowed to select multiple couriers."
 msgstr ""
 
-#: includes/class-woongkir.php:533
+#: includes/class-woongkir.php:530
 msgid "Hour"
 msgstr ""
 
-#: includes/class-woongkir.php:533
+#: includes/class-woongkir.php:530
 msgid "Hours"
 msgstr ""
 
-#: includes/class-woongkir.php:533
+#: includes/class-woongkir.php:530
 msgid "Day"
 msgstr ""
 
-#: includes/class-woongkir.php:533
+#: includes/class-woongkir.php:530
 msgid "Days"
 msgstr ""
 
-#: woongkir.php:99
+#: woongkir.php:77
+msgid "Settings"
+msgstr ""
+
+#: woongkir.php:124
 msgid "Select country"
 msgstr ""
 
-#: woongkir.php:100
+#: woongkir.php:125
 msgid "Select province"
 msgstr ""
 
-#: woongkir.php:101
+#: woongkir.php:126
 msgid "Select city"
 msgstr ""
 
-#: woongkir.php:102
+#: woongkir.php:127
 msgid "Select subdistrict"
 msgstr ""
 
