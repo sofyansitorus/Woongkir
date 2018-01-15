@@ -742,7 +742,7 @@ class Woongkir extends WC_Shipping_Method {
 
 			$json = $wp_filesystem->get_contents( $file_path );
 		} catch ( Exception $e ) {
-			// Get JSON data by HTTP if the Filesystem API procedure failed.
+			// Get JSON data by HTTP if the WP_Filesystem API procedure failed.
 			$json = wp_remote_retrieve_body( wp_remote_get( esc_url_raw( $file_url ) ) );
 		}
 
@@ -756,6 +756,7 @@ class Woongkir extends WC_Shipping_Method {
 			return false;
 		}
 
+		// Search JSON data by associative array. Return the match row or false if not found.
 		if ( $search ) {
 			foreach ( $data as $row ) {
 				if ( array_intersect_assoc( $search, $row ) === $search ) {
