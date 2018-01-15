@@ -718,7 +718,7 @@ class Woongkir extends WC_Shipping_Method {
 		global $wp_filesystem;
 
 		$file_url  = WONGKIR_URL . 'data/' . $file_name . '.json';
-		$file_path = WONGKIR_PATH . 'data/' . $file_name . '.json';
+		$file_path = WOONGKIR_PATH . 'data/' . $file_name . '.json';
 
 		try {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
