@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Defines plugin named constants.
-define( 'WONGKIR_PATH', plugin_dir_path( __FILE__ ) );
+define( 'WOONGKIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WONGKIR_URL', plugin_dir_url( __FILE__ ) );
 
 /**
@@ -53,8 +53,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	 * @since 1.0.0
 	 */
 	function woongkir_load_dependencies() {
-		require_once WONGKIR_PATH . 'includes/class-raja-ongkir.php';
-		require_once WONGKIR_PATH . 'includes/class-woongkir.php';
+		require_once WOONGKIR_PATH . 'includes/class-raja-ongkir.php';
+		require_once WOONGKIR_PATH . 'includes/class-woongkir.php';
 	}
 	add_action( 'woocommerce_shipping_init', 'woongkir_load_dependencies' );
 
