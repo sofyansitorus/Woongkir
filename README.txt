@@ -87,6 +87,11 @@ You can either create ticket at plugin support forum or GitHub repository:
 
 == Changelog ==
 
+= 1.1.2 - 2018-01-15 =
+
+* Fix - The couriers is not displayed if the product weight and dimensions is empty.
+* Improvemnets - Store local storage data at first load only.
+
 = 1.1.1 - 2018-01-14 =
 
 * Fix - Prevent request to API server if the destination adddress is not complete.
@@ -109,3 +114,8 @@ You can either create ticket at plugin support forum or GitHub repository:
 * Feature - Show or hide estimated time of arrival.
 * Feature - Real time currency convertion to IDR for international shipping cost courier that use USD.
 * Feature - Real time API Key validation on settings update.
+
+== Upgrade Notice ==
+
+= 1.1.2 =
+This version add some improvements and fixes several minor bugs. Upgrade immediately.
