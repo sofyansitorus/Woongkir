@@ -684,6 +684,11 @@ class Woongkir extends WC_Shipping_Method {
 		$data['height'] = wc_get_dimension( array_sum( $height ), 'cm' );
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
+		// Set the package weight to 1 gram if it was empty.
+		if ( empty( $data['weight'] ) ) {
+			$data['weight'] = 1;
+		}
+
 		/**
 		 * Developers can modify the dimension and weight data via filter hooks.
 		 *
