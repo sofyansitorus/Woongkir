@@ -8,10 +8,10 @@ Stable tag: trunk
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO to Domestic and International shipment.
+WooCommerce shipping rates calculator using Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO for Domestic and International shipment.
 
 == Description ==
-WooCommerce shipping rates calculator for Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO to Domestic and International shipment.
+WooCommerce shipping rates calculator using Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO for Domestic and International shipment.
 
 Please note that this plugin is using RajaOngkir.com API as the data source. You must have RajaOngkir.com API Key to use this plugin. [Click here](https://rajaongkir.com) to get RajaOngkir.com API Key. It is free.
 
@@ -56,9 +56,9 @@ In the search field type “Woongkir” and click Search Plugins. You can instal
 = How to set the plugin settings? =
 You can setup the plugin setting from the Shipping Zones settings. Please check the following video tutorial how to setup the WooCommerce Shipping Zones:
 
-https://www.youtube.com/watch?v=eThWmrnBP38
+[youtube https://www.youtube.com/watch?v=eThWmrnBP38]
 
-Credits: [InMotion Hosting](https://www.inmotionhosting.com/)
+[Video](https://www.youtube.com/watch?v=eThWmrnBP38) by [InMotion Hosting](https://www.inmotionhosting.com)
 
 = Where can I get support? =
 You can either create ticket at plugin support forum or GitHub repository:
