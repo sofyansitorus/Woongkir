@@ -36,6 +36,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'WOONGKIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WOONGKIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'WOONGKIR_VERSION', '1.1.3' );
+define( 'WOONGKIR_METHOD_ID', 'woongkir' );
+define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
 
 /**
  * Load plugin textdomain.
@@ -164,6 +166,8 @@ function woongkir_enqueue_scripts( $hook = null ) {
 				),
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
 				'show_settings' => ( isset( $_GET['woongkir_nonce'] ) && wp_verify_nonce( $_GET['woongkir_nonce'], 'woongkir_settings' ) && is_admin() ),
+				'method_id'     => WOONGKIR_METHOD_ID,
+				'method_title'  => WOONGKIR_METHOD_TITLE,
 			)
 		);
 	}

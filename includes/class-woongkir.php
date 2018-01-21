@@ -53,10 +53,10 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return void
 	 */
 	public function __construct( $instance_id = 0 ) {
-		$this->id                 = 'woongkir';
 		$this->instance_id        = absint( $instance_id );
-		$this->method_title       = 'Woongkir';
-		$this->title              = 'Woongkir';
+		$this->id                 = WOONGKIR_METHOD_ID;
+		$this->method_title       = WOONGKIR_METHOD_TITLE;
+		$this->title              = WOONGKIR_METHOD_TITLE;
 		$this->method_description = __( 'Shipping rates calculator using Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO for Domestic and International shipment.', 'woongkir' );
 		$this->supports           = array(
 			'shipping-zones',
