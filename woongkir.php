@@ -35,6 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Defines plugin named constants.
 define( 'WOONGKIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WOONGKIR_URL', plugin_dir_url( __FILE__ ) );
+define( 'WOONGKIR_VERSION', '1.1.3' );
 
 /**
  * Load plugin textdomain.
@@ -108,8 +109,26 @@ add_filter( 'woocommerce_shipping_methods', 'woongkir_shipping_methods' );
  */
 function woongkir_enqueue_scripts( $hook = null ) {
 	if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) || ! is_admin() ) {
-		wp_register_script( 'store.js', WOONGKIR_URL . 'assets/js/store.min.js' );
-		wp_enqueue_script( 'woongkir', WOONGKIR_URL . 'assets/js/woongkir.min.js', array( 'jquery', 'store.js' ), '', true );
+		// Register store.js scripts.
+		$store_js = ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) ? add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'assets/js/store.js' ) : WOONGKIR_URL . 'assets/js/store.min.js';
+		wp_enqueue_script(
+			'store.js', // Give the script a unique ID.
+			$store_js, // Define the path to the JS file.
+			array( 'jquery' ), // Define dependencies.
+			WOONGKIR_VERSION, // Define a version (optional).
+			true // Specify whether to put in footer (leave this true).
+		);
+
+		// Enqueue main scripts.
+		$woongkir_js = ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) ? add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'assets/js/woongkir.js' ) : WOONGKIR_URL . 'assets/js/woongkir.min.js';
+		wp_enqueue_script(
+			'woongkir', // Give the script a unique ID.
+			$woongkir_js, // Define the path to the JS file.
+			array( 'jquery', 'store.js' ), // Define dependencies.
+			WOONGKIR_VERSION, // Define a version (optional).
+			true // Specify whether to put in footer (leave this true).
+		);
+
 		wp_localize_script(
 			'woongkir', 'woongkir_params', array(
 				'ajax_url'      => admin_url( 'ajax.php' ),
