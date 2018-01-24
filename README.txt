@@ -129,5 +129,5 @@ You can either create ticket at plugin support forum or GitHub repository:
 
 == Upgrade Notice ==
 
-= 1.1.3 =
-This version add some improvements. Upgrade immediately.
+= 1.1.4 =
+This version include bugs fixes add improvements. Upgrade immediately.
