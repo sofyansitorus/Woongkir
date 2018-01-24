@@ -347,7 +347,7 @@ class Woongkir extends WC_Shipping_Method {
 		}
 
 		$account_type = $this->validate_account_type_field( 'account_type', $this->posted_field_value( 'account_type' ) );
-		if ( $value !== $this->api_key || ( $account_type && $account_type !== $this->account_type ) ) {
+		if ( $account_type ) {
 			$this->api->set_option( 'api_key', $value );
 			$this->api->set_option( 'account_type', $account_type );
 			$account_valid = $this->api->validate_account();
