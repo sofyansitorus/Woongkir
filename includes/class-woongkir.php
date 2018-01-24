@@ -176,8 +176,35 @@ class Woongkir extends WC_Shipping_Method {
 			),
 		);
 
+		$couriers = $this->api->get_courier();
+
 		foreach ( $this->api->get_account() as $account_type => $data ) {
-			$settings['account_type']['options'][ $account_type ] = $data['label'];
+			$zone_data = array();
+			$label     = $data['label'];
+			foreach ( $couriers as $zone_id => $courier ) {
+				$zone_data[ $zone_id ] = 0;
+				foreach ( $courier as $courier_id => $courier_data ) {
+					if ( in_array( $account_type, $courier_data['account'], true ) ) {
+						$zone_data[ $zone_id ]++;
+					}
+				}
+			}
+			$infos = array();
+
+			foreach ( $zone_data as $zone_id => $count ) {
+				$infos[] = $zone_id . ': ' . $count;
+			}
+
+			if ( $data['multiple'] ) {
+				$infos[] = 'multiple';
+			}
+
+			if ( $data['subdistrict'] ) {
+				$infos[] = 'subdistrict';
+			}
+
+			$label .= ' (' . implode( ', ', $infos ) . ')';
+			$settings['account_type']['options'][ $account_type ] = $label;
 		}
 
 		$this->instance_form_fields = $settings;
