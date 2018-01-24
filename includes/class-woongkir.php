@@ -71,6 +71,9 @@ class Woongkir extends WC_Shipping_Method {
 		// Check if this shipping method is availbale for current order.
 		add_filter( 'woocommerce_shipping_' . $this->id . '_is_available', array( $this, 'check_is_available' ), 10, 2 );
 
+		// Set the minimum weight for cart contents.
+		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_min_cart_contents_weight' ), 10 );
+
 		$this->api = new Raja_Ongkir();
 
 		$this->init();
@@ -713,8 +716,8 @@ class Woongkir extends WC_Shipping_Method {
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
 		// Set the package weight to based on min_weight setting value.
-		if ( $this->min_weight && $data['weight'] < $this->min_weight ) {
-			$data['weight'] = $this->min_weight;
+		if ( absint( $this->min_weight ) && $data['weight'] < absint( $this->min_weight ) ) {
+			$data['weight'] = absint( $this->min_weight );
 		}
 
 		/**
@@ -736,6 +739,20 @@ class Woongkir extends WC_Shipping_Method {
 		 *      }
 		 */
 		return apply_filters( 'woocommerce_' . $this->id . '_shipping_dimension_weight', $data, $this );
+	}
+
+	/**
+	 * Set the minimum weight for cart contents.
+	 *
+	 * @since 1.0.0
+	 * @param int $weight Current cart contents weight.
+	 * @return int
+	 */
+	public function set_min_cart_contents_weight( $weight ) {
+		if ( absint( $this->min_weight ) && $weight < absint( $this->min_weight ) ) {
+			return wc_get_weight( absint( $this->min_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
+		}
+		return $weight;
 	}
 
 	/**
