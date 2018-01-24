@@ -301,6 +301,9 @@ class Woongkir extends WC_Shipping_Method {
 						<thead style="background-color:#f1f1f1;">
 							<tr>
 								<td>
+									<?php if ( file_exists( WOONGKIR_PATH . 'assets/img/' . $courier_id . '.png' ) ) : ?>
+									<img src="<?php echo esc_attr( WOONGKIR_URL ); ?>assets/img/<?php echo esc_attr( $courier_id ); ?>.png" style="display: block;margin:0 auto; max-width: 96px; height: auto;">
+									<?php endif; ?>
 									<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
 									<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle"><?php echo wp_kses_post( $courier['label'] ); ?></label>
 								</td>
