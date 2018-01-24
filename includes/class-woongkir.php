@@ -138,13 +138,11 @@ class Woongkir extends WC_Shipping_Method {
 				'label'       => __( 'Yes', 'woongkir' ),
 				'type'        => 'checkbox',
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
-				'desc_tip'    => true,
 			),
 			'base_weight'        => array(
 				'title'             => __( 'Base Weight (gram)', 'woongkir' ),
 				'type'              => 'number',
-				'description'       => __( 'The base weight setting will be applied if the actual cart contents weight is lower that the base weight setting. If leaved blank or filled with zero, the couriers list will not displayed when the calculated cart contents weight is empty.', 'woongkir' ),
-				'desc_tip'          => true,
+				'description'       => __( 'Cart contents weight that will be declared if the actual cart contents weight is lower than the base weight setting. If the value is blank or zero, the couriers list will not displayed when the actual cart contents weight is empty.', 'woongkir' ),
 				'custom_attributes' => array(
 					'min'  => '0',
 					'step' => '100',
@@ -154,7 +152,7 @@ class Woongkir extends WC_Shipping_Method {
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
 				'placeholder' => '',
-				'description' => __( '<a href="http://www.rajaongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key.', 'woongkir' ),
+				'description' => __( '<a href="http://www.rajaongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is free.', 'woongkir' ),
 				'default'     => '',
 			),
 			'account_type'       => array(
