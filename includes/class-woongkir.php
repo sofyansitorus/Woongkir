@@ -772,7 +772,7 @@ class Woongkir extends WC_Shipping_Method {
 	/**
 	 * Set the base weight for cart contents.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.4
 	 * @param int $weight Current cart contents weight.
 	 * @return int
 	 */
