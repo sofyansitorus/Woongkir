@@ -468,7 +468,7 @@ class Raja_Ongkir {
 		}
 
 		if ( isset( $data->rajaongkir->status ) && 200 !== $data->rajaongkir->status->code ) {
-			return new WP_Error( 'api_response_error_' . $data->rajaongkir->status->code, $data->rajaongkir->status->description );
+			return new WP_Error( 'api_response_error_' . $data->rajaongkir->status->code, '<strong>' . __( ' Error from RajaOngkir.com', 'woongkir' ) . ':</strong> ' . $data->rajaongkir->status->description );
 		}
 
 		if ( isset( $data->rajaongkir->results ) ) {
