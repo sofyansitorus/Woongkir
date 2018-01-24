@@ -606,7 +606,7 @@ class Woongkir extends WC_Shipping_Method {
 		);
 
 		// Check if province ID found.
-		if ( empty( $province ) && ! isset( $province['province_id'] ) ) {
+		if ( empty( $province ) || ! isset( $province['province_id'] ) ) {
 			return $destination;
 		}
 
@@ -627,7 +627,7 @@ class Woongkir extends WC_Shipping_Method {
 		);
 
 		// Check if city ID found.
-		if ( empty( $city ) && ! isset( $city['city_id'] ) ) {
+		if ( empty( $city ) || ! isset( $city['city_id'] ) ) {
 			return $destination;
 		}
 
