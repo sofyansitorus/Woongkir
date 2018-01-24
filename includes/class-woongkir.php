@@ -137,7 +137,7 @@ class Woongkir extends WC_Shipping_Method {
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 				'desc_tip'    => true,
 			),
-			'minimun_weight'     => array(
+			'min_weight'         => array(
 				'title'             => __( 'Minimun Package Weight (gr)', 'woongkir' ),
 				'type'              => 'number',
 				'description'       => __( 'Set the minimum package weight in grams unit that will be declared for the cart contents weight. If leaved blank or filled with zero, the couriers list will not displayed when the calculated cart contents weight is empty.', 'woongkir' ),
@@ -683,10 +683,28 @@ class Woongkir extends WC_Shipping_Method {
 		$weight = array();
 
 		foreach ( $contents as $item ) {
-			array_push( $width, $item['data']->get_width() * 1 );
-			array_push( $length, $item['data']->get_length() * 1 );
-			array_push( $height, $item['data']->get_height() * $item['quantity'] );
-			array_push( $weight, $item['data']->get_weight() * $item['quantity'] );
+			// Validate cart item quantity value.
+			$item_quantity = absint( $item['quantity'] );
+			if ( ! $item_quantity ) {
+				continue;
+			}
+
+			// Validate cart item width value.
+			$item_width = is_numeric( $item['data']->get_width() ) ? $item['data']->get_width() : 0;
+			array_push( $width, $item_width * 1 );
+
+			// Validate cart item length value.
+			$item_length = is_numeric( $item['data']->get_length() ) ? $item['data']->get_length() : 0;
+			array_push( $length, $item_length * 1 );
+
+			// Validate cart item height value.
+			$item_height = is_numeric( $item['data']->get_height() ) ? $item['data']->get_height() : 0;
+			array_push( $height, $item_height * $item_quantity );
+
+			// Validate cart item weight value.
+			$item_weight = is_numeric( $item['data']->get_weight() ) ? $item['data']->get_weight() : 0;
+			array_push( $weight, $item_weight * $item_quantity );
+
 		}
 
 		$data['width']  = wc_get_dimension( max( $width ), 'cm' );
@@ -694,9 +712,9 @@ class Woongkir extends WC_Shipping_Method {
 		$data['height'] = wc_get_dimension( array_sum( $height ), 'cm' );
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
-		// Set the package weight to 1 gram if it was empty.
-		if ( empty( $data['weight'] ) ) {
-			$data['weight'] = 1;
+		// Set the package weight to based on min_weight setting value.
+		if ( $this->min_weight && $data['weight'] < $this->min_weight ) {
+			$data['weight'] = $this->min_weight;
 		}
 
 		/**
