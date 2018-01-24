@@ -71,8 +71,8 @@ class Woongkir extends WC_Shipping_Method {
 		// Check if this shipping method is availbale for current order.
 		add_filter( 'woocommerce_shipping_' . $this->id . '_is_available', array( $this, 'check_is_available' ), 10, 2 );
 
-		// Set the minimum weight for cart contents.
-		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_min_cart_contents_weight' ), 10 );
+		// Set the base weight for cart contents.
+		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_cart_contents_base_weight' ), 10 );
 
 		$this->api = new Raja_Ongkir();
 
@@ -140,10 +140,10 @@ class Woongkir extends WC_Shipping_Method {
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 				'desc_tip'    => true,
 			),
-			'min_weight'         => array(
-				'title'             => __( 'Minimun Package Weight (gr)', 'woongkir' ),
+			'base_weight'        => array(
+				'title'             => __( 'Base Weight (gram)', 'woongkir' ),
 				'type'              => 'number',
-				'description'       => __( 'Set the minimum package weight in grams unit that will be declared for the cart contents weight. If leaved blank or filled with zero, the couriers list will not displayed when the calculated cart contents weight is empty.', 'woongkir' ),
+				'description'       => __( 'The base weight setting will be applied if the actual cart contents weight is lower that the base weight setting. If leaved blank or filled with zero, the couriers list will not displayed when the calculated cart contents weight is empty.', 'woongkir' ),
 				'desc_tip'          => true,
 				'custom_attributes' => array(
 					'min'  => '0',
@@ -715,9 +715,9 @@ class Woongkir extends WC_Shipping_Method {
 		$data['height'] = wc_get_dimension( array_sum( $height ), 'cm' );
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
-		// Set the package weight to based on min_weight setting value.
-		if ( absint( $this->min_weight ) && $data['weight'] < absint( $this->min_weight ) ) {
-			$data['weight'] = absint( $this->min_weight );
+		// Set the package weight to based on base_weight setting value.
+		if ( absint( $this->base_weight ) && $data['weight'] < absint( $this->base_weight ) ) {
+			$data['weight'] = absint( $this->base_weight );
 		}
 
 		/**
@@ -742,15 +742,15 @@ class Woongkir extends WC_Shipping_Method {
 	}
 
 	/**
-	 * Set the minimum weight for cart contents.
+	 * Set the base weight for cart contents.
 	 *
 	 * @since 1.0.0
 	 * @param int $weight Current cart contents weight.
 	 * @return int
 	 */
-	public function set_min_cart_contents_weight( $weight ) {
-		if ( absint( $this->min_weight ) && $weight < absint( $this->min_weight ) ) {
-			return wc_get_weight( absint( $this->min_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
+	public function set_cart_contents_base_weight( $weight ) {
+		if ( absint( $this->base_weight ) && $weight < absint( $this->base_weight ) ) {
+			return wc_get_weight( absint( $this->base_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
 		}
 		return $weight;
 	}
