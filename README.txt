@@ -2,7 +2,7 @@
 Contributors: sofyansitorus
 Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos shipping
 Requires at least: 4.8
-Tested up to: 4.9.1
+Tested up to: 4.9.2
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPL-2.0+
@@ -23,6 +23,7 @@ Please note that this plugin is using RajaOngkir.com API as the data source. You
 * Support shipping rates calculation based on dimensions and weight.
 * Enable or disable any of shipping services provided by each couriers.
 * Show or hide estimated time of arrival.
+* Set base weight for cart content.
 * Real time currency convertion to IDR for international shipping cost courier that use USD.
 * Real time API Key validation on settings update.
 
@@ -86,6 +87,13 @@ You can either create ticket at plugin support forum or GitHub repository:
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.1.4 - 2018-01-24 =
+
+* Improvemnets - Add new setting field for base weight.
+* Improvemnets - Add logo for couriers in setting panel.
+* Fix - Bug in get detination info.
+* Fix - Bug in get weight info.
 
 = 1.1.3 - 2018-01-15 =
 
