@@ -137,6 +137,16 @@ class Woongkir extends WC_Shipping_Method {
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 				'desc_tip'    => true,
 			),
+			'minimun_weight'     => array(
+				'title'             => __( 'Minimun Package Weight (gr)', 'woongkir' ),
+				'type'              => 'number',
+				'description'       => __( 'Set the minimum package weight in grams unit that will be declared for the cart contents weight. If leaved blank or filled with zero, the couriers list will not displayed when the calculated cart contents weight is empty.', 'woongkir' ),
+				'desc_tip'          => true,
+				'custom_attributes' => array(
+					'min'  => '0',
+					'step' => '100',
+				),
+			),
 			'api_key'            => array(
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
