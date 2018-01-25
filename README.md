@@ -91,24 +91,24 @@ You can either create ticket at plugin support forum or GitHub repository:
 * Fix - Bug in get detination info.
 * Fix - Bug in get weight info.
 
-### 1.1.3 - 2018-01-15 ###
+### 1.1.3 ###
 * Improvemnets - Add "Settings" link on the plugins.php page.
 
-### 1.1.2 - 2018-01-15 ###
+### 1.1.2 ###
 * Fix - The couriers is not displayed if the product weight and dimensions is empty.
 * Improvemnets - Store local storage data at first load only.
 
-### 1.1.1 - 2018-01-14 ###
+### 1.1.1 ###
 * Fix - Prevent request to API server if the destination adddress is not complete.
 * Improvemnets - Set timeout parameter for remote request: 10 seconds.
 
-### 1.1.0 - 2018-01-13 ###
+### 1.1.0 ###
 * Feature - Add new domestic shipping couriers: STAR, SICEPAT, JET, PANDU, J&T.
 * Feature - Add new international shipping couriers: TIKI, SLIS, EXPEDITO.
 * Improvemnts - Tweak settings panel.
 * Improvemnts - Tweak estimated time of arrival label.
 
-### 1.0.0 - 2018-01-12 ###
+### 1.0.0 ###
 * Feature - Support multiple couriers for domestic shipping: JNE, TIKI, POS, PCP, RPX.
 * Feature - Support multiple couriers for international shipping: JNE, POS.
 * Feature - Support shipping rates calculation from and to subdistrict location for domestic shipping.
@@ -122,6 +122,6 @@ You can either create ticket at plugin support forum or GitHub repository:
 ## Upgrade Notice ##
 
 ### 1.1.4 ###
-This version include bugs fixes add improvements. Upgrade immediately.
+This version include bugs fixes and improvements. Upgrade immediately.
 
 
