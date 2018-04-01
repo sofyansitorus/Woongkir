@@ -1,55 +1,71 @@
 var gulp = require('gulp');
-var sass = require('gulp-sass');
-var cleanCSS = require('gulp-clean-css');
 var rename = require("gulp-rename");
 var uglify = require('gulp-uglify');
+var iife = require("gulp-iife");
+var concat = require('gulp-concat');
 
-var scssSrc = 'assets/scss/*.scss';
-var scssDest = 'assets/css';
+var frontendSrc = ['assets/src/js/shared.js', 'assets/src/js/frontend.js'];
+var frontendDest = 'assets/js';
 
-var cssSrc = 'assets/css/*.css';
-var cssSrcExclude = '!assets/css/*.min.css';
-var cssDest = 'assets/css';
+var backendSrc = ['assets/src/js/shared.js', 'assets/src/js/backend.js'];
+var backendDest = 'assets/js';
 
-var jsSrc = 'assets/js/*.js';
-var jsSrcExclude = '!assets/js/*.min.js';
-var jsDest = 'assets/js';
+var pluginsSrc = ['assets/src/js/plugins/*.js'];
+var pluginsDest = 'assets/js';
 
-// Compiles SCSS files from /scss into /css
-gulp.task('sass', function () {
-    return gulp.src(scssSrc)
-        .pipe(sass())
-        .pipe(gulp.dest(scssDest));
+var minifySrc = ['assets/js/*.js', '!assets/js/*.min.js'];
+var minifyDest = 'assets/js';
+
+// Frontend area scripts
+gulp.task('frontend-scripts', function () {
+    return gulp.src(frontendSrc)
+        .pipe(concat('woongkir-frontend.js'))
+        .pipe(iife({
+            useStrict: true,
+            trimCode: true,
+            prependSemicolon: true,
+            params: ["$", "w"],
+            args: ["jQuery", "window"]
+        }))
+        .pipe(gulp.dest(frontendDest));
 });
 
-// Minify compiled CSS
-gulp.task('minify-css', ['sass'], function () {
-    return gulp.src([cssSrc, cssSrcExclude])
-        .pipe(cleanCSS({
-            compatibility: 'ie8'
+// Backend area scripts
+gulp.task('backend-scripts', function () {
+    return gulp.src(backendSrc)
+        .pipe(concat('woongkir-backend.js'))
+        .pipe(iife({
+            useStrict: true,
+            trimCode: true,
+            prependSemicolon: true,
+            params: ["$", "w"],
+            args: ["jQuery", "window"]
         }))
+        .pipe(gulp.dest(backendDest));
+});
+
+// Plugins scripts
+gulp.task('plugins-scripts', function () {
+    return gulp.src(pluginsSrc)
+        .pipe(gulp.dest(pluginsDest));
+});
+
+gulp.task('minify-scripts', function () {
+    return gulp.src(minifySrc)
         .pipe(rename({
-            suffix: '.min'
+            suffix: ".min"
         }))
-        .pipe(gulp.dest(cssDest));
-});
-
-// Minify custom JS
-gulp.task('minify-js', function () {
-    return gulp.src([jsSrc, jsSrcExclude])
         .pipe(uglify())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(jsDest));
+        .pipe(gulp.dest(minifyDest));
 });
 
 // Default task
-gulp.task('default', ['sass', 'minify-css', 'minify-js']);
+gulp.task('default', ['frontend-scripts', 'backend-scripts', 'plugins-scripts', 'minify-scripts']);
 
 // Dev task with watch
-gulp.task('watch', ['sass', 'minify-css', 'minify-js'], function () {
-    gulp.watch(scssSrc, ['sass']);
-    gulp.watch([cssSrc, cssSrcExclude], ['minify-css']);
-    gulp.watch([jsSrc, jsSrcExclude], ['minify-js']);
+gulp.task('watch', ['frontend-scripts', 'backend-scripts', 'plugins-scripts', 'minify-scripts'], function () {
+    gulp.watch([frontendSrc], ['frontend-scripts']);
+    gulp.watch([backendSrc], ['backend-scripts']);
+    gulp.watch([pluginsSrc], ['plugins-scripts']);
+    gulp.watch([minifySrc], ['minify-scripts']);
 });
