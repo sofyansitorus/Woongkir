@@ -510,7 +510,7 @@ class Woongkir extends WC_Shipping_Method {
 			return;
 		}
 
-		$params['courier'] = $params['destination']['country'] ? array_keys( $this->international ) : array_keys( $this->domestic );
+		$params['courier'] = $params['destination']['country'] ? array_keys( (array) $this->international ) : array_keys( (array) $this->domestic );
 		if ( empty( $params['courier'] ) ) {
 			return;
 		}
