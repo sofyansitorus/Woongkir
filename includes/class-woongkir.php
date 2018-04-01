@@ -111,6 +111,17 @@ class Woongkir extends WC_Shipping_Method {
 	 * @since 1.0.0
 	 */
 	public function init_form_fields() {
+		if ( 'ID' !== WC()->countries->get_base_country() ) {
+			$settings                   = array(
+				'error' => array(
+					'title'       => __( 'Error', 'woongkir' ),
+					'type'        => 'title',
+					'description' => __( 'This plugin only work for Store Address based in Indonesia.', 'woongkir' ),
+				),
+			);
+			$this->instance_form_fields = $settings;
+			return;
+		}
 		$settings = array(
 			'origin_province'    => array(
 				'title' => __( 'Shipping Origin Province', 'woongkir' ),
