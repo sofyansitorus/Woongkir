@@ -147,33 +147,17 @@ add_filter( 'woocommerce_shipping_methods', 'woongkir_shipping_methods' );
 /**
  * Enqueue scripts.
  *
- * @since 1.0.0
- * @param string $hook Passed screen ID in admin area.
+ * @since 1.1.5
+ * @param string $handle  The registered script handle you are attaching the data for.
+ * @param string $name  The name of the variable which will contain the data.
+ * @param array  $data  The script data itself.
  */
-function woongkir_enqueue_scripts( $hook = null ) {
-	if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) || ! is_admin() ) {
-		// Register store.js scripts.
-		$store_js = ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) ? add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'assets/js/store.js' ) : WOONGKIR_URL . 'assets/js/store.min.js';
-		wp_enqueue_script(
-			'store.js', // Give the script a unique ID.
-			$store_js, // Define the path to the JS file.
-			array( 'jquery' ), // Define dependencies.
-			WOONGKIR_VERSION, // Define a version (optional).
-			true // Specify whether to put in footer (leave this true).
-		);
-
-		// Enqueue main scripts.
-		$woongkir_js = ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) ? add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'assets/js/woongkir.js' ) : WOONGKIR_URL . 'assets/js/woongkir.min.js';
-		wp_enqueue_script(
-			'woongkir', // Give the script a unique ID.
-			$woongkir_js, // Define the path to the JS file.
-			array( 'jquery', 'store.js' ), // Define dependencies.
-			WOONGKIR_VERSION, // Define a version (optional).
-			true // Specify whether to put in footer (leave this true).
-		);
-
-		wp_localize_script(
-			'woongkir', 'woongkir_params', array(
+function woongkir_localize_script( $handle, $name, $data = array() ) {
+	wp_localize_script(
+		$handle,
+		$name,
+		wp_parse_args(
+			$data, array(
 				'ajax_url'      => admin_url( 'ajax.php' ),
 				'json'          => array(
 					'country_url'     => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/country.json' ),
@@ -196,11 +180,86 @@ function woongkir_enqueue_scripts( $hook = null ) {
 				'method_id'     => WOONGKIR_METHOD_ID,
 				'method_title'  => WOONGKIR_METHOD_TITLE,
 			)
+		)
+	);
+}
+
+/**
+ * Enqueue backend scripts.
+ *
+ * @since 1.0.0
+ * @param string $hook Passed screen ID in admin area.
+ */
+function woongkir_enqueue_backend_scripts( $hook = null ) {
+	if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) ) {
+		// Register lockr.js scripts.
+		$lockr_js = WOONGKIR_URL . 'assets/js/lockr.min.js';
+		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
+			$lockr_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $lockr_js ) );
+		}
+		wp_enqueue_script(
+			'lockr.js', // Give the script a unique ID.
+			$lockr_js, // Define the path to the JS file.
+			array( 'jquery' ), // Define dependencies.
+			WOONGKIR_VERSION, // Define a version (optional).
+			true // Specify whether to put in footer (leave this true).
 		);
+
+		// Enqueue main scripts.
+		$woongkir_backend_js = WOONGKIR_URL . 'assets/js/woongkir-backend.min.js';
+		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
+			$woongkir_backend_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $woongkir_backend_js ) );
+		}
+		wp_enqueue_script(
+			'woongkir-backend', // Give the script a unique ID.
+			$woongkir_backend_js, // Define the path to the JS file.
+			array( 'jquery', 'lockr.js' ), // Define dependencies.
+			WOONGKIR_VERSION, // Define a version (optional).
+			true // Specify whether to put in footer (leave this true).
+		);
+
+		woongkir_localize_script( 'woongkir-backend', 'woongkir_params' );
 	}
 }
-add_action( 'admin_enqueue_scripts', 'woongkir_enqueue_scripts', 999 );
-add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_scripts', 999 );
+add_action( 'admin_enqueue_scripts', 'woongkir_enqueue_backend_scripts', 999 );
+
+/**
+ * Enqueue frontend scripts.
+ *
+ * @since 1.0.0
+ */
+function woongkir_enqueue_frontend_scripts() {
+	if ( ! is_admin() ) {
+		// Register lockr.js scripts.
+		$lockr_js = WOONGKIR_URL . 'assets/js/lockr.min.js';
+		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
+			$lockr_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $lockr_js ) );
+		}
+		wp_enqueue_script(
+			'lockr.js', // Give the script a unique ID.
+			$lockr_js, // Define the path to the JS file.
+			array( 'jquery' ), // Define dependencies.
+			WOONGKIR_VERSION, // Define a version (optional).
+			true // Specify whether to put in footer (leave this true).
+		);
+
+		// Enqueue main scripts.
+		$woongkir_frontend_js = WOONGKIR_URL . 'assets/js/woongkir-frontend.min.js';
+		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
+			$woongkir_frontend_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $woongkir_frontend_js ) );
+		}
+		wp_enqueue_script(
+			'woongkir-frontend', // Give the script a unique ID.
+			$woongkir_frontend_js, // Define the path to the JS file.
+			array( 'jquery', 'lockr.js' ), // Define dependencies.
+			WOONGKIR_VERSION, // Define a version (optional).
+			true // Specify whether to put in footer (leave this true).
+		);
+
+		woongkir_localize_script( 'woongkir-frontend', 'woongkir_params' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_frontend_scripts', 999 );
 
 // Show city field in the shipping calculator form.
 add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
