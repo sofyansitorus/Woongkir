@@ -515,17 +515,36 @@ class Woongkir extends WC_Shipping_Method {
 			return;
 		}
 
-		$cache_key = preg_replace( '/[^\da-z]/i', '_', wp_json_encode( $params ) );
+		$cache_key = $this->id . '_' . $this->instance_id . '_' . md5(
+			wp_json_encode(
+				array(
+					'params'  => $params,
+					'package' => $package,
+				)
+			)
+		);
 
-		$couriers = wp_cache_get( $cache_key, $this->id );
+		$couriers = get_transient( $cache_key );
+
 		if ( false === $couriers ) {
 			$couriers = $this->api->get_cost( $params['destination'], $params['origin'], $params['dimension_weight'], $params['courier'] );
-			wp_cache_set( $cache_key, $couriers, $this->id, 3600 ); // Store response data for 1 hour.
-		}
-		if ( ! $couriers || ! is_array( $couriers ) || is_wp_error( $couriers ) ) {
-			if ( is_wp_error( $couriers ) ) {
-				$this->show_debug( $couriers->get_error_message() );
+			if ( $couriers && is_array( $couriers ) ) {
+				set_transient( $cache_key, $couriers, HOUR_IN_SECONDS ); // Store response data for 1 hour.
 			}
+		}
+
+		if ( ! $couriers ) {
+			$this->show_debug( __( 'No couriers data found', 'woongkir' ) );
+			return;
+		}
+
+		if ( ! is_array( $couriers ) ) {
+			$this->show_debug( __( 'Couriers data is invalid', 'woongkir' ) );
+			return;
+		}
+
+		if ( is_wp_error( $couriers ) ) {
+			$this->show_debug( $couriers->get_error_message() );
 			return;
 		}
 
