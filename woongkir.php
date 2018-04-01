@@ -79,8 +79,7 @@ add_action( 'woocommerce_shipping_init', 'woongkir_load_dependencies' );
  */
 function woongkir_plugin_action_links( $links ) {
 	$zone_id = 0;
-	$zones   = WC_Shipping_Zones::get_zones();
-	foreach ( $zones as $zone ) {
+	foreach ( WC_Shipping_Zones::get_zones() as $zone ) {
 		if ( empty( $zone['shipping_methods'] ) || empty( $zone['zone_id'] ) ) {
 			continue;
 		}
@@ -90,14 +89,26 @@ function woongkir_plugin_action_links( $links ) {
 				break;
 			}
 		}
+		if ( $zone_id ) {
+			break;
+		}
 	}
-
 	$links = array_merge(
 		array(
-			'<a href="' . esc_url( wp_nonce_url( admin_url( 'admin.php?page=wc-settings&tab=shipping&zone_id=' . $zone_id ), 'woongkir_settings', 'woongkir_nonce' ) ) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
-		), $links
+			'<a href="' . esc_url(
+				add_query_arg(
+					array(
+						'page'              => 'wc-settings',
+						'tab'               => 'shipping',
+						'zone_id'           => $zone_id,
+						'woongkir_settings' => true,
+					),
+					admin_url( 'admin.php' )
+				)
+			) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
+		),
+		$links
 	);
-
 	return $links;
 }
 add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'woongkir_plugin_action_links' );
@@ -165,7 +176,7 @@ function woongkir_enqueue_scripts( $hook = null ) {
 					'select_subdistrict' => __( 'Select subdistrict', 'woongkir' ),
 				),
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
-				'show_settings' => ( isset( $_GET['woongkir_nonce'] ) && wp_verify_nonce( $_GET['woongkir_nonce'], 'woongkir_settings' ) && is_admin() ),
+				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(),
 				'method_id'     => WOONGKIR_METHOD_ID,
 				'method_title'  => WOONGKIR_METHOD_TITLE,
 			)
