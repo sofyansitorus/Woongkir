@@ -151,9 +151,9 @@ class Woongkir extends WC_Shipping_Method {
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 			),
 			'base_weight'        => array(
-				'title'             => __( 'Base Weight (gram)', 'woongkir' ),
+				'title'             => __( 'Base Cart Contents Weight (gram)', 'woongkir' ),
 				'type'              => 'number',
-				'description'       => __( 'Cart contents weight that will be declared if the actual cart contents weight is lower than the base weight setting. If the value is blank or zero, the couriers list will not displayed when the actual cart contents weight is empty.', 'woongkir' ),
+				'description'       => __( 'The base cart contents weight will be calculated. If the value is blank or zero, the couriers list will not displayed when the actual cart contents weight is empty.', 'woongkir' ),
 				'custom_attributes' => array(
 					'min'  => '0',
 					'step' => '100',
