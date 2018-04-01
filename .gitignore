@@ -1,2 +1,3 @@
-/.wpt.yml
-.DS_Store
+*.wpt.yml
+*.DS_Store
+node_modules
