@@ -40,6 +40,29 @@ define( 'WOONGKIR_METHOD_ID', 'woongkir' );
 define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
 
 /**
+ * Check if plugin is active
+ *
+ * @param string $plugin_file Plugin file name.
+ */
+function woongkir_is_plugin_active( $plugin_file ) {
+
+	$active_plugins = (array) apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) );
+
+	if ( is_multisite() ) {
+		$active_plugins = array_merge( $active_plugins, (array) get_site_option( 'active_sitewide_plugins', array() ) );
+	}
+
+	return in_array( $plugin_file, $active_plugins, true ) || array_key_exists( $plugin_file, $active_plugins );
+}
+
+/**
+ * Check if WooCommerce plugin is active
+ */
+if ( ! woongkir_is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+	return;
+}
+
+/**
  * Load plugin textdomain.
  *
  * @since 1.0.0
@@ -48,13 +71,6 @@ function woongkir_load_textdomain() {
 	load_plugin_textdomain( 'woongkir', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 add_action( 'plugins_loaded', 'woongkir_load_textdomain' );
-
-/**
- * Check if WooCommerce is active
- */
-if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
-	return;
-}// End if().
 
 /**
  * Wrap and load main class to ensure the classes need to extend is exist.
