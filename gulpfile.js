@@ -24,8 +24,8 @@ gulp.task('frontend-scripts', function () {
             useStrict: true,
             trimCode: true,
             prependSemicolon: true,
-            params: ["$", "w"],
-            args: ["jQuery", "window"]
+            params: ["$"],
+            args: ["jQuery"]
         }))
         .pipe(gulp.dest(frontendDest));
 });
@@ -38,8 +38,8 @@ gulp.task('backend-scripts', function () {
             useStrict: true,
             trimCode: true,
             prependSemicolon: true,
-            params: ["$", "w"],
-            args: ["jQuery", "window"]
+            params: ["$"],
+            args: ["jQuery"]
         }))
         .pipe(gulp.dest(backendDest));
 });
@@ -50,6 +50,7 @@ gulp.task('plugins-scripts', function () {
         .pipe(gulp.dest(pluginsDest));
 });
 
+// Minify scripts
 gulp.task('minify-scripts', function () {
     return gulp.src(minifySrc)
         .pipe(rename({
