@@ -74,6 +74,9 @@ class Woongkir extends WC_Shipping_Method {
 		// Set the base weight for cart contents.
 		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_cart_contents_base_weight' ), 10 );
 
+		// Set the base weight for cart contents.
+		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
+
 		$this->api = new Raja_Ongkir();
 
 		$this->init();
@@ -811,6 +814,31 @@ class Woongkir extends WC_Shipping_Method {
 			return wc_get_weight( absint( $this->base_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
 		}
 		return $weight;
+	}
+
+	/**
+	 * Inject cart cart packages to calculate shipping for addres 2 field.
+	 *
+	 * @since 1.1.4
+	 * @param array $packages Current cart contents packages.
+	 * @return array
+	 */
+	public function inject_cart_shipping_packages( $packages ) {
+		$nonce_action    = 'woocommerce-shipping-calculator';
+		$nonce_name      = 'woocommerce-shipping-calculator-nonce';
+		$address_2_field = 'calc_shipping_address_2';
+		if ( isset( $_POST[ $nonce_name ], $_POST[ $address_2_field ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ $nonce_name ] ) ), $nonce_action ) ) {
+			$address_2 = sanitize_text_field( wp_unslash( $_POST[ $address_2_field ] ) );
+			if ( empty( $address_2 ) ) {
+				return $packages;
+			}
+			foreach ( $packages as $key => $package ) {
+				WC()->customer->set_billing_address_2( $address_2 );
+				WC()->customer->set_shipping_address_2( $address_2 );
+				$packages[ $key ]['destination']['address_2'] = $address_2;
+			}
+		}
+		return $packages;
 	}
 
 	/**
