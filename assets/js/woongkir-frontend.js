@@ -141,6 +141,8 @@ function woongkirFormCheckout(country, $wrapper) {
 		return;
 	}
 
+	$('#calc_shipping_address_2_field').remove();
+
 	$($wrapper).find('#billing_city, #shipping_city, #calc_shipping_city, #billing_address_2, #shipping_address_2').each(function () {
 		var self = this;
 		$(self).show().closest('.form-row').find('.select2-container').remove();
@@ -162,6 +164,22 @@ function woongkirFormCheckout(country, $wrapper) {
 							break;
 					}
 				});
+				if ($(self).attr('id').indexOf('calc_shipping_city') >= 0) {
+					var $calcSubdistrictFieldWrap = $('#calc_shipping_postcode_field').clone().attr({
+						id: $(self).attr('id').replace('city', 'address_2') + '_field'
+					}).empty().insertBefore('#calc_shipping_postcode_field');
+					var $calcSubdistrictSelect = $elementSelect.clone().append('<option value="">' + woongkir_params.text.select_subdistrict + '</option>');
+					$calcSubdistrictSelect.attr({
+						id: $(self).attr('id').replace('city', 'address_2'),
+						name: $(self).attr('id').replace('city', 'address_2')
+					}).appendTo($calcSubdistrictFieldWrap);
+					if ($().select2) {
+						$calcSubdistrictSelect.select2({
+							placeholderOption: 'first',
+							width: '100%'
+						});
+					}
+				}
 				var firstOption = $(self).attr('id').indexOf('city') >= 0 ? woongkir_params.text.select_city : woongkir_params.text.select_subdistrict;
 				$elementSelect.append('<option value="">' + firstOption + '</option>');
 				$(self).replaceWith($elementSelect);
