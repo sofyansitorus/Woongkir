@@ -1,9 +1,9 @@
 // Render settings form.
 function woongkirFormSettings() {
 
-    var provinceData = woongkirGetProvince(),
-        cityData = woongkirGetCity(),
-        subdistrictData = woongkirGetSubdistrict(),
+    var provinceData = WoongkirLocation.getProvince(),
+        cityData = WoongkirLocation.getCity(),
+        subdistrictData = WoongkirLocation.getSubdistrict(),
         $form = $('.woongkir-account-type').closest('form');
 
     // Bind on account type data change.
@@ -126,7 +126,6 @@ function woongkirFormSettings() {
         $form.find('.woongkir-origin-city').val($(e.currentTarget).val());
         // Build subdistrict list dropdown.
         $form.find('.woongkir-origin-subdistrict-select').empty().append('<option value="">' + woongkir_params.text.select_subdistrict + '</option>');
-        var subdistrictData = woongkirGetSubdistrict();
         if (subdistrictData.length) {
             var selected = $form.find('.woongkir-origin-subdistrict').val();
             $.each(subdistrictData, function (index, item) {

@@ -1,78 +1,143 @@
 ;(function($) {
 "use strict";
 
-// Store province data.
-function woongkirStoreProvince() {
-    if (!woongkirGetProvince().length) {
-        $.getJSON(woongkir_params.json.province_url, function (data) {
-            data.sort(function (a, b) {
-                return (a.province_name > b.province_name) ? 1 : ((b.province_name > a.province_name) ? -1 : 0);
-            });
-            Lockr.set(woongkir_params.json.province_key, data);
-        });
-    }
+var WoongkirLocation = {
+	storeCountry: function () {
+		var self = this;
+		if (!self.getCountry().length) {
+			$.getJSON(woongkir_params.json.country_url, function (data) {
+				data.sort(function (a, b) {
+					return (a.country_name > b.country_name) ? 1 : ((b.country_name > a.country_name) ? -1 : 0);
+				});
+				Lockr.set(woongkir_params.json.country_key, data);
+			});
+		}
+	},
+	getCountry: function (search, searchMethod) {
+		var self = this;
+		var items = Lockr.get(woongkir_params.json.country_key);
+		if (!items || typeof items === 'undefined') {
+			return [];
+		}
+
+		if (search && search === Object(search)) {
+			return self.searchLocation(items, search, searchMethod);
+		}
+
+		return items;
+	},
+	storeProvince: function () {
+		var self = this;
+		if (!self.getProvince().length) {
+			$.getJSON(woongkir_params.json.province_url, function (data) {
+				data.sort(function (a, b) {
+					return (a.province_name > b.province_name) ? 1 : ((b.province_name > a.province_name) ? -1 : 0);
+				});
+				Lockr.set(woongkir_params.json.province_key, data);
+			});
+		}
+	},
+	getProvince: function (search, searchMethod) {
+		var self = this;
+		var items = Lockr.get(woongkir_params.json.province_key);
+		if (!items || typeof items === 'undefined') {
+			return [];
+		}
+
+		if (search && search === Object(search)) {
+			return self.searchLocation(items, search, searchMethod);
+		}
+
+		return items;
+	},
+	storeCity: function () {
+		var self = this;
+		if (!self.getCity().length) {
+			$.getJSON(woongkir_params.json.city_url, function (data) {
+				data.sort(function (a, b) {
+					return (a.city_name > b.city_name) ? 1 : ((b.city_name > a.city_name) ? -1 : 0);
+				});
+				Lockr.set(woongkir_params.json.city_key, data);
+			});
+		}
+	},
+	getCity: function (search, searchMethod) {
+		var self = this;
+		var items = Lockr.get(woongkir_params.json.city_key);
+		if (!items || typeof items === 'undefined') {
+			return [];
+		}
+
+		if (search && search === Object(search)) {
+			return self.searchLocation(items, search, searchMethod);
+		}
+
+		return items;
+	},
+	storeSubdistrict: function () {
+		var self = this;
+		if (!self.getSubdistrict().length) {
+			$.getJSON(woongkir_params.json.subdistrict_url, function (data) {
+				data.sort(function (a, b) {
+					return (a.subdistrict_name > b.subdistrict_name) ? 1 : ((b.subdistrict_name > a.subdistrict_name) ? -1 : 0);
+				});
+				Lockr.set(woongkir_params.json.subdistrict_key, data);
+			});
+		}
+	},
+	getSubdistrict: function (search, searchMethod) {
+		var self = this;
+		var items = Lockr.get(woongkir_params.json.subdistrict_key);
+		if (!items || typeof items === 'undefined') {
+			return [];
+		}
+
+		if (search && search === Object(search)) {
+			return self.searchLocation(items, search, searchMethod);
+		}
+
+		return items;
+	},
+	searchLocation: function (items, search, searchMethod) {
+		var self = this;
+		searchMethod = searchMethod || 'find';
+		switch (searchMethod) {
+			case 'filter':
+				var itemFound = items.filter(function (item) {
+					return self.isLocationMatch(item, search);
+				});
+				break;
+
+			default:
+				var itemFound = items.find(function (item) {
+					return self.isLocationMatch(item, search);
+				});
+				break;
+		}
+		return itemFound || false;
+	},
+	isLocationMatch: function (item, search) {
+		var isItemMatch = true;
+		for (var key in search) {
+			if (!item.hasOwnProperty(key) || String(item[key]).toLowerCase() !== String(search[key]).toLowerCase()) {
+				isItemMatch = false;
+			}
+		}
+		return isItemMatch;
+	}
 }
 
-// Get province data.
-function woongkirGetProvince() {
-    var data = Lockr.get(woongkir_params.json.province_key);
-    if (typeof data == 'undefined' || data == 'undefined' || !data) {
-        return [];
-    }
-    return data;
-}
+WoongkirLocation.storeCountry(); // Store custom country data to local storage.
+WoongkirLocation.storeProvince(); // Store custom province data to local storage.
+WoongkirLocation.storeCity(); // Store custom city data to local storage.
+WoongkirLocation.storeSubdistrict(); // Store custom subdistrict data to local storage.
 
-// Store city data.
-function woongkirStoreCity() {
-    if (!woongkirGetCity().length) {
-        $.getJSON(woongkir_params.json.city_url, function (data) {
-            data.sort(function (a, b) {
-                return (a.city_name > b.city_name) ? 1 : ((b.city_name > a.city_name) ? -1 : 0);
-            });
-            Lockr.set(woongkir_params.json.city_key, data);
-        });
-    }
-}
-
-// Get city data.
-function woongkirGetCity() {
-    var data = Lockr.get(woongkir_params.json.city_key);
-    if (typeof data == 'undefined' || data == 'undefined' || !data) {
-        return [];
-    }
-    return data;
-}
-
-// Store subdictrict data.
-function woongkirStoreSubdistrict() {
-    if (!woongkirGetSubdistrict().length) {
-        $.getJSON(woongkir_params.json.subdistrict_url, function (data) {
-            data.sort(function (a, b) {
-                return (a.subdistrict_name > b.subdistrict_name) ? 1 : ((b.subdistrict_name > a.subdistrict_name) ? -1 : 0);
-            });
-            Lockr.set(woongkir_params.json.subdistrict_key, data);
-        });
-    }
-}
-
-// Get subdictrict data.
-function woongkirGetSubdistrict() {
-    var data = Lockr.get(woongkir_params.json.subdistrict_key);
-    if (typeof data == 'undefined' || data == 'undefined' || !data) {
-        return [];
-    }
-    return data;
-}
-
-woongkirStoreProvince(); // Store custom province data to local storage.
-woongkirStoreCity(); // Store custom city data to local storage.
-woongkirStoreSubdistrict(); // Store custom subdistrict data to local storage.
 // Render settings form.
 function woongkirFormSettings() {
 
-    var provinceData = woongkirGetProvince(),
-        cityData = woongkirGetCity(),
-        subdistrictData = woongkirGetSubdistrict(),
+    var provinceData = WoongkirLocation.getProvince(),
+        cityData = WoongkirLocation.getCity(),
+        subdistrictData = WoongkirLocation.getSubdistrict(),
         $form = $('.woongkir-account-type').closest('form');
 
     // Bind on account type data change.
@@ -195,7 +260,6 @@ function woongkirFormSettings() {
         $form.find('.woongkir-origin-city').val($(e.currentTarget).val());
         // Build subdistrict list dropdown.
         $form.find('.woongkir-origin-subdistrict-select').empty().append('<option value="">' + woongkir_params.text.select_subdistrict + '</option>');
-        var subdistrictData = woongkirGetSubdistrict();
         if (subdistrictData.length) {
             var selected = $form.find('.woongkir-origin-subdistrict').val();
             $.each(subdistrictData, function (index, item) {
