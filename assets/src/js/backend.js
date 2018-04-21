@@ -35,13 +35,11 @@ function woongkirFormSettings() {
         }
     });
 
-    $form.find('.woongkir-service.bulk').bind('change', function (e) {
+    $form.find('.woongkir-service.bulk').bind('change', function () {
         var $table = $(this).closest('table');
-        var zone_id = $(this).closest('.woongkir-couriers-list').data('id');
         var courier_id = $(this).closest('.woongkir-courier-box').data('id');
         var account_type = $form.find('.woongkir-account-type').val();
         var accounts = $form.find('.woongkir-account-type').data('accounts');
-        var couriers = $form.find('.woongkir-account-type').data('couriers');
         if (this.checked) {
             $table.find('.woongkir-service.single').prop('checked', true);
             if (!accounts[account_type].multiple) {
@@ -52,13 +50,11 @@ function woongkirFormSettings() {
         }
     });
 
-    $form.find('.woongkir-service.single').bind('change', function (e) {
+    $form.find('.woongkir-service.single').bind('change', function () {
         var $table = $(this).closest('table');
-        var zone_id = $(this).closest('.woongkir-couriers-list').data('id');
         var courier_id = $(this).closest('.woongkir-courier-box').data('id');
         var account_type = $form.find('.woongkir-account-type').val();
         var accounts = $form.find('.woongkir-account-type').data('accounts');
-        var couriers = $form.find('.woongkir-account-type').data('couriers');
         if (this.checked) {
             $table.find('.woongkir-service.bulk').prop({
                 checked: true
@@ -85,7 +81,7 @@ function woongkirFormSettings() {
         var selected = $form.find('.woongkir-origin-province').val();
         $.each(provinceData, function (index, item) {
             var optionItem = '<option value="' + item.province_id + '"';
-            if (selected == item.province_id) {
+            if (selected === item.province_id) {
                 optionItem += ' selected';
             }
             optionItem += '>' + item.province;
@@ -103,9 +99,9 @@ function woongkirFormSettings() {
         if (cityData.length) {
             var selected = $form.find('.woongkir-origin-city').val();
             $.each(cityData, function (index, item) {
-                if (item.province_id == $(e.currentTarget).val()) {
+                if (item.province_id === $(e.currentTarget).val()) {
                     var optionItem = '<option value="' + item.city_id + '"';
-                    if (selected == item.city_id) {
+                    if (selected === item.city_id) {
                         optionItem += ' selected';
                     }
                     optionItem += '>';
@@ -129,9 +125,9 @@ function woongkirFormSettings() {
         if (subdistrictData.length) {
             var selected = $form.find('.woongkir-origin-subdistrict').val();
             $.each(subdistrictData, function (index, item) {
-                if (item.city_id == $(e.currentTarget).val()) {
+                if (item.city_id === $(e.currentTarget).val()) {
                     var optionItem = '<option value="' + item.subdistrict_id + '"';
-                    if (selected == item.subdistrict_id) {
+                    if (selected === item.subdistrict_id) {
                         optionItem += ' selected';
                     }
                     optionItem += '>' + item.subdistrict_name;
@@ -168,7 +164,7 @@ $(document).ready(function () {
             var methods = $(document).find('.wc-shipping-zone-method-type');
             for (var i = 0; i < methods.length; i++) {
                 var method = methods[i];
-                if ($(method).text() == woongkir_params.method_title) {
+                if ($(method).text() === woongkir_params.method_title) {
                     $(method).closest('tr').find('.row-actions .wc-shipping-zone-method-settings').trigger('click');
                     isMethodAdded = true;
                     return;
@@ -177,8 +173,8 @@ $(document).ready(function () {
 
             // Show Add shipping method modal if the shipping is not added.
             if (!isMethodAdded) {
-                $(".wc-shipping-zone-add-method").trigger('click');
-                $("select[name='add_method_id']").val(woongkir_params.method_id).trigger('change');
+                $('.wc-shipping-zone-add-method').trigger('click');
+                $('select[name="add_method_id"]').val(woongkir_params.method_id).trigger('change');
             }
 
         }, 300);
