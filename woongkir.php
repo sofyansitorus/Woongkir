@@ -260,6 +260,3 @@ function woongkir_enqueue_frontend_scripts() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_frontend_scripts', 999 );
-
-// Show city field in the shipping calculator form.
-add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );

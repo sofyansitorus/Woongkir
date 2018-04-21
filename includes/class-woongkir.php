@@ -64,6 +64,9 @@ class Woongkir extends WC_Shipping_Method {
 			'instance-settings-modal',
 		);
 
+		// Show city field in the shipping calculator form.
+		add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
+
 		// Hook to modify billing and shipping address filed position.
 		add_filter( 'woocommerce_default_address_fields', array( $this, 'default_address_fields_priority' ) );
 		add_filter( 'woocommerce_billing_fields', array( $this, 'billing_fields_priority' ), 10, 2 );
