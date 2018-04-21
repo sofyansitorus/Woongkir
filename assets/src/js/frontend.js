@@ -1,9 +1,9 @@
 // Render checkout form.
 function woongkirFormCheckout(country, $wrapper) {
-	if (!country || typeof country == 'undefined') {
+	if (!country || typeof country === 'undefined') {
 		return;
 	}
-	if (!$wrapper || typeof $wrapper == 'undefined') {
+	if (!$wrapper || typeof $wrapper === 'undefined') {
 		return;
 	}
 
@@ -15,7 +15,6 @@ function woongkirFormCheckout(country, $wrapper) {
 		if (country === 'ID') {
 			if ($(self).is('input')) {
 				var $elementSelect = $('<select></select>');
-				var placeholder = '';
 				$.each(self.attributes, function (i, a) {
 					switch (a.name) {
 						case 'type':
@@ -77,7 +76,7 @@ function woongkirFormCheckout(country, $wrapper) {
 
 	// Bind on state fields change.
 	var provinceData;
-	$wrapper.find('#billing_state, #shipping_state, #calc_shipping_state').on('change', function (e) {
+	$wrapper.find('#billing_state, #shipping_state, #calc_shipping_state').on('change', function () {
 		provinceData = false;
 		if (country !== 'ID') {
 			return;
@@ -102,7 +101,7 @@ function woongkirFormCheckout(country, $wrapper) {
 		}
 
 		$.each(cityData, function (i, data) {
-			var isSelected = $city.data('value') == data.type + ' ' + data.city_name ? ' selected' : '';
+			var isSelected = $city.data('value') === data.type + ' ' + data.city_name ? ' selected' : '';
 			$city.append('<option value="' + data.type + ' ' + data.city_name + '"' + isSelected + '>' + data.type + ' ' + data.city_name + '</option>');
 		});
 		$city.trigger('change');
@@ -110,7 +109,7 @@ function woongkirFormCheckout(country, $wrapper) {
 
 	// Bind on city fields change.
 	var cityData;
-	$wrapper.find('#billing_city, #shipping_city, #calc_shipping_city').on('change', function (e) {
+	$wrapper.find('#billing_city, #shipping_city, #calc_shipping_city').on('change', function () {
 		cityData = false;
 
 		if (country !== 'ID') {
@@ -127,13 +126,13 @@ function woongkirFormCheckout(country, $wrapper) {
 			return;
 		}
 
-		var cityType = $city.val().split(" ").slice(0, 1).join('');
-		var cityName = $city.val().split(" ").slice(1).join(' ');
+		var cityType = $city.val().split(' ').slice(0, 1).join('');
+		var cityName = $city.val().split(' ').slice(1).join(' ');
 
 		cityData = WoongkirLocation.getCity({
 			province_id: provinceData.province_id,
 			type: cityType,
-			city_name: cityName,
+			city_name: cityName
 		});
 
 		if (!cityData) {
@@ -142,7 +141,7 @@ function woongkirFormCheckout(country, $wrapper) {
 
 		var subdistrictData = WoongkirLocation.getSubdistrict({
 			province_id: provinceData.province_id,
-			city_id: cityData.city_id,
+			city_id: cityData.city_id
 		}, 'filter');
 
 		if (!subdistrictData) {
@@ -156,7 +155,7 @@ function woongkirFormCheckout(country, $wrapper) {
 		$subdistrict.trigger('change');
 	});
 
-	$wrapper.find('#billing_address_2, #shipping_address_2').on('change', function (e) {
+	$wrapper.find('#billing_address_2, #shipping_address_2').on('change', function () {
 		$(this).attr('data-value', $(this).val());
 	});
 
@@ -172,11 +171,11 @@ $(document).ready(function () {
 		woongkirFormCheckout(country, wrapper);
 	});
 	// Bind checkout form on updated_wc_div event.
-	$(document.body).on('updated_wc_div', function (e) {
+	$(document.body).on('updated_wc_div', function () {
 		$(':input.country_to_state').trigger('change');
 	});
 	// Bind checkout form on updated_shipping_method event.
-	$(document.body).on('updated_shipping_method', function (e) {
+	$(document.body).on('updated_shipping_method', function () {
 		$(':input.country_to_state').trigger('change');
 	});
 });

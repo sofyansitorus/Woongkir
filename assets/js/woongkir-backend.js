@@ -99,17 +99,17 @@ var WoongkirLocation = {
 		return items;
 	},
 	searchLocation: function (items, search, searchMethod) {
-		var self = this;
+		var self = this, itemFound= false;
 		searchMethod = searchMethod || 'find';
 		switch (searchMethod) {
 			case 'filter':
-				var itemFound = items.filter(function (item) {
+				itemFound = items.filter(function (item) {
 					return self.isLocationMatch(item, search);
 				});
 				break;
 
 			default:
-				var itemFound = items.find(function (item) {
+				itemFound = items.find(function (item) {
 					return self.isLocationMatch(item, search);
 				});
 				break;
@@ -125,7 +125,7 @@ var WoongkirLocation = {
 		}
 		return isItemMatch;
 	}
-}
+};
 
 WoongkirLocation.storeCountry(); // Store custom country data to local storage.
 WoongkirLocation.storeProvince(); // Store custom province data to local storage.
