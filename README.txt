@@ -2,7 +2,7 @@
 Contributors: sofyansitorus
 Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos shipping
 Requires at least: 4.8
-Tested up to: 4.9.2
+Tested up to: 4.9.5
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPL-2.0+
@@ -11,6 +11,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 WooCommerce shipping rates calculator using Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO for Domestic and International shipment.
 
 == Description ==
+
 WooCommerce shipping rates calculator using Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO for Domestic and International shipment.
 
 Please note that this plugin is using RajaOngkir.com API as the data source. You must have RajaOngkir.com API Key to use this plugin. [Click here](https://rajaongkir.com) to get RajaOngkir.com API Key. It is free.
@@ -27,13 +28,14 @@ Please note that this plugin is using RajaOngkir.com API as the data source. You
 * Real time currency convertion to IDR for international shipping cost courier that use USD.
 * Real time API Key validation on settings update.
 
-= My Other Plugins =
+= My Others WooCommerce Shipping Plugins =
 
-* [WooGoSend](https://wordpress.org/plugins/woogosend/) - WooCommerce per kilometer shipping rates calculator for GoSend courier from Go-Jek Indonesia.
-* [WooGrabExpress](https://wordpress.org/plugins/woograbexpress/) - WooCommerce per kilometer shipping rates calculator for GrabExpress courier from Grab Indonesia.
-* [WooCommerce Shipping Distance Matrix](https://wordpress.org/plugins/wcsdm/) - WooCommerce shipping rates calculator based on products shipping class and distances that calculated using Google Maps Distance Matrix API.
+* [WooGoSend](https://wordpress.org/plugins/woogosend/) - WooCommerce per kilometer shipping rates calculator for GoSend Go-Jek Indonesia courier.
+* [WooGrabExpress](https://wordpress.org/plugins/woograbexpress/) - WooCommerce per kilometer shipping rates calculator for GrabExpress Grab Indonesia courier.
+* [WooCommerce Shipping Distance Matrix](https://wordpress.org/plugins/wcsdm/) - WooCommerce shipping rates calculator based on products shipping class and route distances that calculated using Google Maps Distance Matrix API.
 
 == Installation ==
+
 = Minimum Requirements =
 
 * WordPress 4.8 or later
@@ -54,29 +56,22 @@ In the search field type “Woongkir” and click Search Plugins. You can instal
 1. After installation has finished, click the ‘activate plugin’ link
 
 == Frequently Asked Questions ==
+
 = How to set the plugin settings? =
-You can setup the plugin setting from the Shipping Zones settings. Please check the following video tutorial how to setup the WooCommerce Shipping Zones:
+You can setup the plugin setting from the WooCommerce Shipping Zones settings panel. Please check the following video tutorial how to setup the WooCommerce Shipping Zones:
 
 [youtube https://www.youtube.com/watch?v=eThWmrnBP38]
 
-[Video](https://www.youtube.com/watch?v=eThWmrnBP38) by [InMotion Hosting](https://www.inmotionhosting.com)
+Credits: [InMotion Hosting](https://www.inmotionhosting.com)
 
-= Where can I get support? =
-You can either create ticket at plugin support forum or GitHub repository:
-
-* [Plugin Support Forum](https://wordpress.org/support/plugin/woongkir)
-* [Plugin GitHub Repository](https://github.com/sofyansitorus/Woongkir)
-
-= Where can I report bugs? =
-You can either create ticket at plugin support forum or GitHub repository:
+= Where can I get support report bug? =
+You can create support ticket at plugin support forum :
 
 * [Plugin Support Forum](https://wordpress.org/support/plugin/woongkir)
-* [Plugin GitHub Repository](https://github.com/sofyansitorus/Woongkir)
 
-= Where can I request a feature? =
-You can either create ticket at plugin support forum or GitHub repository:
+= Can I contribute to develop this plugin? =
+I always welcome and encourage contributions to this plugin. Please visit the plugin GitHub repository:
 
-* [Plugin Support Forum](https://wordpress.org/support/plugin/woongkir)
 * [Plugin GitHub Repository](https://github.com/sofyansitorus/Woongkir)
 
 == Screenshots ==
@@ -88,26 +83,31 @@ You can either create ticket at plugin support forum or GitHub repository:
 
 == Changelog ==
 
+= 1.2 =
+
+* Feature - Enabled subdistrict field in shipping rate calcultor form.
+* Fix - Plugin is not detected in WordPress multisite.
+
 = 1.1.4 =
 
-* Improvemnets - Add new setting field for base weight.
-* Improvemnets - Add logo for couriers in setting panel.
+* Improvements - Add new setting field for base weight.
+* Improvements - Add logo for couriers in setting panel.
 * Fix - Bug in get detination info.
 * Fix - Bug in get weight info.
 
 = 1.1.3 =
 
-* Improvemnets - Add "Settings" link on the plugins.php page.
+* Improvements - Add "Settings" link on the plugins.php page.
 
 = 1.1.2 =
 
 * Fix - The couriers is not displayed if the product weight and dimensions is empty.
-* Improvemnets - Store local storage data at first load only.
+* Improvements - Store local storage data at first load only.
 
 = 1.1.1 =
 
 * Fix - Prevent request to API server if the destination adddress is not complete.
-* Improvemnets - Set timeout parameter for remote request: 10 seconds.
+* Improvements - Set timeout parameter for remote request: 10 seconds.
 
 = 1.1.0 =
 
@@ -129,5 +129,5 @@ You can either create ticket at plugin support forum or GitHub repository:
 
 == Upgrade Notice ==
 
-= 1.1.4 =
-This version include bugs fixes and improvements. Upgrade immediately.
+= 1.2 =
+This version include new feature and bugs fixes. Upgrade immediately.
