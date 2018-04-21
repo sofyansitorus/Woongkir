@@ -64,6 +64,7 @@ class Woongkir extends WC_Shipping_Method {
 			'instance-settings-modal',
 		);
 
+		// Hook to modify billing and shipping address filed position.
 		add_filter( 'woocommerce_default_address_fields', array( $this, 'default_address_fields_priority' ) );
 		add_filter( 'woocommerce_billing_fields', array( $this, 'billing_fields_priority' ), 10, 2 );
 		add_filter( 'woocommerce_shipping_fields', array( $this, 'shipping_fields_priority' ), 10, 2 );
@@ -74,7 +75,7 @@ class Woongkir extends WC_Shipping_Method {
 		// Set the base weight for cart contents.
 		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_cart_contents_base_weight' ), 10 );
 
-		// Set the base weight for cart contents.
+		// Hook to woocommerce_cart_shipping_packages to inject filed address_2.
 		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
 
 		$this->api = new Raja_Ongkir();
