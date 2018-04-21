@@ -64,6 +64,10 @@ class Woongkir extends WC_Shipping_Method {
 			'instance-settings-modal',
 		);
 
+		// Show city field in the shipping calculator form.
+		add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
+
+		// Hook to modify billing and shipping address filed position.
 		add_filter( 'woocommerce_default_address_fields', array( $this, 'default_address_fields_priority' ) );
 		add_filter( 'woocommerce_billing_fields', array( $this, 'billing_fields_priority' ), 10, 2 );
 		add_filter( 'woocommerce_shipping_fields', array( $this, 'shipping_fields_priority' ), 10, 2 );
@@ -73,6 +77,9 @@ class Woongkir extends WC_Shipping_Method {
 
 		// Set the base weight for cart contents.
 		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_cart_contents_base_weight' ), 10 );
+
+		// Hook to woocommerce_cart_shipping_packages to inject filed address_2.
+		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
 
 		$this->api = new Raja_Ongkir();
 
@@ -111,6 +118,17 @@ class Woongkir extends WC_Shipping_Method {
 	 * @since 1.0.0
 	 */
 	public function init_form_fields() {
+		if ( 'ID' !== WC()->countries->get_base_country() ) {
+			$settings                   = array(
+				'error' => array(
+					'title'       => __( 'Error', 'woongkir' ),
+					'type'        => 'title',
+					'description' => __( 'This plugin only work for Store Address based in Indonesia.', 'woongkir' ),
+				),
+			);
+			$this->instance_form_fields = $settings;
+			return;
+		}
 		$settings = array(
 			'origin_province'    => array(
 				'title' => __( 'Shipping Origin Province', 'woongkir' ),
@@ -140,9 +158,9 @@ class Woongkir extends WC_Shipping_Method {
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 			),
 			'base_weight'        => array(
-				'title'             => __( 'Base Weight (gram)', 'woongkir' ),
+				'title'             => __( 'Base Cart Contents Weight (gram)', 'woongkir' ),
 				'type'              => 'number',
-				'description'       => __( 'Cart contents weight that will be declared if the actual cart contents weight is lower than the base weight setting. If the value is blank or zero, the couriers list will not displayed when the actual cart contents weight is empty.', 'woongkir' ),
+				'description'       => __( 'The base cart contents weight will be calculated. If the value is blank or zero, the couriers list will not displayed when the actual cart contents weight is empty.', 'woongkir' ),
 				'custom_attributes' => array(
 					'min'  => '0',
 					'step' => '100',
@@ -499,22 +517,41 @@ class Woongkir extends WC_Shipping_Method {
 			return;
 		}
 
-		$params['courier'] = $params['destination']['country'] ? array_keys( $this->international ) : array_keys( $this->domestic );
+		$params['courier'] = $params['destination']['country'] ? array_keys( (array) $this->international ) : array_keys( (array) $this->domestic );
 		if ( empty( $params['courier'] ) ) {
 			return;
 		}
 
-		$cache_key = preg_replace( '/[^\da-z]/i', '_', wp_json_encode( $params ) );
+		$cache_key = $this->id . '_' . $this->instance_id . '_' . md5(
+			wp_json_encode(
+				array(
+					'params'  => $params,
+					'package' => $package,
+				)
+			)
+		);
 
-		$couriers = wp_cache_get( $cache_key, $this->id );
+		$couriers = get_transient( $cache_key );
+
 		if ( false === $couriers ) {
 			$couriers = $this->api->get_cost( $params['destination'], $params['origin'], $params['dimension_weight'], $params['courier'] );
-			wp_cache_set( $cache_key, $couriers, $this->id, 3600 ); // Store response data for 1 hour.
-		}
-		if ( ! $couriers || ! is_array( $couriers ) || is_wp_error( $couriers ) ) {
-			if ( is_wp_error( $couriers ) ) {
-				$this->show_debug( $couriers->get_error_message() );
+			if ( $couriers && is_array( $couriers ) ) {
+				set_transient( $cache_key, $couriers, HOUR_IN_SECONDS ); // Store response data for 1 hour.
 			}
+		}
+
+		if ( ! $couriers ) {
+			$this->show_debug( __( 'No couriers data found', 'woongkir' ) );
+			return;
+		}
+
+		if ( ! is_array( $couriers ) ) {
+			$this->show_debug( __( 'Couriers data is invalid', 'woongkir' ) );
+			return;
+		}
+
+		if ( is_wp_error( $couriers ) ) {
+			$this->show_debug( $couriers->get_error_message() );
 			return;
 		}
 
@@ -781,6 +818,31 @@ class Woongkir extends WC_Shipping_Method {
 			return wc_get_weight( absint( $this->base_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
 		}
 		return $weight;
+	}
+
+	/**
+	 * Inject cart cart packages to calculate shipping for addres 2 field.
+	 *
+	 * @since 1.1.4
+	 * @param array $packages Current cart contents packages.
+	 * @return array
+	 */
+	public function inject_cart_shipping_packages( $packages ) {
+		$nonce_action    = 'woocommerce-shipping-calculator';
+		$nonce_name      = 'woocommerce-shipping-calculator-nonce';
+		$address_2_field = 'calc_shipping_address_2';
+		if ( isset( $_POST[ $nonce_name ], $_POST[ $address_2_field ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ $nonce_name ] ) ), $nonce_action ) ) {
+			$address_2 = sanitize_text_field( wp_unslash( $_POST[ $address_2_field ] ) );
+			if ( empty( $address_2 ) ) {
+				return $packages;
+			}
+			foreach ( $packages as $key => $package ) {
+				WC()->customer->set_billing_address_2( $address_2 );
+				WC()->customer->set_shipping_address_2( $address_2 );
+				$packages[ $key ]['destination']['address_2'] = $address_2;
+			}
+		}
+		return $packages;
 	}
 
 	/**
