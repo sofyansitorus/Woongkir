@@ -108,8 +108,10 @@ class Woongkir extends WC_Shipping_Method {
 			$this->{$field_id} = $option;
 		}
 
-		$this->api->set_option( 'api_key', $this->api_key );
-		$this->api->set_option( 'account_type', $this->account_type );
+		$api_key      = isset( $this->api_key ) ? $this->api_key : '';
+		$account_type = isset( $this->account_type ) ? $this->account_type : '';
+		$this->api->set_option( 'api_key', $api_key );
+		$this->api->set_option( 'account_type', $account_type );
 	}
 
 	/**
