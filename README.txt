@@ -4,7 +4,7 @@ Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos 
 Requires at least: 4.8
 Tested up to: 4.9.5
 Requires PHP: 5.6
-Stable tag: trunk
+Stable tag: 1.2.1
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -83,6 +83,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Changelog ==
 
+= 1.2.1 =
+
+* Improvements - Added 5 new domestic couriers: Solusi Ekspres, Wahana Prestasi Logistik, Cahaya Ekspress Logistik, Pahala Kencana Express, SAP Express Courier
+
 = 1.2 =
 
 * Feature - Enabled subdistrict field in shipping rate calcultor form.
@@ -129,5 +133,5 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Upgrade Notice ==
 
-= 1.2 =
-This version include new feature and bugs fixes. Upgrade immediately.
+= 1.2.1 =
+This version include improvements. Upgrade immediately.
