@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Defines plugin named constants.
 define( 'WOONGKIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WOONGKIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'WOONGKIR_VERSION', '1.2' );
+define( 'WOONGKIR_VERSION', '1.2.1' );
 define( 'WOONGKIR_METHOD_ID', 'woongkir' );
 define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
 
