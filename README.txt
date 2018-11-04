@@ -4,7 +4,7 @@ Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos 
 Requires at least: 4.8
 Tested up to: 4.9.5
 Requires PHP: 5.6
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -84,6 +84,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Changelog ==
 
+= 1.2.3 =
+
+* Bug Fix - Compatibilty issue with WooCommerce 3.5
+
 = 1.2.2 =
 
 * Bug Fix - Empty JS File.
@@ -138,5 +142,5 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Upgrade Notice ==
 
-= 1.2.2 =
-This version include bugs fixes. Upgrade immediately is required.
+= 1.2.3 =
+This version include fixes for compatibilty issue with WooCommerce 3.5. Upgrade immediately is required.
