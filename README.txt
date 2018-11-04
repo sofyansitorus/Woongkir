@@ -4,7 +4,7 @@ Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos 
 Requires at least: 4.8
 Tested up to: 4.9.5
 Requires PHP: 5.6
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -58,11 +58,12 @@ In the search field type “Woongkir” and click Search Plugins. You can instal
 == Frequently Asked Questions ==
 
 = How to set the plugin settings? =
-You can setup the plugin setting from the WooCommerce Shipping Zones settings panel. Please check the following video tutorial how to setup the WooCommerce Shipping Zones:
+You can setup the plugin setting from the WooCommerce Shipping Zones settings panel. Please [click here](https://fast.wistia.net/embed/iframe/95yiocro6p) for the video tutorial how to setup the WooCommerce Shipping Zones.
 
-[youtube https://www.youtube.com/watch?v=eThWmrnBP38]
+= I see message "There are no shipping methods available" in the cart/checkout page, what should I do? =
+Please try to switch the WooCommerce Shipping Debug Mode setting to "On". Then open your cart/checkout page. You will see the error printed if there was.
 
-Credits: [InMotion Hosting](https://www.inmotionhosting.com)
+[Click here](https://fast.wistia.net/embed/iframe/9c9008dxnr) for how to switch WooCommerce Shipping Debug Mode.
 
 = Where can I get support report bug? =
 You can create support ticket at plugin support forum :
@@ -82,6 +83,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.2.3 =
+
+* Bug Fix - Compatibilty issue with WooCommerce 3.5
 
 = 1.2.2 =
 
@@ -137,5 +142,5 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Upgrade Notice ==
 
-= 1.2.2 =
-This version include bugs fixes. Upgrade immediately is required.
+= 1.2.3 =
+This version include fixes for compatibilty issue with WooCommerce 3.5. Upgrade immediately is required.
