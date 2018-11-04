@@ -174,6 +174,9 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 					'select_province'    => __( 'Select province', 'woongkir' ),
 					'select_city'        => __( 'Select city', 'woongkir' ),
 					'select_subdistrict' => __( 'Select subdistrict', 'woongkir' ),
+
+					'city'               => __( 'Town / City', 'woongkir' ),
+					'subdistrict'        => __( 'Subdistrict', 'woongkir' ),
 				),
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
 				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(),
@@ -235,10 +238,10 @@ function woongkir_enqueue_frontend_scripts() {
 		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
 			$lockr_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $lockr_js ) );
 		}
-		wp_enqueue_script(
+		wp_register_script(
 			'lockr.js', // Give the script a unique ID.
 			$lockr_js, // Define the path to the JS file.
-			array( 'jquery' ), // Define dependencies.
+			array(), // Define dependencies.
 			WOONGKIR_VERSION, // Define a version (optional).
 			true // Specify whether to put in footer (leave this true).
 		);
@@ -259,4 +262,4 @@ function woongkir_enqueue_frontend_scripts() {
 		woongkir_localize_script( 'woongkir-frontend', 'woongkir_params' );
 	}
 }
-add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_frontend_scripts', 999 );
+add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_frontend_scripts', 0 );
