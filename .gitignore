@@ -3,18 +3,7 @@
 node_modules
 package-lock.json
 
-assets/js/lockr\.js
-
-assets/js/lockr\.min\.js
-
-assets/js/woongkir-backend\.js
-
-assets/js/woongkir-backend\.min\.js
-
-assets/js/woongkir-frontend\.js
-
-assets/js/woongkir-frontend\.min\.js
-
-languages/woongkir\.pot
-
+assets/js/
+assets/css/
+languages/
 dist/

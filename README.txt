@@ -4,7 +4,7 @@ Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos 
 Requires at least: 4.8
 Tested up to: 4.9.5
 Requires PHP: 5.6
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -84,6 +84,12 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Changelog ==
 
+= 1.2.4 =
+
+* Fix - Fixed City and subdistrict dropdown field now appear in my account address fields
+* Fix - Fixed Fixed Subdistrict selected value always empty in shipping calculator form
+* Improvements - Improved backend form
+
 = 1.2.3 =
 
 * Bug Fix - Compatibilty issue with WooCommerce 3.5
@@ -142,5 +148,5 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Upgrade Notice ==
 
-= 1.2.3 =
-This version include fixes for compatibilty issue with WooCommerce 3.5. Upgrade immediately is required.
+= 1.2.4 =
+This version include bug fixes and improvemnts. Upgrade immediately is always recommended.
