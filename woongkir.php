@@ -179,12 +179,12 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 					'address_2'          => __( 'Subdistrict', 'woongkir' ),
 				),
 				'placeholder'   => array(
-					'city'        => __( 'Town / City', 'woongkir' ),
-					'address_2'   => __( 'Subdistrict', 'woongkir' ),
+					'city'      => __( 'Town / City', 'woongkir' ),
+					'address_2' => __( 'Subdistrict', 'woongkir' ),
 				),
-				'label'   => array(
-					'city'        => __( 'Town / City', 'woongkir' ),
-					'address_2'   => __( 'Subdistrict', 'woongkir' ),
+				'label'         => array(
+					'city'      => __( 'Town / City', 'woongkir' ),
+					'address_2' => __( 'Subdistrict', 'woongkir' ),
 				),
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
 				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(),
@@ -203,28 +203,47 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
  */
 function woongkir_enqueue_backend_scripts( $hook = null ) {
 	if ( ( is_admin() && 'woocommerce_page_wc-settings' === $hook ) ) {
-		// Register lockr.js scripts.
-		$lockr_js = WOONGKIR_URL . 'assets/js/lockr.min.js';
-		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
-			$lockr_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $lockr_js ) );
+		$is_debug = defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV;
+
+		// Define the styles URL.
+		$css_url = WOONGKIR_URL . 'assets/css/woongkir-backend.min.css';
+		if ( $is_debug ) {
+			$css_url = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $css_url ) );
 		}
-		wp_enqueue_script(
+
+		// Enqueue admin styles.
+		wp_enqueue_style(
+			'woongkir-backend', // Give the script a unique ID.
+			$css_url, // Define the path to the JS file.
+			array(), // Define dependencies.
+			WOONGKIR_VERSION, // Define a version (optional).
+			false // Specify whether to put in footer (leave this false).
+		);
+
+		// Register lockr.js scripts.
+		$lockr_url = WOONGKIR_URL . 'assets/js/lockr.min.js';
+		if ( $is_debug ) {
+			$lockr_url = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $lockr_url ) );
+		}
+
+		wp_register_script(
 			'lockr.js', // Give the script a unique ID.
-			$lockr_js, // Define the path to the JS file.
+			$lockr_url, // Define the path to the JS file.
 			array( 'jquery' ), // Define dependencies.
 			WOONGKIR_VERSION, // Define a version (optional).
 			true // Specify whether to put in footer (leave this true).
 		);
 
-		// Enqueue main scripts.
-		$woongkir_backend_js = WOONGKIR_URL . 'assets/js/woongkir-backend.min.js';
-		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
-			$woongkir_backend_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $woongkir_backend_js ) );
+		// Define the scripts URL.
+		$js_url = WOONGKIR_URL . 'assets/js/woongkir-backend.min.js';
+		if ( $is_debug ) {
+			$js_url = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $js_url ) );
 		}
+
 		wp_enqueue_script(
 			'woongkir-backend', // Give the script a unique ID.
-			$woongkir_backend_js, // Define the path to the JS file.
-			array( 'jquery', 'lockr.js' ), // Define dependencies.
+			$js_url, // Define the path to the JS file.
+			array( 'jquery', 'wp-util', 'select2', 'selectWoo', 'lockr.js' ), // Define dependencies.
 			WOONGKIR_VERSION, // Define a version (optional).
 			true // Specify whether to put in footer (leave this true).
 		);
@@ -241,27 +260,31 @@ add_action( 'admin_enqueue_scripts', 'woongkir_enqueue_backend_scripts', 999 );
  */
 function woongkir_enqueue_frontend_scripts() {
 	if ( ! is_admin() ) {
+		$is_debug = defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV;
+
 		// Register lockr.js scripts.
-		$lockr_js = WOONGKIR_URL . 'assets/js/lockr.min.js';
-		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
-			$lockr_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $lockr_js ) );
+		$lockr_url = WOONGKIR_URL . 'assets/js/lockr.min.js';
+		if ( $is_debug ) {
+			$lockr_url = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $lockr_url ) );
 		}
+
 		wp_register_script(
 			'lockr.js', // Give the script a unique ID.
-			$lockr_js, // Define the path to the JS file.
+			$lockr_url, // Define the path to the JS file.
 			array(), // Define dependencies.
 			WOONGKIR_VERSION, // Define a version (optional).
 			true // Specify whether to put in footer (leave this true).
 		);
 
 		// Enqueue main scripts.
-		$woongkir_frontend_js = WOONGKIR_URL . 'assets/js/woongkir-frontend.min.js';
-		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
-			$woongkir_frontend_js = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $woongkir_frontend_js ) );
+		$js_url = WOONGKIR_URL . 'assets/js/woongkir-frontend.min.js';
+		if ( $is_debug ) {
+			$js_url = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $js_url ) );
 		}
+
 		wp_enqueue_script(
 			'woongkir-frontend', // Give the script a unique ID.
-			$woongkir_frontend_js, // Define the path to the JS file.
+			$js_url, // Define the path to the JS file.
 			array( 'jquery', 'wp-util', 'select2', 'selectWoo', 'lockr.js' ), // Define dependencies.
 			WOONGKIR_VERSION, // Define a version (optional).
 			true // Specify whether to put in footer (leave this true).

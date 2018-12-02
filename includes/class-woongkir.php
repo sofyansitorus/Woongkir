@@ -177,7 +177,7 @@ class Woongkir extends WC_Shipping_Method {
 			),
 			'account_type'       => array(
 				'title'             => __( 'RajaOngkir Account Type', 'woongkir' ),
-				'type'              => 'select',
+				'type'              => 'account_type',
 				'default'           => 'starter',
 				'options'           => array(),
 				'class'             => 'woongkir-account-type',
@@ -199,32 +199,38 @@ class Woongkir extends WC_Shipping_Method {
 		$couriers = $this->api->get_courier();
 
 		foreach ( $this->api->get_account() as $account_type => $data ) {
-			$zone_data = array();
-			$label     = $data['label'];
+			$zone_data = array(
+				'domestic'      => array(
+					'label'    => __( 'Domestic Couriers', 'woongkir' ),
+					'couriers' => array(),
+				),
+				'international' => array(
+					'label'    => __( 'International Couriers', 'woongkir' ),
+					'couriers' => array(),
+				),
+			);
 			foreach ( $couriers as $zone_id => $courier ) {
-				$zone_data[ $zone_id ] = 0;
 				foreach ( $courier as $courier_id => $courier_data ) {
 					if ( in_array( $account_type, $courier_data['account'], true ) ) {
-						$zone_data[ $zone_id ]++;
+						$zone_data[ $zone_id ]['couriers'][] = $courier_data;
 					}
 				}
 			}
-			$infos = array();
 
-			foreach ( $zone_data as $zone_id => $count ) {
-				$infos[] = $zone_id . ': ' . $count;
+			$settings['account_type']['options'][ $account_type ] = $data['label'];
+			foreach ( $zone_data as $zone_id => $zone_info ) {
+				$settings['account_type']['features'][ $zone_id ]['label'] = $zone_info['label'];
+
+				$settings['account_type']['features'][ $zone_id ]['value'][ $account_type ] = count( $zone_info['couriers'] );
 			}
 
-			if ( $data['multiple'] ) {
-				$infos[] = 'multiple';
-			}
+			$settings['account_type']['features']['multiple']['label'] = __( 'Multiple Couriers', 'woongkir' );
 
-			if ( $data['subdistrict'] ) {
-				$infos[] = 'subdistrict';
-			}
+			$settings['account_type']['features']['multiple']['value'][ $account_type ] = $data['multiple'] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
 
-			$label .= ' (' . implode( ', ', $infos ) . ')';
-			$settings['account_type']['options'][ $account_type ] = $label;
+			$settings['account_type']['features']['subdistrict']['label'] = __( 'Calculate Subdistrict', 'woongkir' );
+
+			$settings['account_type']['features']['subdistrict']['value'][ $account_type ] = $data['subdistrict'] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
 		}
 
 		$this->instance_form_fields = $settings;
@@ -239,8 +245,50 @@ class Woongkir extends WC_Shipping_Method {
 	 */
 	public function generate_origin_html( $key, $data ) {
 		$field_key = $this->get_field_key( $key );
+		$defaults  = array(
+			'title'             => '',
+			'disabled'          => false,
+			'class'             => '',
+			'css'               => '',
+			'placeholder'       => '',
+			'type'              => 'text',
+			'desc_tip'          => false,
+			'description'       => '',
+			'custom_attributes' => array(),
+		);
 
-		$defaults = array(
+		$data = wp_parse_args( $data, $defaults );
+
+		ob_start();
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
+			</th>
+			<td class="forminp">
+				<fieldset style="max-width: 50%;min-width: 250px;">
+					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
+					<input class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>" type="<?php echo esc_attr( $data['type'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo $this->get_custom_attribute_html( $data ); // WPCS: XSS ok. ?> />
+					<?php echo $this->get_description_html( $data ); // WPCS: XSS ok. ?>
+				</fieldset>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * Generate Select HTML.
+	 *
+	 * @param string $key Field key.
+	 * @param array  $data Field data.
+	 * @since  1.0.0
+	 * @return string
+	 */
+	public function generate_account_type_html( $key, $data ) {
+		$field_key = $this->get_field_key( $key );
+		$defaults  = array(
 			'title'             => '',
 			'disabled'          => false,
 			'class'             => '',
@@ -251,27 +299,53 @@ class Woongkir extends WC_Shipping_Method {
 			'description'       => '',
 			'custom_attributes' => array(),
 			'options'           => array(),
+			'features'          => array(),
 		);
 
 		$data = wp_parse_args( $data, $defaults );
 
-		ob_start(); ?>
+		ob_start();
+		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
-				<?php echo esc_html( $this->get_tooltip_html( $data ) ); ?>
-				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></label>
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
 			</th>
 			<td class="forminp">
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-					<select class="select wc-enhanced-select woongkir-<?php echo esc_attr( str_replace( '_', '-', $key ) ); ?>-select <?php echo esc_attr( $data['class'] ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo esc_html( $this->get_custom_attribute_html( $data ) ); ?>>
+					<select class="select <?php echo esc_attr( $data['class'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo $this->get_custom_attribute_html( $data ); // WPCS: XSS ok. ?>>
+						<?php foreach ( (array) $data['options'] as $option_key => $option_value ) : ?>
+							<option value="<?php echo esc_attr( $option_key ); ?>" <?php selected( (string) $option_key, esc_attr( $this->get_option( $key ) ) ); ?>><?php echo esc_attr( $option_value ); ?></option>
+						<?php endforeach; ?>
 					</select>
-					<?php echo esc_html( $this->get_description_html( $data ) ); ?>
+					<?php echo $this->get_description_html( $data ); // WPCS: XSS ok. ?>
 				</fieldset>
-				<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" class="woongkir-<?php echo esc_attr( str_replace( '_', '-', $key ) ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>">
+				<div class="woongkir-account-features-wrap">
+					<table id="woongkir-account-features" class="woongkir-account-features form-table">
+						<thead>
+							<tr>
+								<th>&nbsp;</th>
+								<?php foreach ( $this->api->get_account() as $account_type => $account_data ) { ?>
+									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><?php echo esc_html( $account_data['label'] ); ?></th>
+								<?php } ?>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( (array) $data['features'] as $feature_key => $feature ) : ?>
+							<tr>
+								<th><?php echo esc_html( $feature['label'] ); ?></th>
+								<?php foreach ( $feature['value'] as $account_type => $feature_value ) : ?>
+									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><?php echo esc_html( $feature_value ); ?></td>
+								<?php endforeach; ?>
+							</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
 			</td>
 		</tr>
 		<?php
+
 		return ob_get_clean();
 	}
 
