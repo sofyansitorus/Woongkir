@@ -1,7 +1,7 @@
 {
   "name": "woongkir",
   "title": "Woongkir",
-  "version": "1.0.0",
+  "version": "1.2.3",
   "homepage": "https://github.com/sofyansitorus/",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
     "browser-sync": "^2.24.4",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
+    "gulp-bump": "^3.1.1",
     "gulp-clean-css": "^3.9.3",
     "gulp-concat": "^2.6.1",
     "gulp-if": "^2.0.2",
@@ -28,9 +29,5 @@
     "gulp-zip": "^4.1.0",
     "gutil": "^1.6.4",
     "yargs": "^11.0.0"
-  },
-  "scripts": {
-    "watch": "gulp watch",
-    "build": "gulp"
   }
 }
