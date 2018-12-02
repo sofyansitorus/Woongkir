@@ -71,7 +71,7 @@ var woongkirFrontend = {
 					width: '100%'
 				}).addClass('woongkir-select2');
 
-				setTimeout(() => {
+				setTimeout(function () {
 					var $fieldLabel = $('#' + formPrefix + '_' + field + '_field').find('label');
 					var labelClass = _.has(addressParams[field], 'label_class') ? addressParams[field].label_class : [];
 					if ($fieldLabel && $fieldLabel.length) {
