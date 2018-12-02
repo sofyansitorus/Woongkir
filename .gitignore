@@ -16,3 +16,5 @@ assets/js/woongkir-frontend\.js
 assets/js/woongkir-frontend\.min\.js
 
 languages/woongkir\.pot
+
+dist/
