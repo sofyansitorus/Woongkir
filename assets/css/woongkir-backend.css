@@ -1,0 +1,25 @@
+.woongkir-account-features {
+  border-top: 1px solid #f8f8f8;
+  border-left: 1px solid #f8f8f8;
+  border-right: 1px solid #f8f8f8; }
+  .woongkir-account-features-wrap {
+    width: 50%;
+    min-width: 250px;
+    margin-top: 10px; }
+  .woongkir-account-features thead th {
+    text-align: center;
+    width: 20% !important;
+    border-left: 1px solid #f8f8f8;
+    background: #f1f1f1; }
+    .woongkir-account-features thead th:first-child {
+      width: 40% !important;
+      border-left: none; }
+  .woongkir-account-features tbody td {
+    text-align: center;
+    border-left: 1px solid #f8f8f8; }
+  .woongkir-account-features tbody td,
+  .woongkir-account-features tbody th {
+    padding: 5px !important; }
+    .woongkir-account-features tbody td.selected,
+    .woongkir-account-features tbody th.selected {
+      background: #f1f1f1; }

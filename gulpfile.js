@@ -64,6 +64,16 @@ const assets = [
         isIife: false,
     },
     {
+        type: 'styles',
+        target: 'backend',
+        sources: [
+            'backend.scss',
+        ],
+        targetDir: 'assets/css/',
+        sourcesDir: 'assets/src/scss/',
+        isPrefixed: true,
+    },
+    {
         type: 'php',
         target: 'php',
         sources: [
