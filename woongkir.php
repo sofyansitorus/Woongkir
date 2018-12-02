@@ -176,7 +176,15 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 					'select_subdistrict' => __( 'Select subdistrict', 'woongkir' ),
 
 					'city'               => __( 'Town / City', 'woongkir' ),
-					'subdistrict'        => __( 'Subdistrict', 'woongkir' ),
+					'address_2'          => __( 'Subdistrict', 'woongkir' ),
+				),
+				'placeholder'   => array(
+					'city'        => __( 'Town / City', 'woongkir' ),
+					'address_2'   => __( 'Subdistrict', 'woongkir' ),
+				),
+				'label'   => array(
+					'city'        => __( 'Town / City', 'woongkir' ),
+					'address_2'   => __( 'Subdistrict', 'woongkir' ),
 				),
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
 				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(),
@@ -254,7 +262,7 @@ function woongkir_enqueue_frontend_scripts() {
 		wp_enqueue_script(
 			'woongkir-frontend', // Give the script a unique ID.
 			$woongkir_frontend_js, // Define the path to the JS file.
-			array( 'jquery', 'lockr.js' ), // Define dependencies.
+			array( 'jquery', 'wp-util', 'select2', 'selectWoo', 'lockr.js' ), // Define dependencies.
 			WOONGKIR_VERSION, // Define a version (optional).
 			true // Specify whether to put in footer (leave this true).
 		);
@@ -262,4 +270,22 @@ function woongkir_enqueue_frontend_scripts() {
 		woongkir_localize_script( 'woongkir-frontend', 'woongkir_params' );
 	}
 }
-add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_frontend_scripts', 0 );
+add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_frontend_scripts', 999 );
+
+/**
+ * Print hidden element for the hidden address 2 field value
+ * in shipping calculator form.
+ *
+ * @since 1.2.4
+ * @return void
+ */
+function woongkir_after_shipping_calculator() {
+	// Address 2 hidden field.
+	if ( apply_filters( 'woocommerce_shipping_calculator_enable_address_2', true ) ) {
+		$address_2 = WC()->cart->get_customer()->get_shipping_address_2();
+		?>
+		<input type="hidden" id="calc_shipping_address_2_dummy" value="<?php echo esc_attr( $address_2 ); ?>" />
+		<?php
+	}
+}
+add_action( 'woocommerce_after_shipping_calculator', 'woongkir_after_shipping_calculator' );

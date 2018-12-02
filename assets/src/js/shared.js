@@ -1,7 +1,6 @@
-var WoongkirLocation = {
+var woongkirLocation = {
 	storeCountry: function () {
-		var self = this;
-		if (!self.getCountry().length) {
+		if (!woongkirLocation.getCountry().length) {
 			$.getJSON(woongkir_params.json.country_url, function (data) {
 				data.sort(function (a, b) {
 					return (a.country_name > b.country_name) ? 1 : ((b.country_name > a.country_name) ? -1 : 0);
@@ -11,21 +10,19 @@ var WoongkirLocation = {
 		}
 	},
 	getCountry: function (search, searchMethod) {
-		var self = this;
 		var items = Lockr.get(woongkir_params.json.country_key);
 		if (!items || typeof items === 'undefined') {
 			return [];
 		}
 
 		if (search && search === Object(search)) {
-			return self.searchLocation(items, search, searchMethod);
+			return woongkirLocation.searchLocation(items, search, searchMethod);
 		}
 
 		return items;
 	},
 	storeProvince: function () {
-		var self = this;
-		if (!self.getProvince().length) {
+		if (!woongkirLocation.getProvince().length) {
 			$.getJSON(woongkir_params.json.province_url, function (data) {
 				data.sort(function (a, b) {
 					return (a.province_name > b.province_name) ? 1 : ((b.province_name > a.province_name) ? -1 : 0);
@@ -35,21 +32,19 @@ var WoongkirLocation = {
 		}
 	},
 	getProvince: function (search, searchMethod) {
-		var self = this;
 		var items = Lockr.get(woongkir_params.json.province_key);
 		if (!items || typeof items === 'undefined') {
 			return [];
 		}
 
 		if (search && search === Object(search)) {
-			return self.searchLocation(items, search, searchMethod);
+			return woongkirLocation.searchLocation(items, search, searchMethod);
 		}
 
 		return items;
 	},
 	storeCity: function () {
-		var self = this;
-		if (!self.getCity().length) {
+		if (!woongkirLocation.getCity().length) {
 			$.getJSON(woongkir_params.json.city_url, function (data) {
 				data.sort(function (a, b) {
 					return (a.city_name > b.city_name) ? 1 : ((b.city_name > a.city_name) ? -1 : 0);
@@ -59,21 +54,19 @@ var WoongkirLocation = {
 		}
 	},
 	getCity: function (search, searchMethod) {
-		var self = this;
 		var items = Lockr.get(woongkir_params.json.city_key);
 		if (!items || typeof items === 'undefined') {
 			return [];
 		}
 
 		if (search && search === Object(search)) {
-			return self.searchLocation(items, search, searchMethod);
+			return woongkirLocation.searchLocation(items, search, searchMethod);
 		}
 
 		return items;
 	},
 	storeSubdistrict: function () {
-		var self = this;
-		if (!self.getSubdistrict().length) {
+		if (!woongkirLocation.getSubdistrict().length) {
 			$.getJSON(woongkir_params.json.subdistrict_url, function (data) {
 				data.sort(function (a, b) {
 					return (a.subdistrict_name > b.subdistrict_name) ? 1 : ((b.subdistrict_name > a.subdistrict_name) ? -1 : 0);
@@ -83,35 +76,27 @@ var WoongkirLocation = {
 		}
 	},
 	getSubdistrict: function (search, searchMethod) {
-		var self = this;
 		var items = Lockr.get(woongkir_params.json.subdistrict_key);
 		if (!items || typeof items === 'undefined') {
 			return [];
 		}
 
 		if (search && search === Object(search)) {
-			return self.searchLocation(items, search, searchMethod);
+			return woongkirLocation.searchLocation(items, search, searchMethod);
 		}
 
 		return items;
 	},
 	searchLocation: function (items, search, searchMethod) {
-		var self = this, itemFound= false;
-		searchMethod = searchMethod || 'find';
-		switch (searchMethod) {
-			case 'filter':
-				itemFound = items.filter(function (item) {
-					return self.isLocationMatch(item, search);
-				});
-				break;
-
-			default:
-				itemFound = items.find(function (item) {
-					return self.isLocationMatch(item, search);
-				});
-				break;
+		if (searchMethod === 'filter') {
+			return items.filter(function (item) {
+				return woongkirLocation.isLocationMatch(item, search);
+			});
 		}
-		return itemFound || false;
+
+		return items.find(function (item) {
+			return woongkirLocation.isLocationMatch(item, search);
+		});
 	},
 	isLocationMatch: function (item, search) {
 		var isItemMatch = true;
@@ -124,7 +109,7 @@ var WoongkirLocation = {
 	}
 };
 
-WoongkirLocation.storeCountry(); // Store custom country data to local storage.
-WoongkirLocation.storeProvince(); // Store custom province data to local storage.
-WoongkirLocation.storeCity(); // Store custom city data to local storage.
-WoongkirLocation.storeSubdistrict(); // Store custom subdistrict data to local storage.
+woongkirLocation.storeCountry(); // Store custom country data to local storage.
+woongkirLocation.storeProvince(); // Store custom province data to local storage.
+woongkirLocation.storeCity(); // Store custom city data to local storage.
+woongkirLocation.storeSubdistrict(); // Store custom subdistrict data to local storage.
