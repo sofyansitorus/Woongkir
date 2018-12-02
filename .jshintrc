@@ -23,7 +23,7 @@
 		"export": false,
 		"module": false,
 		"require": false,
-		"WoongkirLocation": false,
+		"woongkirLocation": false,
 		"woongkir_params": false,
 		"$": false,
 		"Lockr": false

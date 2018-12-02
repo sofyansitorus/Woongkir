@@ -1,9 +1,9 @@
 // Render settings form.
 function woongkirFormSettings() {
 
-    var provinceData = WoongkirLocation.getProvince(),
-        cityData = WoongkirLocation.getCity(),
-        subdistrictData = WoongkirLocation.getSubdistrict(),
+    var provinceData = woongkirLocation.getProvince(),
+        cityData = woongkirLocation.getCity(),
+        subdistrictData = woongkirLocation.getSubdistrict(),
         $form = $('.woongkir-account-type').closest('form');
 
     // Bind on account type data change.
