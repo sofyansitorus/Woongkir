@@ -1,9 +1,8 @@
-*.wpt.yml
-*.DS_Store
-node_modules
+.DS_Store
 package-lock.json
 
-assets/js/
-assets/css/
-languages/
-dist/
+node_modules/*
+assets/js/*
+assets/css/*
+languages/*
+dist/*
