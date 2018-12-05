@@ -17,8 +17,6 @@ const cleanCSS = require('gulp-clean-css');
 const sourcemaps = require('gulp-sourcemaps');
 const wpPot = require('gulp-wp-pot');
 const phpcs = require('gulp-phpcs');
-const phpcbf = require('gulp-phpcbf');
-const gutil = require('gutil');
 const bump = require('gulp-bump');
 
 /**
@@ -199,29 +197,7 @@ const phpcsHandler = function (asset) {
 }
 
 /**
- * PHPCBF taks handler
- */
-const phpcbfHandler = function (asset) {
-    const srcParam = asset.sources.map(function (sourcesFile) {
-        const sourcesDir = asset.sourcesDir || '';
-        return sourcesDir + sourcesFile;
-    });
-
-    const config = Object.assign({}, asset.config, {
-        bin: '/usr/local/bin/phpcbf',
-        standard: 'WordPress',
-        warningSeverity: 0,
-    });
-
-    return gulp.src(srcParam)
-        .pipe(errorHandler())
-        .pipe(phpcbf(config))
-        .on('error', gutil.log)
-        .pipe(gulp.dest('./'));
-}
-
-/**
- * PHPCBF taks handler
+ * Internationalization taks handler
  */
 const i18nHandler = function (asset) {
     const srcParam = asset.sources.map(function (sourcesFile) {
@@ -272,20 +248,7 @@ assets.forEach(function (asset) {
     }
 
     /**
-     * PHPCBF Task
-     */
-    if (asset.type === 'php') {
-        const taskName = asset.target + '-phpcbf';
-
-        gulp.task(taskName, function () {
-            return phpcbfHandler(asset);
-        });
-
-        tasksListBuild.push(taskName);
-    }
-
-    /**
-     * PHPCBF Task
+     * Internationalization Task
      */
     if (asset.type === 'php') {
         const taskName = asset.target + '-i18n';
