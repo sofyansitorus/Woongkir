@@ -39,6 +39,7 @@ const assets = [
         sourcesDir: 'assets/src/js/',
         isPrefixed: true,
         isIife: true,
+        isSourceMap: false,
     },
     {
         type: 'scripts',
@@ -51,6 +52,7 @@ const assets = [
         sourcesDir: 'assets/src/js/',
         isPrefixed: true,
         isIife: true,
+        isSourceMap: false,
     },
     {
         type: 'scripts',
@@ -62,6 +64,7 @@ const assets = [
         sourcesDir: 'assets/src/js/',
         isPrefixed: false,
         isIife: false,
+        isSourceMap: false,
     },
     {
         type: 'styles',
@@ -72,6 +75,7 @@ const assets = [
         targetDir: 'assets/css/',
         sourcesDir: 'assets/src/scss/',
         isPrefixed: true,
+        isSourceMap: false,
     },
     {
         type: 'php',
@@ -130,9 +134,9 @@ const scriptsHandler = function (asset, isMinify) {
         .pipe(gulpif(isMinify, rename({
             suffix: '.min',
         })))
-        .pipe(gulpif(isMinify, sourcemaps.init()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.init()))
         .pipe(gulpif(isMinify, uglify()))
-        .pipe(gulpif(isMinify, sourcemaps.write()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.write()))
         .pipe(gulpif(isMinify, gulp.dest(asset.targetDir)));
 }
 
@@ -147,7 +151,7 @@ const stylesHandler = function (asset, isMinify) {
 
     return gulp.src(srcParam)
         .pipe(errorHandler())
-        .pipe(gulpif(isMinify, sourcemaps.init()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.init()))
         .pipe(sass().on('error', sass.logError))
         .pipe(autoprefixer(
             'last 2 version',
@@ -168,7 +172,7 @@ const stylesHandler = function (asset, isMinify) {
         .pipe(gulpif(isMinify, cleanCSS({
             compatibility: 'ie8',
         })))
-        .pipe(gulpif(isMinify, sourcemaps.write()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.write()))
         .pipe(gulpif(isMinify, gulp.dest(asset.targetDir)))
         .pipe(gulpif(!isMinify, browserSync.stream()));
 }
