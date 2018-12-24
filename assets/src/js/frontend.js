@@ -18,45 +18,45 @@ var woongkirFrontend = {
 			var $wrapper = $(form.wrapper);
 
 			if ($wrapper && $wrapper.length) {
-				var formPrefix = form.prefix;
+				var prefix = form.prefix;
 
-				if (!formPrefix && $('#billing_country').length) {
-					formPrefix = 'billing';
+				if (!prefix && $wrapper.find('#billing_country').length) {
+					prefix = 'billing';
 				}
 
-				if (!formPrefix && $('#shipping_country').length) {
-					formPrefix = 'shipping';
+				if (!prefix && $wrapper.find('#shipping_country').length) {
+					prefix = 'shipping';
 				}
 
-				if (formPrefix) {
-					var country = $('#' + formPrefix + '_country').val();
+				if (prefix) {
+					var country = $('#' + prefix + '_country').val();
 					if (country && country.length) {
 						if (country === 'ID') {
-							woongkirFrontend.modifyForm(formPrefix, $wrapper);
+							woongkirFrontend.modifyForm(prefix);
 						} else {
-							woongkirFrontend.restoreForm(formPrefix, $wrapper, country);
+							woongkirFrontend.restoreForm(prefix, country);
 						}
 					}
 				}
 			}
 		});
 	},
-	modifyForm: function (formPrefix, $wrapper) {
+	modifyForm: function (prefix) {
 		var addressParams = woongkirFrontend.getAddressParams('ID');
 		_.each(['address_2', 'city'], function (field) {
-			var $field = $wrapper.find('#' + formPrefix + '_' + field);
+			var $field = $('#' + prefix + '_' + field);
 			if (!$field || !$field.length) {
-				var $cloneFieldWrap = $wrapper.find('#' + formPrefix + '_postcode_field');
+				var $cloneFieldWrap = $('#' + prefix + '_postcode_field');
 
 				if ($cloneFieldWrap && $cloneFieldWrap.length) {
 					var $fieldWrap = $cloneFieldWrap.clone().attr({
-						id: formPrefix + '_' + field + '_field'
+						id: prefix + '_' + field + '_field'
 					});
 
 					$fieldWrap.find('input').attr({
-						id: formPrefix + '_' + field,
-						name: formPrefix + '_' + field,
-						value: $('#' + formPrefix + '_' + field + '_dummy').val(),
+						id: prefix + '_' + field,
+						name: prefix + '_' + field,
+						value: $('#' + prefix + '_' + field + '_dummy').val(),
 					});
 
 					$cloneFieldWrap.before($fieldWrap);
@@ -66,52 +66,51 @@ var woongkirFrontend = {
 			}
 
 			if ($field && $field.length) {
-				$field.selectWoo({
-					placeholder: woongkir_params.text[field],
-					width: '100%'
-				}).addClass('woongkir-select2');
-
 				setTimeout(function () {
-					var $fieldLabel = $('#' + formPrefix + '_' + field + '_field').find('label');
+					var $fieldLabel = $('#' + prefix + '_' + field + '_field').find('label');
 					var labelClass = _.has(addressParams[field], 'label_class') ? addressParams[field].label_class : [];
 					if ($fieldLabel && $fieldLabel.length) {
-						var fieldLabelHtml = $fieldLabel.html().replace(addressParams[field].label, woongkir_params.label[field]);
+						var fieldLabelHtml = $fieldLabel.html().replace(addressParams[field].label, woongkir_params.text.label[field]);
 						$fieldLabel.html(fieldLabelHtml);
 						if (_.indexOf(labelClass, 'screen-reader-text') !== -1) {
 							$fieldLabel.removeClass('screen-reader-text');
 						}
 					}
-					var $fieldWrapSorted = $('#' + formPrefix + '_' + field + '_field').detach();
-					$fieldWrapSorted.insertAfter($('#' + formPrefix + '_state_field'));
+					var $fieldWrapSorted = $('#' + prefix + '_' + field + '_field').detach();
+					$fieldWrapSorted.insertAfter($('#' + prefix + '_state_field'));
 				}, 100);
 			}
 		});
 
-		$(document.body).off('change', '#' + formPrefix + '_state');
-		$(document.body).on('change', '#' + formPrefix + '_state', function (e) {
-			woongkirFrontend.modifyFormCity(formPrefix);
+		$(document.body).off('change', '#' + prefix + '_state');
+		$(document.body).on('change', '#' + prefix + '_state', function (e) {
+			woongkirFrontend.modifyFormCity(prefix);
 		});
 
-		$(document.body).off('change', '#' + formPrefix + '_city');
-		$(document.body).on('change', '#' + formPrefix + '_city', function (e) {
-			woongkirFrontend.modifyFormSubdistrict(formPrefix);
+		$(document.body).off('change', '#' + prefix + '_city');
+		$(document.body).on('change', '#' + prefix + '_city', function (e) {
+			woongkirFrontend.modifyFormSubdistrict(prefix);
 		});
 
-		$('#' + formPrefix + '_state').trigger('change');
+		$(document.body).off('change', '#' + prefix + '_address_2');
+		$(document.body).on('change', '#' + prefix + '_address_2', function (e) {
+			if ($(document.body).hasClass('woocommerce-checkout')) {
+				$(document.body).trigger('update_checkout');
+			}
+		});
+
+		$('#' + prefix + '_state').trigger('change');
 	},
-	modifyFormCity: function (formPrefix) {
-		var $provinceField = $('#' + formPrefix + '_state');
+	modifyFormCity: function (prefix) {
+		var $provinceField = $('#' + prefix + '_state');
 		var provinceSelected = $provinceField.val();
 
-		var $cityField = $('#' + formPrefix + '_city');
-		var citySelected = $cityField.val();
-		var cityMatch = '';
-		var cityParam = {
-			data: [{
-				id: '',
-				text: woongkir_params.text.select_city,
-			}],
-		};
+		var placeholder = woongkir_params.text.placeholder.city;
+		var cityOptions = [{
+			id: '',
+			text: placeholder,
+		}];
+		var citySelected = $('#' + prefix + '_city').val();
 
 		var provinceData = woongkirLocation.getProvince({ code: provinceSelected });
 
@@ -121,37 +120,32 @@ var woongkirFrontend = {
 				for (var i = 0; i < cityData.length; i++) {
 					var cityName = cityData[i].type + ' ' + cityData[i].city_name;
 
-					cityParam.data.push({
+					cityOptions.push({
 						id: cityName,
 						text: cityName,
+						selected: citySelected === cityName
 					});
-
-					if (citySelected === cityName) {
-						cityMatch = cityName;
-					}
 				}
 			}
 		}
 
-		$cityField.selectWoo(cityParam).val(cityMatch).trigger('change');
+		woongkirFrontend.convertInputToSelect(prefix, 'city', cityOptions, placeholder);
 	},
-	modifyFormSubdistrict: function (formPrefix) {
-		var $provinceField = $('#' + formPrefix + '_state');
+	modifyFormSubdistrict: function (prefix) {
+		var $provinceField = $('#' + prefix + '_state');
 		var provinceSelected = $provinceField.val();
 
-		var $cityField = $('#' + formPrefix + '_city');
+		var $cityField = $('#' + prefix + '_city');
 		var citySelected = $cityField.val();
 
-		var $subdistrictField = $('#' + formPrefix + '_address_2');
-		var subdistrictSelected = $subdistrictField.val();
-		var subdistrictMatch = '';
+		var placeholder = woongkir_params.text.placeholder.address_2;
+		var subdistrictOptions = [{
+			id: '',
+			text: placeholder,
+		}];
+		var subdistrictSelected = $('#' + prefix + '_address_2').val();
 
-		var subdistrictParam = {
-			data: [{
-				id: '',
-				text: woongkir_params.text.select_subdistrict,
-			}],
-		};
+
 
 		var provinceData = woongkirLocation.getProvince({ code: provinceSelected });
 
@@ -172,46 +166,89 @@ var woongkirFrontend = {
 
 				if (subdistrictData) {
 					for (var i = 0; i < subdistrictData.length; i++) {
-						subdistrictParam.data.push({
+						subdistrictOptions.push({
 							id: subdistrictData[i].subdistrict_name,
 							text: subdistrictData[i].subdistrict_name,
+							selected: subdistrictSelected === subdistrictData[i].subdistrict_name,
 						});
-
-						if (subdistrictSelected && subdistrictSelected === subdistrictData[i].subdistrict_name) {
-							subdistrictMatch = subdistrictData[i].subdistrict_name;
-						}
 					}
 				}
 			}
 		}
 
-		$subdistrictField.selectWoo(subdistrictParam).val(subdistrictMatch).trigger('change');
+		woongkirFrontend.convertInputToSelect(prefix, 'address_2', subdistrictOptions, placeholder);
 	},
-	restoreForm: function (formPrefix, $wrapper, country) {
-		var addressParams = woongkirFrontend.getAddressParams(country);
+	restoreForm: function (prefix, country) {
 		_.each(['city', 'address_2'], function (field) {
-			var $field = $wrapper.find('#' + formPrefix + '_' + field);
-			if ($field && $field.length) {
-				if ($field.hasClass('woongkir-select2')) {
-					$field.selectWoo('destroy').removeClass('woongkir-select2');
-				}
+			woongkirFrontend.convertSelectToInput(prefix, field, country);
 
-				var $fieldLabel = $('#' + formPrefix + '_' + field + '_field').find('label');
-				var labelClass = _.has(addressParams[field], 'label_class') ? addressParams[field].label_class : [];
+			if (prefix === 'calc_shipping' && field === 'address_2') {
+				$('#calc_shipping_address_2_field').remove();
+			}
+		});
+	},
+	convertInputToSelect: function (prefix, field, options, placeholder) {
+		var fieldKey = prefix + '_' + field;
+		var $field = $('#' + fieldKey);
+		if ($field && $field.length) {
+			if (!$field.is('select')) {
+				$field.replaceWith($('<select></select>').attr({
+					id: fieldKey,
+					name: fieldKey,
+				}));
+			}
+
+			$field.empty();
+
+			$field = $('#' + fieldKey);
+
+			_.each(options, function (option) {
+				$field.append($('<option></option>').attr({
+					value: option.id
+				}).text(option.text).prop('selected', option.selected));
+			});
+
+			$field.select2({
+				width: '100%',
+				placeholder: placeholder
+			}).trigger('change');
+		}
+	},
+	convertSelectToInput: function (prefix, field, country) {
+		var addressParams = woongkirFrontend.getAddressParams(country);
+		var fieldKey = prefix + '_' + field;
+		var $field = $('#' + fieldKey);
+		if ($field && $field.length) {
+			if ($field.is('select')) {
+				var fieldParam = _.has(addressParams, field) ? addressParams[field] : {
+					autocomplete: undefined,
+					required: false,
+					label_class: [],
+				};
+
+				$field.select2('destroy');
+
+				$field.replaceWith($('<input>').attr(_.extend(
+					{
+						autocomplete: fieldParam.autocomplete,
+						required: fieldParam.required,
+					}, {
+						id: fieldKey,
+						name: fieldKey,
+					}
+				)));
+
+				$field = $('#' + fieldKey);
+				$field.addClass('input-text ');
+
+				var $fieldLabel = $('#' + prefix + '_' + field + '_field').find('label');
 				if ($fieldLabel && $fieldLabel.length) {
-					if (_.indexOf(labelClass, 'screen-reader-text') !== -1) {
+					if (_.indexOf(fieldParam.label_class, 'screen-reader-text') !== -1) {
 						$fieldLabel.addClass('screen-reader-text');
 					}
 				}
 			}
-
-			if (formPrefix === 'calc_shipping' && field === 'address_2') {
-				$('#calc_shipping_address_2_field').remove();
-			}
-		});
-
-		$(document.body).off('change', '#' + formPrefix + '_state');
-		$(document.body).off('change', '#' + formPrefix + '_city');
+		}
 	},
 	getForms: function () {
 		return [{

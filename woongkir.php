@@ -15,7 +15,7 @@
  * Plugin Name:       Woongkir
  * Plugin URI:        https://github.com/sofyansitorus/Woongkir
  * Description:       WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 15 domestic couriers + 5 international shipping couriers: JNE, TIKI, Pos Indonesia, RPX, PCP, SICEPAT, JET, J&T, WAHANA, PANDU, SAP, PAHALA, SLIS, EXPEDITO.
- * Version:           1.2.4
+ * Version:           1.2.6
  * Author:            Sofyan Sitorus
  * Author URI:        https://github.com/sofyansitorus
  * License:           GPL-2.0+
@@ -170,21 +170,15 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 					'subdistrict_key' => 'woongkir_subdistrict_data',
 				),
 				'text'          => array(
-					'select_country'     => __( 'Select country', 'woongkir' ),
-					'select_province'    => __( 'Select province', 'woongkir' ),
-					'select_city'        => __( 'Select city', 'woongkir' ),
-					'select_subdistrict' => __( 'Select subdistrict', 'woongkir' ),
-
-					'city'               => __( 'Town / City', 'woongkir' ),
-					'address_2'          => __( 'Subdistrict', 'woongkir' ),
-				),
-				'placeholder'   => array(
-					'city'      => __( 'Town / City', 'woongkir' ),
-					'address_2' => __( 'Subdistrict', 'woongkir' ),
-				),
-				'label'         => array(
-					'city'      => __( 'Town / City', 'woongkir' ),
-					'address_2' => __( 'Subdistrict', 'woongkir' ),
+					'placeholder' => array(
+						'state'     => __( 'Select a Province', 'woongkir' ),
+						'city'      => __( 'Select a Town / City', 'woongkir' ),
+						'address_2' => __( 'Select a Subdistrict', 'woongkir' ),
+					),
+					'label'       => array(
+						'city'      => __( 'Town / City', 'woongkir' ),
+						'address_2' => __( 'Subdistrict', 'woongkir' ),
+					),
 				),
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
 				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(),

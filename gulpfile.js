@@ -17,8 +17,6 @@ const cleanCSS = require('gulp-clean-css');
 const sourcemaps = require('gulp-sourcemaps');
 const wpPot = require('gulp-wp-pot');
 const phpcs = require('gulp-phpcs');
-const phpcbf = require('gulp-phpcbf');
-const gutil = require('gutil');
 const bump = require('gulp-bump');
 
 /**
@@ -39,6 +37,7 @@ const assets = [
         sourcesDir: 'assets/src/js/',
         isPrefixed: true,
         isIife: true,
+        isSourceMap: false,
     },
     {
         type: 'scripts',
@@ -51,6 +50,7 @@ const assets = [
         sourcesDir: 'assets/src/js/',
         isPrefixed: true,
         isIife: true,
+        isSourceMap: false,
     },
     {
         type: 'scripts',
@@ -62,6 +62,7 @@ const assets = [
         sourcesDir: 'assets/src/js/',
         isPrefixed: false,
         isIife: false,
+        isSourceMap: false,
     },
     {
         type: 'styles',
@@ -72,6 +73,7 @@ const assets = [
         targetDir: 'assets/css/',
         sourcesDir: 'assets/src/scss/',
         isPrefixed: true,
+        isSourceMap: false,
     },
     {
         type: 'php',
@@ -130,9 +132,9 @@ const scriptsHandler = function (asset, isMinify) {
         .pipe(gulpif(isMinify, rename({
             suffix: '.min',
         })))
-        .pipe(gulpif(isMinify, sourcemaps.init()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.init()))
         .pipe(gulpif(isMinify, uglify()))
-        .pipe(gulpif(isMinify, sourcemaps.write()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.write()))
         .pipe(gulpif(isMinify, gulp.dest(asset.targetDir)));
 }
 
@@ -147,7 +149,7 @@ const stylesHandler = function (asset, isMinify) {
 
     return gulp.src(srcParam)
         .pipe(errorHandler())
-        .pipe(gulpif(isMinify, sourcemaps.init()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.init()))
         .pipe(sass().on('error', sass.logError))
         .pipe(autoprefixer(
             'last 2 version',
@@ -168,7 +170,7 @@ const stylesHandler = function (asset, isMinify) {
         .pipe(gulpif(isMinify, cleanCSS({
             compatibility: 'ie8',
         })))
-        .pipe(gulpif(isMinify, sourcemaps.write()))
+        .pipe(gulpif(asset.isSourceMap, sourcemaps.write()))
         .pipe(gulpif(isMinify, gulp.dest(asset.targetDir)))
         .pipe(gulpif(!isMinify, browserSync.stream()));
 }
@@ -195,29 +197,7 @@ const phpcsHandler = function (asset) {
 }
 
 /**
- * PHPCBF taks handler
- */
-const phpcbfHandler = function (asset) {
-    const srcParam = asset.sources.map(function (sourcesFile) {
-        const sourcesDir = asset.sourcesDir || '';
-        return sourcesDir + sourcesFile;
-    });
-
-    const config = Object.assign({}, asset.config, {
-        bin: '/usr/local/bin/phpcbf',
-        standard: 'WordPress',
-        warningSeverity: 0,
-    });
-
-    return gulp.src(srcParam)
-        .pipe(errorHandler())
-        .pipe(phpcbf(config))
-        .on('error', gutil.log)
-        .pipe(gulp.dest('./'));
-}
-
-/**
- * PHPCBF taks handler
+ * Internationalization taks handler
  */
 const i18nHandler = function (asset) {
     const srcParam = asset.sources.map(function (sourcesFile) {
@@ -268,20 +248,7 @@ assets.forEach(function (asset) {
     }
 
     /**
-     * PHPCBF Task
-     */
-    if (asset.type === 'php') {
-        const taskName = asset.target + '-phpcbf';
-
-        gulp.task(taskName, function () {
-            return phpcbfHandler(asset);
-        });
-
-        tasksListBuild.push(taskName);
-    }
-
-    /**
-     * PHPCBF Task
+     * Internationalization Task
      */
     if (asset.type === 'php') {
         const taskName = asset.target + '-i18n';

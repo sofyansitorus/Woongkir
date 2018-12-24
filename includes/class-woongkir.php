@@ -180,7 +180,6 @@ class Woongkir extends WC_Shipping_Method {
 				'type'              => 'account_type',
 				'default'           => 'starter',
 				'options'           => array(),
-				'class'             => 'woongkir-account-type',
 				'custom_attributes' => array(
 					'data-accounts' => wp_json_encode( $this->api->get_account() ),
 					'data-couriers' => wp_json_encode( $this->api->get_courier() ),
@@ -311,15 +310,7 @@ class Woongkir extends WC_Shipping_Method {
 				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
 			</th>
 			<td class="forminp">
-				<fieldset>
-					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-					<select class="select <?php echo esc_attr( $data['class'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo $this->get_custom_attribute_html( $data ); // WPCS: XSS ok. ?>>
-						<?php foreach ( (array) $data['options'] as $option_key => $option_value ) : ?>
-							<option value="<?php echo esc_attr( $option_key ); ?>" <?php selected( (string) $option_key, esc_attr( $this->get_option( $key ) ) ); ?>><?php echo esc_attr( $option_value ); ?></option>
-						<?php endforeach; ?>
-					</select>
-					<?php echo $this->get_description_html( $data ); // WPCS: XSS ok. ?>
-				</fieldset>
+				<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" <?php echo $this->get_custom_attribute_html( $data ); // WPCS: XSS ok. ?> />
 				<div class="woongkir-account-features-wrap">
 					<table id="woongkir-account-features" class="woongkir-account-features form-table">
 						<thead>
@@ -340,6 +331,16 @@ class Woongkir extends WC_Shipping_Method {
 							</tr>
 							<?php endforeach; ?>
 						</tbody>
+						<tfoot>
+							<tr>
+								<th></th>
+								<?php foreach ( array_keys( $feature['value'] ) as $account_type ) : ?>
+									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>">
+										<input type="checkbox" value="<?php echo esc_attr( $account_type ); ?>" id="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account_type ); ?>" class="woongkir-account-type" <?php checked( $account_type, $this->get_option( $key ) ); ?> <?php disabled( $account_type, $this->get_option( $key ) ); ?>>
+									</td>
+								<?php endforeach; ?>
+							</tr>
+						</tfoot>
 					</table>
 				</div>
 			</td>
@@ -390,13 +391,13 @@ class Woongkir extends WC_Shipping_Method {
 						echo '</tr><tr>';
 					}
 				?>
-				<td style="vertical-align:top !important; width: 20%;" id="woongkir-courier-box-<?php echo esc_attr( $key ); ?>-<?php echo esc_attr( $courier_id ); ?>" class="woongkir-courier-box <?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>">
-					<table class="form-table" width="100%" style="border:1px solid #f8f8f8;">
-						<thead style="background-color:#f1f1f1;">
+				<td id="woongkir-courier-box-<?php echo esc_attr( $key ); ?>-<?php echo esc_attr( $courier_id ); ?>" class="woongkir-courier-box <?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>">
+					<table class="form-table woongkir-courier-list">
+						<thead>
 							<tr>
-								<td>
+								<td class="woongkir-courier-name">
 									<?php if ( file_exists( WOONGKIR_PATH . 'assets/img/' . $courier_id . '.png' ) ) : ?>
-									<img src="<?php echo esc_attr( WOONGKIR_URL ); ?>assets/img/<?php echo esc_attr( $courier_id ); ?>.png" style="display: block;margin:0 auto; max-width: 96px; height: auto;">
+									<a class="woongkir-courier-link" href="<?php echo esc_attr( $courier['website'] ); ?>" target="_blank" title="<?php echo esc_attr_e( 'Visit Website', 'woongkir' ); ?>"><img src="<?php echo esc_attr( WOONGKIR_URL ); ?>assets/img/<?php echo esc_attr( $courier_id ); ?>.png" class="woongkir-courier-logo"></a>
 									<?php endif; ?>
 									<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
 									<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle"><?php echo wp_kses_post( $courier['label'] ); ?></label>
@@ -406,7 +407,7 @@ class Woongkir extends WC_Shipping_Method {
 						<tbody>
 							<?php foreach ( $courier['services'] as $index => $service ) : ?>
 							<tr>
-								<td>
+								<td class="woongkir-courier-service">
 									<input type="checkbox" class="woongkir-service single" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $service ); ?>" <?php checked( ( isset( $selected[ $courier_id ] ) && in_array( $service, $selected[ $courier_id ], true ) ? $service : false ), $service ); ?>>
 									<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>"><?php echo wp_kses_post( $service ); ?></label>
 								</td>

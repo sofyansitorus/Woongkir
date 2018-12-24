@@ -66,6 +66,7 @@ class Raja_Ongkir {
 		'domestic'      => array(
 			'pos'     => array(
 				'label'    => 'POS Indonesia',
+				'website'  => 'http://www.posindonesia.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'Surat Kilat Khusus',
 					'Paketpos Biasa',
@@ -84,7 +85,8 @@ class Raja_Ongkir {
 				),
 			),
 			'tiki'    => array(
-				'label'    => 'Citra Van Titipan Kilat',
+				'label'    => 'TIKI',
+				'website'  => 'http://tiki.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'TRC',
 					'REG',
@@ -100,7 +102,8 @@ class Raja_Ongkir {
 				),
 			),
 			'jne'     => array(
-				'label'    => 'Jalur Nugraha Ekakurir',
+				'label'    => 'JNE',
+				'website'  => 'http://www.jne.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'CTC',
 					'CTCYES',
@@ -115,7 +118,8 @@ class Raja_Ongkir {
 				),
 			),
 			'rpx'     => array(
-				'label'    => 'RPX Holding',
+				'label'    => 'RPX',
+				'website'  => 'http://www.rpx.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'SDP',
 					'MDP',
@@ -130,7 +134,8 @@ class Raja_Ongkir {
 				),
 			),
 			'pcp'     => array(
-				'label'    => 'Priority Cargo Package',
+				'label'    => 'PCP Express',
+				'website'  => 'http://www.pcpexpress.com/?utm_source=woongkir-plugin',
 				'services' => array(
 					'ONS',
 					'NFS',
@@ -143,6 +148,7 @@ class Raja_Ongkir {
 			),
 			'star'    => array(
 				'label'    => 'Star Cargo',
+				'website'  => 'http://www.starcargo.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'Express',
 					'Reguler',
@@ -156,6 +162,7 @@ class Raja_Ongkir {
 			),
 			'sicepat' => array(
 				'label'    => 'SiCepat Express',
+				'website'  => 'http://www.sicepat.com/?utm_source=woongkir-plugin',
 				'services' => array(
 					'REG',
 					'BEST',
@@ -167,6 +174,7 @@ class Raja_Ongkir {
 			),
 			'jet'     => array(
 				'label'    => 'JET Express',
+				'website'  => 'http://www.jetexpress.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'CRG',
 					'PRI',
@@ -177,7 +185,8 @@ class Raja_Ongkir {
 				),
 			),
 			'sap'     => array(
-				'label'    => 'SAP Express Courier',
+				'label'    => 'SAP Express',
+				'website'  => 'http://sap-express.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'REG',
 					'SDS',
@@ -188,7 +197,8 @@ class Raja_Ongkir {
 				),
 			),
 			'pahala'  => array(
-				'label'    => 'Pahala Kencana Express',
+				'label'    => 'Pahala Express',
+				'website'  => 'http://www.pahalaexpress.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'EXPRESS',
 					'ONS',
@@ -199,6 +209,7 @@ class Raja_Ongkir {
 			),
 			'slis'    => array(
 				'label'    => 'Solusi Ekspres',
+				'website'  => 'http://www.solusiekspres.com/?utm_source=woongkir-plugin',
 				'services' => array(
 					'REGULAR',
 					'EXPRESS',
@@ -209,6 +220,7 @@ class Raja_Ongkir {
 			),
 			'jnt'     => array(
 				'label'    => 'J&T Express',
+				'website'  => 'http://www.jet.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'EZ',
 				),
@@ -218,6 +230,7 @@ class Raja_Ongkir {
 			),
 			'pandu'   => array(
 				'label'    => 'Pandu Logistics',
+				'website'  => 'http://www.pandulogistics.com',
 				'services' => array(
 					'REG',
 				),
@@ -226,7 +239,8 @@ class Raja_Ongkir {
 				),
 			),
 			'wahana'  => array(
-				'label'    => 'Wahana Prestasi Logistik',
+				'label'    => 'Wahana Express',
+				'website'  => 'http://www.wahana.com/?utm_source=woongkir-plugin',
 				'services' => array(
 					'DES',
 				),
@@ -235,7 +249,8 @@ class Raja_Ongkir {
 				),
 			),
 			'cahaya'  => array(
-				'label'    => 'Cahaya Ekspress Logistik',
+				'label'    => 'Cahaya Logistik',
+				'website'  => 'http://www.cahayalogistik.com/?utm_source=woongkir-plugin',
 				'services' => array(
 					'REG',
 				),
@@ -246,7 +261,8 @@ class Raja_Ongkir {
 		),
 		'international' => array(
 			'pos'      => array(
-				'label'    => 'POS Indonesia (POS)',
+				'label'    => 'POS Indonesia',
+				'website'  => 'http://www.posindonesia.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'Surat R LN',
 					'EMS BARANG',
@@ -259,7 +275,8 @@ class Raja_Ongkir {
 				),
 			),
 			'tiki'     => array(
-				'label'    => 'Citra Van Titipan Kilat (TIKI)',
+				'label'    => 'TIKI',
+				'website'  => 'http://tiki.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'Dokumen',
 					'Paket',
@@ -271,7 +288,8 @@ class Raja_Ongkir {
 				),
 			),
 			'jne'      => array(
-				'label'    => 'Jalur Nugraha Ekakurir (JNE)',
+				'label'    => 'JNE',
+				'website'  => 'http://www.jne.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'INTL',
 				),
@@ -280,7 +298,8 @@ class Raja_Ongkir {
 				),
 			),
 			'slis'     => array(
-				'label'    => 'Solusi Ekspres (SLIS)',
+				'label'    => 'Solusi Ekspres',
+				'website'  => 'http://www.solusiekspres.com',
 				'services' => array(
 					'PACKAGE',
 					'COSMETIC/FOOD',
@@ -290,7 +309,8 @@ class Raja_Ongkir {
 				),
 			),
 			'expedito' => array(
-				'label'    => 'Expedito (EXPEDITO)',
+				'label'    => 'Expedito',
+				'website'  => 'http://www.expedito.co.id/?utm_source=woongkir-plugin',
 				'services' => array(
 					'CityLink',
 					'DHL Indonesia',

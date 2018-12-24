@@ -25,6 +25,9 @@ var woongkirBackend = {
         $(document.body).off('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleCouriers);
         $(document.body).on('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleCouriers);
 
+        $(document.body).off('change', '.woongkir-account-type', woongkirBackend.selectAccountType);
+        $(document.body).on('change', '.woongkir-account-type', woongkirBackend.selectAccountType);
+
         $(document.body).off('change', '.woongkir-service.bulk', woongkirBackend.selectServicesBulk);
         $(document.body).on('change', '.woongkir-service.bulk', woongkirBackend.selectServicesBulk);
 
@@ -58,10 +61,8 @@ var woongkirBackend = {
     loadForm: function () {
         var provinceData = woongkirLocation.getProvince();
         var provinceParam = {
-            data: [{
-                id: '',
-                text: woongkir_params.text.select_province,
-            }],
+            data: [],
+            placeholder: woongkir_params.text.placeholder.state
         };
 
         if (provinceData.length) {
@@ -79,10 +80,8 @@ var woongkirBackend = {
     },
     loadFormCity: function () {
         var cityParam = {
-            data: [{
-                id: '',
-                text: woongkir_params.text.select_city,
-            }],
+            data: [],
+            placeholder: woongkir_params.text.placeholder.city
         };
         var $cityField = $('#woocommerce_woongkir_origin_city');
         var citySelected = $cityField.val();
@@ -110,10 +109,8 @@ var woongkirBackend = {
     },
     loadFormSubdistrict: function () {
         var subdistrictParam = {
-            data: [{
-                id: '',
-                text: woongkir_params.text.select_subdistrict,
-            }],
+            data: [],
+            placeholder: woongkir_params.text.placeholder.address_2
         };
         var $subdistrictField = $('#woocommerce_woongkir_origin_subdistrict');
         var subdistrictSelected = $subdistrictField.val();
@@ -138,6 +135,17 @@ var woongkirBackend = {
         }
 
         $('#woocommerce_woongkir_origin_subdistrict').selectWoo(subdistrictParam).val(subdistrictMatch).trigger('change');
+    },
+    selectAccountType: function (e) {
+        e.preventDefault();
+
+        var selected = $(this).val();
+
+        $(this).closest('tr').find('input').not($(this)).prop('disabled', false).prop('checked', false);
+
+        $(this).prop('disabled', true);
+
+        $('#woocommerce_woongkir_account_type').val(selected).trigger('change');
     },
     highlightFeature: function (e) {
         var selected = $(e.currentTarget).val();
@@ -189,7 +197,7 @@ var woongkirBackend = {
         var account = $accountType.val();
         var accounts = $accountType.data('accounts');
 
-        if (this.checked) {
+        if ($(this).is(':checked')) {
             $table.find('.woongkir-service.single').prop('checked', true);
             if (!accounts[account].multiple) {
                 $('.woongkir-courier-box')
