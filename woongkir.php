@@ -172,11 +172,12 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 				),
 				'text'          => array(
 					'placeholder' => array(
-						'state'     => __( 'Select a Province', 'woongkir' ),
-						'city'      => __( 'Select a Town / City', 'woongkir' ),
-						'address_2' => __( 'Select a Subdistrict', 'woongkir' ),
+						'state'     => __( 'Province', 'woongkir' ),
+						'city'      => __( 'Town / City', 'woongkir' ),
+						'address_2' => __( 'Subdistrict', 'woongkir' ),
 					),
 					'label'       => array(
+						'state'     => __( 'Province', 'woongkir' ),
 						'city'      => __( 'Town / City', 'woongkir' ),
 						'address_2' => __( 'Subdistrict', 'woongkir' ),
 					),
