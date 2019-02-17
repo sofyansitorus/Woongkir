@@ -428,7 +428,6 @@ class Raja_Ongkir {
 	 */
 	public function set_option( $key, $value ) {
 		$this->options[ $key ] = $value;
-		return $this;
 	}
 
 	/**
@@ -703,6 +702,7 @@ class Raja_Ongkir {
 				$url = $account['api_url'] . '/' . $endpoint;
 				break;
 		}
+
 		return $url;
 	}
 }
