@@ -163,7 +163,7 @@ var woongkirBackend = {
 
         for (var zoneId in couriers) {
             $('#woongkir-couriers-list-' + zoneId).hide();
-            var multiple = 0;
+            var multiple_coriers = 0;
             for (var courierId in couriers[zoneId]) {
                 if (couriers[zoneId][courierId].account.indexOf(account) === -1) {
                     $('#woongkir-courier-box-' + zoneId + '-' + courierId)
@@ -176,15 +176,15 @@ var woongkirBackend = {
                     $('#woongkir-courier-box-' + zoneId + '-' + courierId)
                         .show();
                 }
-                if (!accounts[account].multiple) {
-                    if (multiple) {
+                if (!accounts[account].multiple_coriers) {
+                    if (multiple_coriers) {
                         $('#woongkir-courier-box-' + zoneId + '-' + courierId)
                             .find('.woongkir-service')
                             .prop('checked', false);
                     }
                     if ($('#woongkir-courier-box-' + zoneId + '-' + courierId)
                         .find('.woongkir-service.single:checked').length) {
-                        multiple++;
+                        multiple_coriers++;
                     }
                 }
             }
@@ -199,7 +199,7 @@ var woongkirBackend = {
 
         if ($(this).is(':checked')) {
             $table.find('.woongkir-service.single').prop('checked', true);
-            if (!accounts[account].multiple) {
+            if (!accounts[account].multiple_coriers) {
                 $('.woongkir-courier-box')
                     .not('.' + courierId).find('.woongkir-service')
                     .prop('checked', false);
@@ -219,7 +219,7 @@ var woongkirBackend = {
             $table.find('.woongkir-service.bulk').prop({
                 checked: true
             });
-            if (!accounts[account].multiple) {
+            if (!accounts[account].multiple_coriers) {
                 $('.woongkir-courier-box').not('.' + courierId).find('.woongkir-service').prop('checked', false);
             }
         } else {

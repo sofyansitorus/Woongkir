@@ -28,7 +28,6 @@
  */
 class Woongkir extends WC_Shipping_Method {
 
-
 	/**
 	 * Raja_Ongkir API Class Object
 	 *
@@ -44,6 +43,14 @@ class Woongkir extends WC_Shipping_Method {
 	 * @var array
 	 */
 	private $posted_field_values;
+
+	/**
+	 * Posted values of settings fields.
+	 *
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $currency_exchange = false;
 
 	/**
 	 * Constructor for your shipping class
@@ -108,9 +115,10 @@ class Woongkir extends WC_Shipping_Method {
 			$this->{$field_id} = $option;
 		}
 
-		$api_key      = isset( $this->api_key ) ? $this->api_key : '';
-		$account_type = isset( $this->account_type ) ? $this->account_type : '';
+		$api_key = isset( $this->api_key ) ? $this->api_key : '';
 		$this->api->set_option( 'api_key', $api_key );
+
+		$account_type = isset( $this->account_type ) ? $this->account_type : '';
 		$this->api->set_option( 'account_type', $account_type );
 	}
 
@@ -121,16 +129,17 @@ class Woongkir extends WC_Shipping_Method {
 	 */
 	public function init_form_fields() {
 		if ( 'ID' !== WC()->countries->get_base_country() ) {
-			$settings                   = array(
+			$this->instance_form_fields = array(
 				'error' => array(
 					'title'       => __( 'Error', 'woongkir' ),
 					'type'        => 'title',
 					'description' => __( 'This plugin only work for Store Address based in Indonesia.', 'woongkir' ),
 				),
 			);
-			$this->instance_form_fields = $settings;
+
 			return;
 		}
+
 		$settings = array(
 			'origin_province'    => array(
 				'title' => __( 'Shipping Origin Province', 'woongkir' ),
@@ -223,9 +232,9 @@ class Woongkir extends WC_Shipping_Method {
 				$settings['account_type']['features'][ $zone_id ]['value'][ $account_type ] = count( $zone_info['couriers'] );
 			}
 
-			$settings['account_type']['features']['multiple']['label'] = __( 'Multiple Couriers', 'woongkir' );
+			$settings['account_type']['features']['multiple_coriers']['label'] = __( 'Multiple Couriers', 'woongkir' );
 
-			$settings['account_type']['features']['multiple']['value'][ $account_type ] = $data['multiple'] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
+			$settings['account_type']['features']['multiple_coriers']['value'][ $account_type ] = $data['multiple_coriers'] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
 
 			$settings['account_type']['features']['subdistrict']['label'] = __( 'Calculate Subdistrict', 'woongkir' );
 
@@ -390,7 +399,7 @@ class Woongkir extends WC_Shipping_Method {
 					if ( $i && 0 === $i % 5 ) {
 						echo '</tr><tr>';
 					}
-				?>
+					?>
 				<td id="woongkir-courier-box-<?php echo esc_attr( $key ); ?>-<?php echo esc_attr( $courier_id ); ?>" class="woongkir-courier-box <?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>">
 					<table class="form-table woongkir-courier-list">
 						<thead>
@@ -416,7 +425,7 @@ class Woongkir extends WC_Shipping_Method {
 						</tbody>
 					</table>
 				</td>
-				<?php
+					<?php
 					$i++;
 				endforeach;
 				?>
@@ -445,14 +454,20 @@ class Woongkir extends WC_Shipping_Method {
 		if ( $account_type ) {
 			$this->api->set_option( 'api_key', $value );
 			$this->api->set_option( 'account_type', $account_type );
-			$account_valid = $this->api->validate_account();
-			if ( is_wp_error( $account_valid ) ) {
-				throw new Exception( $account_valid->get_error_message(), 1 );
+
+			$results = $this->api->validate_account();
+
+			if ( ! $results ) {
+				throw new Exception( __( 'API Key or Account type is invalid.', 'woongkir' ), 1 );
 			}
-			if ( ! $account_valid ) {
-				throw new Exception( 'API Key or Account type is invalid', 1 );
+
+			foreach ( $results as $result ) {
+				if ( is_wp_error( $result ) ) {
+					throw new Exception( $result->get_error_message(), 1 );
+				}
 			}
 		}
+
 		return $value;
 	}
 
@@ -486,7 +501,7 @@ class Woongkir extends WC_Shipping_Method {
 	public function validate_origin_field( $key, $value ) {
 		if ( empty( $value ) ) {
 			// Translators: Shipping origin location type.
-			throw new Exception( sprintf( __( 'Shipping origin %s field is required.', 'woongkir' ), str_replace( 'origin_', '', $key ) ) );
+			throw new Exception( wp_sprintf( __( 'Shipping origin %s field is required.', 'woongkir' ), str_replace( 'origin_', '', $key ) ) );
 		}
 		return $value;
 	}
@@ -538,12 +553,12 @@ class Woongkir extends WC_Shipping_Method {
 
 			if ( ! empty( $not_allowed ) ) {
 				// Translators: %1$s Shipping zone name, %2$s Account label, %3$s Couriers name.
-				throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account['label'], implode( ', ', $not_allowed ) ) );
+				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account['label'], implode( ', ', $not_allowed ) ) );
 			}
 
-			if ( ! $account['multiple'] && count( $value ) > 1 ) {
+			if ( ! $account['multiple_coriers'] && count( $value ) > 1 ) {
 				// Translators: %1$s Shipping zone name, %2$s Account label.
-				throw new Exception( sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account['label'] ) );
+				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account['label'] ) );
 			}
 		}
 
@@ -575,129 +590,194 @@ class Woongkir extends WC_Shipping_Method {
 	 *
 	 * @since 1.0.0
 	 * @param array $package Order package data.
+	 * @throws Exception If the field value is invalid.
 	 */
 	public function calculate_shipping( $package = array() ) {
-		$params = array();
+		try {
+			$params = array();
 
-		$params['origin'] = $this->get_origin_info();
-		if ( empty( $params['origin'] ) ) {
-			return;
-		}
-
-		$params['destination'] = $this->get_destination_info( $package['destination'] );
-		if ( ! $params['destination'] || ! array_filter( $params['destination'] ) ) {
-			return;
-		}
-
-		$params['dimension_weight'] = $this->get_dimension_weight( $package['contents'] );
-		if ( ! $params['dimension_weight'] || ! array_filter( $params['dimension_weight'] ) ) {
-			return;
-		}
-
-		$params['courier'] = $params['destination']['country'] ? array_keys( (array) $this->international ) : array_keys( (array) $this->domestic );
-		if ( empty( $params['courier'] ) ) {
-			return;
-		}
-
-		$cache_key = $this->id . '_' . $this->instance_id . '_' . md5(
-			wp_json_encode(
-				array(
-					'params'  => $params,
-					'package' => $package,
-				)
-			)
-		);
-
-		$couriers = get_transient( $cache_key );
-
-		if ( false === $couriers ) {
-			$couriers = $this->api->get_cost( $params['destination'], $params['origin'], $params['dimension_weight'], $params['courier'] );
-			if ( $couriers && is_array( $couriers ) ) {
-				set_transient( $cache_key, $couriers, HOUR_IN_SECONDS ); // Store response data for 1 hour.
+			$params['origin'] = $this->get_origin_info();
+			if ( empty( $params['origin'] ) ) {
+				return;
 			}
-		}
 
-		if ( ! $couriers ) {
-			$this->show_debug( __( 'No couriers data found', 'woongkir' ) );
-			return;
-		}
-
-		if ( ! is_array( $couriers ) ) {
-			$this->show_debug( __( 'Couriers data is invalid', 'woongkir' ) );
-			return;
-		}
-
-		if ( is_wp_error( $couriers ) ) {
-			$this->show_debug( $couriers->get_error_message() );
-			return;
-		}
-
-		$zone = empty( $params['destination']['country'] ) ? 'domestic' : 'international';
-
-		$currency_exchange = false;
-
-		foreach ( $couriers as $courier ) {
-			if ( empty( $courier->costs ) ) {
-				continue;
+			$params['destination'] = $this->get_destination_info( $package['destination'] );
+			if ( ! $params['destination'] || ! array_filter( $params['destination'] ) ) {
+				return;
 			}
-			$courier_code = strtolower( str_replace( '&', 'n', $courier->code ) );
-			$selected     = isset( $this->{$zone}[ $courier_code ] ) ? $this->{$zone}[ $courier_code ] : array();
-			foreach ( $courier->costs as $service ) {
-				if ( ! in_array( $service->service, $selected, true ) || empty( $service->cost ) ) {
-					continue;
-				}
 
-				$currency_code = isset( $service->currency ) ? $service->currency : 'IDR';
+			$params['dimension_weight'] = $this->get_dimension_weight( $package['contents'] );
+			if ( ! $params['dimension_weight'] || ! array_filter( $params['dimension_weight'] ) ) {
+				return;
+			}
 
-				if ( 'IDR' !== $currency_code && empty( $currency_exchange ) ) {
-					$currency_exchange = $this->api->get_currency();
-				}
+			$params['courier'] = $params['destination']['country'] ? array_keys( (array) $this->international ) : array_keys( (array) $this->domestic );
+			if ( empty( $params['courier'] ) ) {
+				return;
+			}
 
-				if ( 'IDR' !== $currency_code && ! isset( $currency_exchange->value ) ) {
-					continue;
-				}
-
-				$rate = is_array( $service->cost ) ? $service->cost[0]->value : $service->cost;
-				$cost = ( 'IDR' === $currency_code ) ? $rate : ( $currency_exchange->value * $rate );
-
-				$rate_id    = $this->get_rate_id( $courier_code . ':' . $service->service );
-				$rate_label = sprintf( '%s - %s', strtoupper( $courier->code ), $service->service );
-
-				if ( 'yes' === $this->show_eta ) {
-					$eta = isset( $service->etd ) ? $service->etd : false;
-					if ( ! $eta && is_array( $service->cost ) && isset( $service->cost[0]->etd ) ) {
-						$eta = $service->cost[0]->etd;
-					}
-					if ( $eta ) {
-						$eta = strtoupper( $eta );
-						if ( '1-1' === $eta ) {
-							$eta = '1';
-						}
-						if ( false === strpos( $eta, 'HARI' ) && false === strpos( $eta, 'JAM' ) ) {
-							$eta = ( '1' === $eta ) ? $eta . ' {day}' : $eta . ' {days}';
-						}
-						if ( false !== strpos( $eta, 'HARI' ) ) {
-							$eta = ( str_replace( ' HARI', '', $eta ) === '1' ) ? str_replace( 'HARI', '{day}', $eta ) : str_replace( 'HARI', '{days}', $eta );
-						}
-						if ( false !== strpos( $eta, 'JAM' ) ) {
-							$eta = ( str_replace( ' JAM', '', $eta ) === '1' ) ? str_replace( 'JAM', '{hour}', $eta ) : str_replace( 'JAM', '{hours}', $eta );
-						}
-						$eta = str_replace( array( '{hour}', '{hours}', '{day}', '{days}' ), array( __( 'Hour', 'woongkir' ), __( 'Hours', 'woongkir' ), __( 'Day', 'woongkir' ), __( 'Days', 'woongkir' ) ), $eta );
-
-						$rate_label = sprintf( '%s (%s)', $rate_label, $eta );
-					}
-				}
-
-				$this->add_rate(
+			$cache_key = $this->id . '_' . $this->instance_id . '_' . md5(
+				wp_json_encode(
 					array(
-						'id'        => $rate_id,
-						'label'     => $rate_label,
-						'cost'      => $cost,
-						'meta_data' => $couriers,
+						'params'  => $params,
+						'package' => $package,
 					)
-				);
+				)
+			);
+
+			$results = get_transient( $cache_key );
+
+			if ( false === $results ) {
+				$results = $this->api->get_cost( $params['destination'], $params['origin'], $params['dimension_weight'], $params['courier'] );
+				if ( $results && is_array( $results ) ) {
+					set_transient( $cache_key, $results, HOUR_IN_SECONDS ); // Store response data for 1 hour.
+				}
 			}
+
+			if ( ! $results ) {
+				throw new Exception( __( 'No couriers data found', 'woongkir' ) );
+			}
+
+			if ( ! is_array( $results ) ) {
+				// translators: %s Encoded data response.
+				throw new Exception( wp_sprintf( __( 'Couriers data is invalid: %s', 'woongkir' ), wp_json_encode( $results ) ) );
+			}
+
+			foreach ( $results as $couriers ) {
+				if ( is_wp_error( $couriers ) ) {
+					throw new Exception( $couriers->get_error_message() );
+				}
+
+				$zone = empty( $params['destination']['country'] ) ? 'domestic' : 'international';
+
+				foreach ( $couriers as $courier ) {
+					if ( empty( $courier->costs ) ) {
+						continue;
+					}
+
+					$courier_code = strtolower( str_replace( '&', 'n', $courier->code ) );
+					$selected     = isset( $this->{$zone}[ $courier_code ] ) ? $this->{$zone}[ $courier_code ] : array();
+
+					foreach ( $courier->costs as $service ) {
+						if ( ! in_array( $service->service, $selected, true ) || empty( $service->cost ) ) {
+							continue;
+						}
+
+						$currency_code = isset( $service->currency ) ? $service->currency : 'IDR';
+
+						$cost = $this->parse_shipping_rate( $service->cost, $currency_code );
+
+						if ( is_wp_error( $cost ) ) {
+							continue;
+						}
+
+						$rate_id    = $this->get_rate_id( $courier_code . ':' . $service->service );
+						$rate_label = $this->parse_rate_label( $service, $courier->code );
+
+						$this->add_rate(
+							array(
+								'id'        => $rate_id,
+								'label'     => $rate_label,
+								'cost'      => $cost,
+								'meta_data' => $couriers,
+							)
+						);
+					}
+				}
+			}
+		} catch ( Exception $e ) {
+			$this->show_debug( $e->getMessage() );
 		}
+	}
+
+	/**
+	 * Parse shipping rate
+	 *
+	 * @since 1.2.7
+	 * @param mixed  $data Shipping rate raw data.
+	 * @param string $currency_code Shipping rate currency code.
+	 * @return integer
+	 */
+	private function parse_shipping_rate( $data, $currency_code ) {
+		if ( is_array( $data ) ) {
+			$data = $data[0];
+		}
+
+		$rate = false;
+
+		if ( isset( $data->value ) ) {
+			$rate = $data->value;
+		}
+
+		if ( isset( $data->cost ) ) {
+			$rate = $data->cost;
+		}
+
+		if ( empty( $rate ) ) {
+			return new WP_Error( 'shipping_rate_empty', __( 'Shipping rate is empty.', 'woongkir' ) );
+		}
+
+		if ( 'IDR' !== $currency_code ) {
+			if ( empty( $this->currency_exchange ) ) {
+				$this->currency_exchange = apply_filters( 'woongkir_currency_exchange', $this->api->get_currency() );
+			}
+
+			if ( empty( $this->currency_exchange ) ) {
+				return new WP_Error( 'currency_exchange_empty', __( 'Currency Exchange is empty.', 'woongkir' ) );
+			}
+
+			return $this->currency_exchange->value * $rate;
+		}
+
+		return apply_filters( 'woongkir_parse_shipping_rate', $rate, $data, $currency_code );
+	}
+
+	/**
+	 * Parse shipping rate
+	 *
+	 * @since 1.2.7
+	 * @param object $service Shipping service data.
+	 * @param string $courier_code Shipping courier code.
+	 * @return string
+	 */
+	private function parse_rate_label( $service, $courier_code ) {
+		$rate_label = wp_sprintf( '%s - %s', strtoupper( $courier_code ), $service->service );
+
+		if ( 'yes' !== $this->show_eta ) {
+			return $rate_label;
+		}
+
+		$etd = isset( $service->etd ) ? $service->etd : false;
+
+		if ( is_array( $service->cost ) && isset( $service->cost[0]->etd ) ) {
+			$etd = $service->cost[0]->etd;
+		}
+
+		if ( $etd ) {
+			$etd = strtoupper( $etd );
+
+			if ( '1-1' === $etd ) {
+				$etd = '1';
+			}
+
+			if ( false === strpos( $etd, 'HARI' ) && false === strpos( $etd, 'JAM' ) ) {
+				$etd = ( '1' === $etd ) ? $etd . ' {day}' : $etd . ' {days}';
+			}
+
+			if ( false !== strpos( $etd, 'HARI' ) ) {
+				$etd = ( str_replace( ' HARI', '', $etd ) === '1' ) ? str_replace( 'HARI', '{day}', $etd ) : str_replace( 'HARI', '{days}', $etd );
+			}
+
+			if ( false !== strpos( $etd, 'JAM' ) ) {
+				$etd = ( str_replace( ' JAM', '', $etd ) === '1' ) ? str_replace( 'JAM', '{hour}', $etd ) : str_replace( 'JAM', '{hours}', $etd );
+			}
+
+			$etd = str_replace( array( '{hour}', '{hours}', '{day}', '{days}' ), array( __( 'Hour', 'woongkir' ), __( 'Hours', 'woongkir' ), __( 'Day', 'woongkir' ), __( 'Days', 'woongkir' ) ), $etd );
+
+			$rate_label = wp_sprintf( '%s (%s)', $rate_label, $etd );
+		}
+
+		return apply_filters( 'woongkir_parse_rate_label', $rate_label, $etd, $service, $courier_code );
 	}
 
 	/**

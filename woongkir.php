@@ -157,7 +157,8 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 		$handle,
 		$name,
 		wp_parse_args(
-			$data, array(
+			$data,
+			array(
 				'ajax_url'      => admin_url( 'ajax.php' ),
 				'json'          => array(
 					'country_url'     => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/country.json' ),
