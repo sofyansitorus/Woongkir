@@ -477,7 +477,7 @@ class Raja_Ongkir {
 		$response = apply_filters( 'woongkir_api_remote_request_pre', false, $endpoint, $args, $param, $this );
 
 		if ( false === $response ) {
-			$response = wp_remote_request( $this->url( $endpoint ), $args );
+			$response = wp_remote_request( $this->api_url( $endpoint ), $args );
 		}
 
 		return $this->validate_api_response( $response );
@@ -517,7 +517,7 @@ class Raja_Ongkir {
 		$response = apply_filters( 'woongkir_api_remote_post_pre', false, $endpoint, $args, $body, $this );
 
 		if ( false === $response ) {
-			$response = wp_remote_post( $this->url( $endpoint ), $args );
+			$response = wp_remote_post( $this->api_url( $endpoint ), $args );
 		}
 
 		return $this->validate_api_response( $response );
@@ -555,7 +555,7 @@ class Raja_Ongkir {
 		$response = apply_filters( 'woongkir_api_remote_get_pre', false, $endpoint, $args, $query_url, $this );
 
 		if ( false === $response ) {
-			$url = $this->url( $endpoint );
+			$url = $this->api_url( $endpoint );
 
 			if ( $query_url ) {
 				$url = add_query_arg( $query_url, $url );
@@ -690,7 +690,7 @@ class Raja_Ongkir {
 	 * @param string $endpoint API URL endpoint.
 	 * @return string
 	 */
-	private function url( $endpoint ) {
+	private function api_url( $endpoint ) {
 		$account = $this->get_account( $this->get_option( 'account_type' ) );
 		switch ( $endpoint ) {
 			case 'internationalOrigin':
