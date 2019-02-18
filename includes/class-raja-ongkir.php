@@ -248,16 +248,6 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'cahaya'  => array(
-				'label'    => 'Cahaya Logistik',
-				'website'  => 'http://www.cahayalogistik.com/?utm_source=woongkir.com',
-				'services' => array(
-					'REG',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
 		),
 		'international' => array(
 			'pos'      => array(
