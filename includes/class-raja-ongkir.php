@@ -596,7 +596,7 @@ class Raja_Ongkir {
 				if ( ! isset( $matches[0][0] ) || empty( $matches[0][0] ) ) {
 					$body = is_string( $body ) ? $body : wp_json_encode( $body );
 					// translators: %1$s - Error message from RajaOngkir.com, %2$s - API response body.
-					throw new Exception( wp_sprintf( __( 'Error while decoding JSON string - %1$s: %2$s', 'woongkir' ), $json_error, wp_strip_all_tags( $body, true ) ), 1 );
+					throw new Exception( wp_sprintf( __( '%1$s -- %2$s', 'woongkir' ), $json_error, $body ), 1 );
 				}
 
 				$body       = $matches[0][0];
@@ -606,13 +606,13 @@ class Raja_Ongkir {
 				if ( strtolower( $json_error ) !== 'no error' ) {
 					$body = is_string( $body ) ? $body : wp_json_encode( $body );
 					// translators: %1$s - Error message from RajaOngkir.com, %2$s - API response body.
-					throw new Exception( wp_sprintf( __( 'Error while decoding JSON string - %1$s: %2$s', 'woongkir' ), $json_error, wp_strip_all_tags( $body, true ) ), 1 );
+					throw new Exception( wp_sprintf( __( '%1$s -- %2$s', 'woongkir' ), $json_error, $body ), 1 );
 				}
 			}
 
 			if ( isset( $data->rajaongkir->status ) && 200 !== $data->rajaongkir->status->code ) {
 				// translators: %s - Error message from RajaOngkir.com.
-				throw new Exception( wp_sprintf( __( '<strong>Error from RajaOngkir.com</strong>: %s', 'woongkir' ), $data->rajaongkir->status->description ), 1 );
+				throw new Exception( $data->rajaongkir->status->description, 1 );
 			}
 
 			if ( isset( $data->rajaongkir->results ) ) {
@@ -623,12 +623,13 @@ class Raja_Ongkir {
 				return $data->rajaongkir->result;
 			}
 
-			throw new Exception( __( 'Unknown error', 'woongkir' ), 1 );
+			throw new Exception( __( 'API response is invalid.', 'woongkir' ), 1 );
 		} catch ( Exception $e ) {
 			$wc_log = wc_get_logger();
-			$wc_log->log( 'error', $e->getMessage(), array( 'source' => 'woongkir_api_error' ) );
+			$wc_log->log( 'error', wp_strip_all_tags( $e->getMessage(), true ), array( 'source' => 'woongkir_api_error' ) );
 
-			return new WP_Error( 'invalid_api_response', $e->getMessage() );
+			// translators: %s - Error message from RajaOngkir.com.
+			return new WP_Error( 'invalid_api_response', wp_sprintf( __( '<strong>Error from RajaOngkir.com</strong>: %s', 'woongkir' ), $e->getMessage() ) );
 		}
 	}
 
