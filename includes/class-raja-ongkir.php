@@ -264,19 +264,6 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'tiki'     => array(
-				'label'    => 'TIKI',
-				'website'  => 'http://tiki.id/?utm_source=woongkir.com',
-				'services' => array(
-					'Dokumen',
-					'Paket',
-					'Dokumen / Paket',
-				),
-				'account'  => array(
-					'basic',
-					'pro',
-				),
-			),
 			'jne'      => array(
 				'label'    => 'JNE',
 				'website'  => 'http://www.jne.co.id/?utm_source=woongkir.com',
