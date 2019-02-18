@@ -516,7 +516,6 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return array
 	 */
 	public function validate_couriers_list_field( $key, $value ) {
-
 		if ( is_string( $value ) ) {
 			$value = array_map( 'trim', explode( ',', $value ) );
 		}
@@ -663,23 +662,21 @@ class Woongkir extends WC_Shipping_Method {
 							continue;
 						}
 
-						$currency_code = isset( $service->currency ) ? $service->currency : 'IDR';
-
-						$cost = $this->parse_shipping_rate( $service->cost, $currency_code );
+						$cost = $this->get_service_rate( $service );
 
 						if ( is_wp_error( $cost ) ) {
 							continue;
 						}
 
-						$rate_id    = $this->get_rate_id( $courier_code . ':' . $service->service );
-						$rate_label = $this->parse_rate_label( $service, $courier->code );
+						$rate_id = $this->get_rate_id( $courier_code . ':' . $service->service );
+						$label   = $this->get_service_label( $service, $courier->code );
 
 						$this->add_rate(
 							array(
 								'id'        => $rate_id,
-								'label'     => $rate_label,
+								'label'     => $label,
 								'cost'      => $cost,
-								'meta_data' => $couriers,
+								'meta_data' => array( 'courier_code' => $courier_code, 'service' => $service ),
 							)
 						);
 					}
@@ -691,33 +688,50 @@ class Woongkir extends WC_Shipping_Method {
 	}
 
 	/**
+	 * Parse service data
+	 *
+	 * @since 1.2.7
+	 * @param mixed $service Shipping rate raw data.
+	 * @return integer
+	 */
+	private function parse_service_data( $service ) {
+		$data = array();
+
+		foreach ( $service as $key => $value ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value[0] as $value_key => $value_value ) {
+					$data_key = 'value' === $value_key ? 'cost' : $value_key;
+
+					$data[ $data_key ] = $value_value;
+				}
+			} else {
+				$data_key = 'value' === $key ? 'cost' : $key;
+
+				$data[ $data_key ] = $value;
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Parse shipping rate
 	 *
 	 * @since 1.2.7
-	 * @param mixed  $data Shipping rate raw data.
-	 * @param string $currency_code Shipping rate currency code.
+	 * @param mixed $service Shipping rate raw data.
 	 * @return integer
 	 */
-	private function parse_shipping_rate( $data, $currency_code ) {
-		if ( is_array( $data ) ) {
-			$data = $data[0];
-		}
+	private function get_service_rate( $service ) {
+		$data = $this->parse_service_data( $service );
 
-		$rate = false;
-
-		if ( isset( $data->value ) ) {
-			$rate = $data->value;
-		}
-
-		if ( isset( $data->cost ) ) {
-			$rate = $data->cost;
-		}
-
-		if ( empty( $rate ) ) {
+		if ( ! isset( $data['cost'] ) && empty( $data['cost'] ) ) {
 			return new WP_Error( 'shipping_rate_empty', __( 'Shipping rate is empty.', 'woongkir' ) );
 		}
 
-		if ( 'IDR' !== $currency_code ) {
+		$cost     = $data['cost'];
+		$currency = isset( $data['currency'] ) ? $data['currency'] : 'IDR';
+
+		if ( 'IDR' !== $currency ) {
 			if ( empty( $this->currency_exchange ) ) {
 				$this->currency_exchange = apply_filters( 'woongkir_currency_exchange', $this->api->get_currency() );
 			}
@@ -726,10 +740,10 @@ class Woongkir extends WC_Shipping_Method {
 				return new WP_Error( 'currency_exchange_empty', __( 'Currency Exchange is empty.', 'woongkir' ) );
 			}
 
-			return $this->currency_exchange->value * $rate;
+			$cost = $this->currency_exchange->value * $cost;
 		}
 
-		return apply_filters( 'woongkir_parse_shipping_rate', $rate, $data, $currency_code );
+		return apply_filters( 'woongkir_service_rate', $cost, $data );
 	}
 
 	/**
@@ -740,44 +754,43 @@ class Woongkir extends WC_Shipping_Method {
 	 * @param string $courier_code Shipping courier code.
 	 * @return string
 	 */
-	private function parse_rate_label( $service, $courier_code ) {
-		$rate_label = wp_sprintf( '%s - %s', strtoupper( $courier_code ), $service->service );
+	private function get_service_label( $service, $courier_code ) {
+		$label = wp_sprintf( '%s - %s', strtoupper( $courier_code ), $service->service );
 
-		if ( 'yes' !== $this->show_eta ) {
-			return $rate_label;
+		if ( 'yes' === $this->show_eta ) {
+			$data = $this->parse_service_data( $service );
+
+			$etd = isset( $data['etd'] ) ? $data['etd'] : false;
+
+			if ( $etd ) {
+				$etd = strtoupper( $etd );
+
+				if ( '1-1' === $etd ) {
+					$etd = '1';
+				}
+
+				if ( false === strpos( $etd, 'HARI' ) && false === strpos( $etd, 'JAM' ) ) {
+					$etd = ( '1' === $etd ) ? $etd . ' {day}' : $etd . ' {days}';
+				}
+
+				if ( false !== strpos( $etd, 'HARI' ) ) {
+					$etd = ( str_replace( ' HARI', '', $etd ) === '1' ) ? str_replace( 'HARI', '{day}', $etd ) : str_replace( 'HARI', '{days}', $etd );
+				}
+
+				if ( false !== strpos( $etd, 'JAM' ) ) {
+					$etd = ( str_replace( ' JAM', '', $etd ) === '1' ) ? str_replace( 'JAM', '{hour}', $etd ) : str_replace( 'JAM', '{hours}', $etd );
+				}
+
+				$etd_find    = array( '{hour}', '{hours}', '{day}', '{days}' );
+				$etd_replace = array( __( 'Hour', 'woongkir' ), __( 'Hours', 'woongkir' ), __( 'Day', 'woongkir' ), __( 'Days', 'woongkir' ) );
+
+				$etd = str_replace( $etd_find, $etd_replace, $etd );
+
+				$label = wp_sprintf( '%s (%s)', $label, $etd );
+			}
 		}
 
-		$etd = isset( $service->etd ) ? $service->etd : false;
-
-		if ( is_array( $service->cost ) && isset( $service->cost[0]->etd ) ) {
-			$etd = $service->cost[0]->etd;
-		}
-
-		if ( $etd ) {
-			$etd = strtoupper( $etd );
-
-			if ( '1-1' === $etd ) {
-				$etd = '1';
-			}
-
-			if ( false === strpos( $etd, 'HARI' ) && false === strpos( $etd, 'JAM' ) ) {
-				$etd = ( '1' === $etd ) ? $etd . ' {day}' : $etd . ' {days}';
-			}
-
-			if ( false !== strpos( $etd, 'HARI' ) ) {
-				$etd = ( str_replace( ' HARI', '', $etd ) === '1' ) ? str_replace( 'HARI', '{day}', $etd ) : str_replace( 'HARI', '{days}', $etd );
-			}
-
-			if ( false !== strpos( $etd, 'JAM' ) ) {
-				$etd = ( str_replace( ' JAM', '', $etd ) === '1' ) ? str_replace( 'JAM', '{hour}', $etd ) : str_replace( 'JAM', '{hours}', $etd );
-			}
-
-			$etd = str_replace( array( '{hour}', '{hours}', '{day}', '{days}' ), array( __( 'Hour', 'woongkir' ), __( 'Hours', 'woongkir' ), __( 'Day', 'woongkir' ), __( 'Days', 'woongkir' ) ), $etd );
-
-			$rate_label = wp_sprintf( '%s (%s)', $rate_label, $etd );
-		}
-
-		return apply_filters( 'woongkir_parse_rate_label', $rate_label, $etd, $service, $courier_code );
+		return apply_filters( 'woongkir_service_label', $label, $service, $courier_code );
 	}
 
 	/**
@@ -974,6 +987,7 @@ class Woongkir extends WC_Shipping_Method {
 		if ( absint( $this->base_weight ) && $weight < absint( $this->base_weight ) ) {
 			return wc_get_weight( absint( $this->base_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
 		}
+
 		return $weight;
 	}
 
@@ -993,6 +1007,7 @@ class Woongkir extends WC_Shipping_Method {
 			if ( empty( $address_2 ) ) {
 				return $packages;
 			}
+
 			foreach ( $packages as $key => $package ) {
 				WC()->customer->set_billing_address_2( $address_2 );
 				WC()->customer->set_shipping_address_2( $address_2 );
