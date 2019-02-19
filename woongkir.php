@@ -14,8 +14,8 @@
  * @wordpress-plugin
  * Plugin Name:       Woongkir
  * Plugin URI:        https://github.com/sofyansitorus/Woongkir
- * Description:       WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 15 domestic couriers + 5 international shipping couriers: JNE, TIKI, Pos Indonesia, RPX, PCP, SICEPAT, JET, J&T, WAHANA, PANDU, SAP, PAHALA, SLIS, EXPEDITO.
- * Version:           1.2.6
+ * Description:       WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 14 domestic couriers + 4 international shipping couriers: POS Indonesia, TIKI, JNE, RPX, PCP Express, Star Cargo, SiCepat, JET Express, SAP Express, Pahala Express, Solusi Ekspres, J&T Express, Pandu Logistics, Wahana Express, Solusi Ekspres, Expedito.
+ * Version:           1.2.7
  * Author:            Sofyan Sitorus
  * Author URI:        https://github.com/sofyansitorus
  * License:           GPL-2.0+
@@ -24,7 +24,7 @@
  * Domain Path:       /languages
  *
  * WC requires at least: 3.0.0
- * WC tested up to: 3.5.1
+ * WC tested up to: 3.5.4
  */
 
 // If this file is called directly, abort.
@@ -157,7 +157,8 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 		$handle,
 		$name,
 		wp_parse_args(
-			$data, array(
+			$data,
+			array(
 				'ajax_url'      => admin_url( 'ajax.php' ),
 				'json'          => array(
 					'country_url'     => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/country.json' ),
@@ -171,11 +172,12 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 				),
 				'text'          => array(
 					'placeholder' => array(
-						'state'     => __( 'Select a Province', 'woongkir' ),
-						'city'      => __( 'Select a Town / City', 'woongkir' ),
-						'address_2' => __( 'Select a Subdistrict', 'woongkir' ),
+						'state'     => __( 'Province', 'woongkir' ),
+						'city'      => __( 'Town / City', 'woongkir' ),
+						'address_2' => __( 'Subdistrict', 'woongkir' ),
 					),
 					'label'       => array(
+						'state'     => __( 'Province', 'woongkir' ),
 						'city'      => __( 'Town / City', 'woongkir' ),
 						'address_2' => __( 'Subdistrict', 'woongkir' ),
 					),

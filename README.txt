@@ -2,33 +2,35 @@
 Contributors: sofyansitorus
 Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos shipping
 Requires at least: 4.8
-Tested up to: 4.9.5
+Tested up to: 5.1
 Requires PHP: 5.6
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 15 domestic couriers + 5 international shipping couriers: JNE, TIKI, Pos Indonesia, RPX, PCP, SICEPAT, JET, J&T, WAHANA, PANDU, SAP, PAHALA, SLIS, EXPEDITO.
+WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 14 domestic couriers + 4 international shipping couriers: POS Indonesia, TIKI, JNE, RPX, PCP Express, Star Cargo, SiCepat, JET Express, SAP Express, Pahala Express, Solusi Ekspres, J&T Express, Pandu Logistics, Wahana Express, Solusi Ekspres, Expedito.
 
 == Description ==
 
-WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 15 domestic couriers + 5 international shipping couriers: JNE, TIKI, Pos Indonesia, RPX, PCP, SICEPAT, JET, J&T, WAHANA, PANDU, SAP, PAHALA, SLIS, EXPEDITO.
+WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 14 domestic couriers + 4 international shipping couriers: POS Indonesia, TIKI, JNE, RPX, PCP Express, Star Cargo, SiCepat, JET Express, SAP Express, Pahala Express, Solusi Ekspres, J&T Express, Pandu Logistics, Wahana Express, Solusi Ekspres, Expedito.
 
 Please note that this plugin is using RajaOngkir.com API as the data source. You must have RajaOngkir.com API Key to use this plugin. [Click here](https://rajaongkir.com) to get RajaOngkir.com API Key. It is free.
 
 = Features =
 
-* Support multiple couriers for domestic shipping: JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T.
-* Support multiple couriers for international shipping: JNE, TIKI, POS, SLIS, EXPEDITO.
+* Support domestic shipping couriers: POS Indonesia, TIKI, JNE, RPX, PCP Express, Star Cargo, SiCepat, JET Express, SAP Express, Pahala Express, Solusi Ekspres, J&T Express, Pandu Logistics, Wahana Express.
+* Support international shipping couriers: POS Indonesia, JNE, TIKI, Solusi Ekspres, Expedito.
+* Support multiple couriers.
 * Support shipping rates calculation from and to subdistrict location for domestic shipping.
 * Support shipping rates calculation based on dimensions and weight.
 * Enable or disable any of shipping services provided by each couriers.
-* Show or hide estimated time of arrival.
+* Set shipping couriers priority.
 * Set base weight for cart content.
+* Show or hide estimated time of arrival.
 * Real time currency convertion to IDR for international shipping cost courier that use USD.
 * Real time API Key validation on settings update.
 
-= My Others WooCommerce Shipping Plugins =
+= Another WooCommerce Shipping Plugins =
 
 * [WooGoSend](https://wordpress.org/plugins/woogosend/) - WooCommerce per kilometer shipping rates calculator for GoSend Go-Jek Indonesia courier.
 * [WooGrabExpress](https://wordpress.org/plugins/woograbexpress/) - WooCommerce per kilometer shipping rates calculator for GrabExpress Grab Indonesia courier.
@@ -83,6 +85,15 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.2.7 =
+
+* Fix - Fixed duplicate post code field in checkout form when using custom form structure
+* Fix - Fixed timeout issue when many couriers selected
+* Fix - Removed Cahaya Logistic Domestic Courier (Not supported by RajaOngkir anymore)
+* Fix - Removed TIKI International Courier (Not supported by RajaOngkir temporarily)
+* Improvement - Enabled to sort couriers list
+* Improvement - Enabled logger for API response error
 
 = 1.2.6 =
 
@@ -157,5 +168,5 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Upgrade Notice ==
 
-= 1.2.6 =
+= 1.2.7 =
 This version include important bug fixes. Upgrade immediately is always recommended.

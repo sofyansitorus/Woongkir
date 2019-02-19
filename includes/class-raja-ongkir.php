@@ -37,22 +37,22 @@ class Raja_Ongkir {
 	 */
 	private $accounts = array(
 		'starter' => array(
-			'label'       => 'Starter',
-			'api_url'     => 'http://api.rajaongkir.com/starter',
-			'subdistrict' => false,
-			'multiple'    => false,
+			'label'            => 'Starter',
+			'api_url'          => 'http://api.rajaongkir.com/starter',
+			'subdistrict'      => false,
+			'multiple_coriers' => false,
 		),
 		'basic'   => array(
-			'label'       => 'Basic',
-			'api_url'     => 'http://api.rajaongkir.com/basic',
-			'subdistrict' => false,
-			'multiple'    => true,
+			'label'            => 'Basic',
+			'api_url'          => 'http://api.rajaongkir.com/basic',
+			'subdistrict'      => false,
+			'multiple_coriers' => true,
 		),
 		'pro'     => array(
-			'label'       => 'Pro',
-			'api_url'     => 'http://pro.rajaongkir.com/api',
-			'subdistrict' => true,
-			'multiple'    => true,
+			'label'            => 'Pro',
+			'api_url'          => 'http://pro.rajaongkir.com/api',
+			'subdistrict'      => true,
+			'multiple_coriers' => true,
 		),
 	);
 
@@ -66,7 +66,7 @@ class Raja_Ongkir {
 		'domestic'      => array(
 			'pos'     => array(
 				'label'    => 'POS Indonesia',
-				'website'  => 'http://www.posindonesia.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.posindonesia.co.id',
 				'services' => array(
 					'Surat Kilat Khusus',
 					'Paketpos Biasa',
@@ -86,7 +86,7 @@ class Raja_Ongkir {
 			),
 			'tiki'    => array(
 				'label'    => 'TIKI',
-				'website'  => 'http://tiki.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://tiki.id',
 				'services' => array(
 					'TRC',
 					'REG',
@@ -103,7 +103,7 @@ class Raja_Ongkir {
 			),
 			'jne'     => array(
 				'label'    => 'JNE',
-				'website'  => 'http://www.jne.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.jne.co.id',
 				'services' => array(
 					'CTC',
 					'CTCYES',
@@ -119,7 +119,7 @@ class Raja_Ongkir {
 			),
 			'rpx'     => array(
 				'label'    => 'RPX',
-				'website'  => 'http://www.rpx.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.rpx.co.id',
 				'services' => array(
 					'SDP',
 					'MDP',
@@ -135,7 +135,7 @@ class Raja_Ongkir {
 			),
 			'pcp'     => array(
 				'label'    => 'PCP Express',
-				'website'  => 'http://www.pcpexpress.com/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.pcpexpress.com',
 				'services' => array(
 					'ONS',
 					'NFS',
@@ -148,7 +148,7 @@ class Raja_Ongkir {
 			),
 			'star'    => array(
 				'label'    => 'Star Cargo',
-				'website'  => 'http://www.starcargo.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.starcargo.co.id',
 				'services' => array(
 					'Express',
 					'Reguler',
@@ -162,7 +162,7 @@ class Raja_Ongkir {
 			),
 			'sicepat' => array(
 				'label'    => 'SiCepat Express',
-				'website'  => 'http://www.sicepat.com/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.sicepat.com',
 				'services' => array(
 					'REG',
 					'BEST',
@@ -174,7 +174,7 @@ class Raja_Ongkir {
 			),
 			'jet'     => array(
 				'label'    => 'JET Express',
-				'website'  => 'http://www.jetexpress.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.jetexpress.co.id',
 				'services' => array(
 					'CRG',
 					'PRI',
@@ -186,7 +186,7 @@ class Raja_Ongkir {
 			),
 			'sap'     => array(
 				'label'    => 'SAP Express',
-				'website'  => 'http://sap-express.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://sap-express.id',
 				'services' => array(
 					'REG',
 					'SDS',
@@ -198,7 +198,7 @@ class Raja_Ongkir {
 			),
 			'pahala'  => array(
 				'label'    => 'Pahala Express',
-				'website'  => 'http://www.pahalaexpress.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.pahalaexpress.co.id',
 				'services' => array(
 					'EXPRESS',
 					'ONS',
@@ -209,7 +209,7 @@ class Raja_Ongkir {
 			),
 			'slis'    => array(
 				'label'    => 'Solusi Ekspres',
-				'website'  => 'http://www.solusiekspres.com/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.solusiekspres.com',
 				'services' => array(
 					'REGULAR',
 					'EXPRESS',
@@ -220,7 +220,7 @@ class Raja_Ongkir {
 			),
 			'jnt'     => array(
 				'label'    => 'J&T Express',
-				'website'  => 'http://www.jet.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.jet.co.id',
 				'services' => array(
 					'EZ',
 				),
@@ -240,19 +240,9 @@ class Raja_Ongkir {
 			),
 			'wahana'  => array(
 				'label'    => 'Wahana Express',
-				'website'  => 'http://www.wahana.com/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.wahana.com',
 				'services' => array(
 					'DES',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
-			'cahaya'  => array(
-				'label'    => 'Cahaya Logistik',
-				'website'  => 'http://www.cahayalogistik.com/?utm_source=woongkir-plugin',
-				'services' => array(
-					'REG',
 				),
 				'account'  => array(
 					'pro',
@@ -262,7 +252,7 @@ class Raja_Ongkir {
 		'international' => array(
 			'pos'      => array(
 				'label'    => 'POS Indonesia',
-				'website'  => 'http://www.posindonesia.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.posindonesia.co.id',
 				'services' => array(
 					'Surat R LN',
 					'EMS BARANG',
@@ -274,22 +264,9 @@ class Raja_Ongkir {
 					'pro',
 				),
 			),
-			'tiki'     => array(
-				'label'    => 'TIKI',
-				'website'  => 'http://tiki.id/?utm_source=woongkir-plugin',
-				'services' => array(
-					'Dokumen',
-					'Paket',
-					'Dokumen / Paket',
-				),
-				'account'  => array(
-					'basic',
-					'pro',
-				),
-			),
 			'jne'      => array(
 				'label'    => 'JNE',
-				'website'  => 'http://www.jne.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.jne.co.id',
 				'services' => array(
 					'INTL',
 				),
@@ -310,7 +287,7 @@ class Raja_Ongkir {
 			),
 			'expedito' => array(
 				'label'    => 'Expedito',
-				'website'  => 'http://www.expedito.co.id/?utm_source=woongkir-plugin',
+				'website'  => 'http://www.expedito.co.id',
 				'services' => array(
 					'CityLink',
 					'DHL Indonesia',
@@ -350,31 +327,37 @@ class Raja_Ongkir {
 	 * @return array
 	 */
 	public function get_cost( $destination, $origin, $dimension_weight, $courier ) {
-		$account  = $this->get_account( $this->get_option( 'account_type' ) );
-		$endpoint = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
+		$results        = array();
+		$account        = $this->get_account( $this->get_option( 'account_type' ) );
+		$endpoint       = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
+		$courier        = $account['multiple_coriers'] ? $courier : array_slice( $courier, 1 );
+		$courier_chunks = array_chunk( $courier, apply_filters( 'woongkir_api_courier_chunks', 3 ) );
 
-		switch ( $endpoint ) {
-			case 'internationalCost':
-				$params = array(
-					'destination' => $destination['country'],
-					'origin'      => $origin['city'],
-					'courier'     => ( $account['multiple'] ) ? implode( ':', $courier ) : $courier[0],
-				);
-				break;
+		foreach ( $courier_chunks as $courier_chunk ) {
+			switch ( $endpoint ) {
+				case 'internationalCost':
+					$params = array(
+						'destination' => $destination['country'],
+						'origin'      => $origin['city'],
+						'courier'     => implode( ':', $courier_chunk ),
+					);
+					break;
 
-			default:
-				$params = array(
-					'destination'     => ( $account['subdistrict'] && ! empty( $destination['subdistrict'] ) ) ? $destination['subdistrict'] : $destination['city'],
-					'destinationType' => ( $account['subdistrict'] && ! empty( $destination['subdistrict'] ) ) ? 'subdistrict' : 'city',
-					'origin'          => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? $origin['subdistrict'] : $origin['city'],
-					'originType'      => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? 'subdistrict' : 'city',
-					'courier'         => ( $account['multiple'] ) ? implode( ':', $courier ) : $courier[0],
-				);
-				break;
+				default:
+					$params = array(
+						'destination'     => ( $account['subdistrict'] && ! empty( $destination['subdistrict'] ) ) ? $destination['subdistrict'] : $destination['city'],
+						'destinationType' => ( $account['subdistrict'] && ! empty( $destination['subdistrict'] ) ) ? 'subdistrict' : 'city',
+						'origin'          => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? $origin['subdistrict'] : $origin['city'],
+						'originType'      => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? 'subdistrict' : 'city',
+						'courier'         => implode( ':', $courier_chunk ),
+					);
+					break;
+			}
+
+			$results[] = $this->remote_post( $endpoint, array_merge( $params, $dimension_weight ) );
 		}
 
-		$params = array_merge( $params, $dimension_weight );
-		return $this->remote_post( $endpoint, $params );
+		return $results;
 	}
 
 	/**
@@ -409,6 +392,7 @@ class Raja_Ongkir {
 		if ( ! is_null( $zone_id ) ) {
 			return isset( $this->couriers[ $zone_id ] ) ? $this->couriers[ $zone_id ] : false;
 		}
+
 		return $this->couriers;
 	}
 
@@ -421,7 +405,6 @@ class Raja_Ongkir {
 	 */
 	public function set_option( $key, $value ) {
 		$this->options[ $key ] = $value;
-		return $this;
 	}
 
 	/**
@@ -443,7 +426,6 @@ class Raja_Ongkir {
 	 * @param array  $params API request parameters.
 	 */
 	public function remote_request( $endpoint, $params = array() ) {
-
 		$args = wp_parse_args(
 			$params,
 			array(
@@ -454,10 +436,27 @@ class Raja_Ongkir {
 			)
 		);
 
-		$response = wp_remote_request( $this->url( $endpoint ), $args );
+		/**
+		 * Developers can modify the api request via filter hooks.
+		 *
+		 * @since 1.2.7
+		 *
+		 * This example shows how you can modify the $response var via custom function:
+		 *
+		 *      add_filter( 'woongkir_api_remote_request_pre', 'my_api_remote_request_pre', 10, 4 );
+		 *
+		 *      function my_api_remote_request_pre( $false, $endpoint, $args, $param, $obj ) {
+		 *          // Return the response data JSON
+		 *          return wp_json_encode( array() );
+		 *      }
+		 */
+		$response = apply_filters( 'woongkir_api_remote_request_pre', false, $endpoint, $args, $param, $this );
+
+		if ( false === $response ) {
+			$response = wp_remote_request( $this->api_url( $endpoint ), $args );
+		}
 
 		return $this->validate_api_response( $response );
-
 	}
 
 	/**
@@ -468,7 +467,6 @@ class Raja_Ongkir {
 	 * @param array  $body API request body parameters.
 	 */
 	public function remote_post( $endpoint, $body = array() ) {
-
 		$args = array(
 			'timeout' => 10,
 			'headers' => array(
@@ -478,10 +476,27 @@ class Raja_Ongkir {
 			'body'    => $body,
 		);
 
-		$response = wp_remote_post( $this->url( $endpoint ), $args );
+		/**
+		 * Developers can modify the api request via filter hooks.
+		 *
+		 * @since 1.2.7
+		 *
+		 * This example shows how you can modify the $response var via custom function:
+		 *
+		 *      add_filter( 'woongkir_api_remote_post_pre', 'my_api_remote_post_pre', 10, 4 );
+		 *
+		 *      function my_api_remote_post_pre( $false, $endpoint, $args, $body, $obj ) {
+		 *          // Return the response data JSON
+		 *          return wp_json_encode( array() );
+		 *      }
+		 */
+		$response = apply_filters( 'woongkir_api_remote_post_pre', false, $endpoint, $args, $body, $this );
+
+		if ( false === $response ) {
+			$response = wp_remote_post( $this->api_url( $endpoint ), $args );
+		}
 
 		return $this->validate_api_response( $response );
-
 	}
 
 	/**
@@ -492,7 +507,6 @@ class Raja_Ongkir {
 	 * @param array  $query_url API request URL query string parameters.
 	 */
 	public function remote_get( $endpoint, $query_url = array() ) {
-
 		$args = array(
 			'timeout' => 10,
 			'headers' => array(
@@ -500,16 +514,33 @@ class Raja_Ongkir {
 			),
 		);
 
-		$url = $this->url( $endpoint );
+		/**
+		 * Developers can modify the api request via filter hooks.
+		 *
+		 * @since 1.2.7
+		 *
+		 * This example shows how you can modify the $response var via custom function:
+		 *
+		 *      add_filter( 'woongkir_api_remote_get_pre', 'my_api_remote_get_pre', 10, 4 );
+		 *
+		 *      function my_api_remote_get_pre( $false, $endpoint, $args, $query_url, $obj ) {
+		 *          // Return the response data JSON
+		 *          return wp_json_encode( array() );
+		 *      }
+		 */
+		$response = apply_filters( 'woongkir_api_remote_get_pre', false, $endpoint, $args, $query_url, $this );
 
-		if ( $query_url ) {
-			$url = add_query_arg( $query_url, $url );
+		if ( false === $response ) {
+			$url = $this->api_url( $endpoint );
+
+			if ( $query_url ) {
+				$url = add_query_arg( $query_url, $url );
+			}
+
+			$response = wp_remote_get( $url, $args );
 		}
 
-		$response = wp_remote_get( $url, $args );
-
 		return $this->validate_api_response( $response );
-
 	}
 
 	/**
@@ -517,38 +548,66 @@ class Raja_Ongkir {
 	 *
 	 * @since 1.0.0
 	 * @param mixed $response API request response data.
+	 * @throws Exception Error exception when response data is invalid.
+	 * @return mixed WP_Error object on failure.
 	 */
 	private function validate_api_response( $response ) {
+		try {
+			if ( is_wp_error( $response ) ) {
+				throw new Exception( $response->get_error_message(), 1 );
+			}
 
-		if ( is_wp_error( $response ) ) {
-			return $response;
+			$body = wp_remote_retrieve_body( $response );
+
+			if ( empty( $body ) ) {
+				throw new Exception( __( 'API response is empty.', 'woongkir' ), 1 );
+			}
+
+			$data       = json_decode( $body );
+			$json_error = json_last_error_msg();
+
+			if ( strtolower( $json_error ) !== 'no error' ) {
+				// Try to capture the JSON string for response that has output incorrect JSON format.
+				preg_match( '/{"rajaongkir"(.*?)}}/m', $body, $matches, PREG_OFFSET_CAPTURE, 0 );
+
+				if ( ! isset( $matches[0][0] ) || empty( $matches[0][0] ) ) {
+					$body = is_string( $body ) ? $body : wp_json_encode( $body );
+					// translators: %1$s - Error message from RajaOngkir.com, %2$s - API response body.
+					throw new Exception( wp_sprintf( __( '%1$s -- %2$s', 'woongkir' ), $json_error, $body ), 1 );
+				}
+
+				$body       = $matches[0][0];
+				$data       = json_decode( $matches[0][0] );
+				$json_error = json_last_error_msg();
+
+				if ( strtolower( $json_error ) !== 'no error' ) {
+					$body = is_string( $body ) ? $body : wp_json_encode( $body );
+					// translators: %1$s - Error message from RajaOngkir.com, %2$s - API response body.
+					throw new Exception( wp_sprintf( __( '%1$s -- %2$s', 'woongkir' ), $json_error, $body ), 1 );
+				}
+			}
+
+			if ( isset( $data->rajaongkir->status ) && 200 !== $data->rajaongkir->status->code ) {
+				// translators: %s - Error message from RajaOngkir.com.
+				throw new Exception( $data->rajaongkir->status->description, 1 );
+			}
+
+			if ( isset( $data->rajaongkir->results ) ) {
+				return $data->rajaongkir->results;
+			}
+
+			if ( isset( $data->rajaongkir->result ) ) {
+				return $data->rajaongkir->result;
+			}
+
+			throw new Exception( __( 'API response is invalid.', 'woongkir' ), 1 );
+		} catch ( Exception $e ) {
+			$wc_log = wc_get_logger();
+			$wc_log->log( 'error', wp_strip_all_tags( $e->getMessage(), true ), array( 'source' => 'woongkir_api_error' ) );
+
+			// translators: %s - Error message from RajaOngkir.com.
+			return new WP_Error( 'invalid_api_response', wp_sprintf( __( '<strong>Error from RajaOngkir.com</strong>: %s', 'woongkir' ), $e->getMessage() ) );
 		}
-
-		$body = wp_remote_retrieve_body( $response );
-
-		if ( empty( $body ) ) {
-			return new WP_Error( 'api_response_empty', __( 'API response is empty.', 'woongkir' ) );
-		}
-
-		$data = json_decode( $body );
-
-		if ( json_last_error() !== JSON_ERROR_NONE || ! $data ) {
-			return new WP_Error( 'api_response_invalid', __( 'API response is invalid.', 'woongkir' ) );
-		}
-
-		if ( isset( $data->rajaongkir->status ) && 200 !== $data->rajaongkir->status->code ) {
-			return new WP_Error( 'api_response_error_' . $data->rajaongkir->status->code, '<strong>' . __( ' Error from RajaOngkir.com', 'woongkir' ) . ':</strong> ' . $data->rajaongkir->status->description );
-		}
-
-		if ( isset( $data->rajaongkir->results ) ) {
-			return $data->rajaongkir->results;
-		}
-
-		if ( isset( $data->rajaongkir->result ) ) {
-			return $data->rajaongkir->result;
-		}
-
-		return new WP_Error( 'unknown_error', __( 'Unknown error', 'woongkir' ) );
 	}
 
 	/**
@@ -608,7 +667,7 @@ class Raja_Ongkir {
 	 * @param string $endpoint API URL endpoint.
 	 * @return string
 	 */
-	private function url( $endpoint ) {
+	private function api_url( $endpoint ) {
 		$account = $this->get_account( $this->get_option( 'account_type' ) );
 		switch ( $endpoint ) {
 			case 'internationalOrigin':
@@ -621,6 +680,7 @@ class Raja_Ongkir {
 				$url = $account['api_url'] . '/' . $endpoint;
 				break;
 		}
+
 		return $url;
 	}
 }
