@@ -181,7 +181,7 @@ class Woongkir extends WC_Shipping_Method {
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
 				'placeholder' => '',
-				'description' => __( '<a href="http://www.rajaongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is free.', 'woongkir' ),
+				'description' => __( '<a href="http://www.rajaongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
 				'default'     => '',
 			),
 			'account_type'       => array(
@@ -376,63 +376,72 @@ class Woongkir extends WC_Shipping_Method {
 
 		$data = wp_parse_args( $data, $defaults );
 
-		$couriers = $this->api->get_courier( $key );
+		$couriers_raw = $this->api->get_courier( $key );
+
+		foreach ( $couriers_raw as $code => $courier ) {
+			$courier['code']       = $code;
+			$couriers_raw[ $code ] = $courier;
+		}
+
+		usort( $couriers_raw, array( $this, 'sort_couriers_list_' . $key ) );
+
+		$couriers = array();
+
+		foreach ( $couriers_raw as $courier ) {
+			$couriers[ $courier['code'] ] = $courier;
+		}
 
 		$selected = $this->{$key};
 
 		ob_start();
 		?>
+		<?php if ( 'domestic' === $key ) : ?>
 		</table>
-		<div id="woongkir-couriers-list-<?php echo esc_attr( $key ); ?>" class="woongkir-couriers-list <?php echo esc_attr( $key ); ?>" data-id="<?php echo esc_attr( $key ); ?>">
-			<h3 class="wc-settings-sub-title <?php echo esc_attr( $data['class'] ); ?>" id="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></h3>
-			<?php if ( ! empty( $data['description'] ) ) : ?>
-				<p><?php echo wp_kses_post( $data['description'] ); ?></p>
-			<?php endif; ?>
-			<table class="form-table" width="100%">
-				<tr>
-				<?php
-				$i = 0;
-				foreach ( $couriers as $courier_id => $courier ) :
-					if ( empty( $courier['services'] ) ) :
-						continue;
-					endif;
-					if ( $i && 0 === $i % 5 ) {
-						echo '</tr><tr>';
-					}
-					?>
-				<td id="woongkir-courier-box-<?php echo esc_attr( $key ); ?>-<?php echo esc_attr( $courier_id ); ?>" class="woongkir-courier-box <?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>">
-					<table class="form-table woongkir-courier-list">
-						<thead>
-							<tr>
-								<td class="woongkir-courier-name">
-									<?php if ( file_exists( WOONGKIR_PATH . 'assets/img/' . $courier_id . '.png' ) ) : ?>
-									<a class="woongkir-courier-link" href="<?php echo esc_attr( $courier['website'] ); ?>" target="_blank" title="<?php echo esc_attr_e( 'Visit Website', 'woongkir' ); ?>"><img src="<?php echo esc_attr( WOONGKIR_URL ); ?>assets/img/<?php echo esc_attr( $courier_id ); ?>.png" class="woongkir-courier-logo"></a>
-									<?php endif; ?>
-									<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
-									<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle"><?php echo wp_kses_post( $courier['label'] ); ?></label>
-								</td>
-							</tr>
-						</thead>
-						<tbody>
-							<?php foreach ( $courier['services'] as $index => $service ) : ?>
-							<tr>
-								<td class="woongkir-courier-service">
-									<input type="checkbox" class="woongkir-service single" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $service ); ?>" <?php checked( ( isset( $selected[ $courier_id ] ) && in_array( $service, $selected[ $courier_id ], true ) ? $service : false ), $service ); ?>>
-									<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>"><?php echo wp_kses_post( $service ); ?></label>
-								</td>
-							</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-				</td>
-					<?php
-					$i++;
-				endforeach;
-				?>
-				</tr>
-			</table>
-		</div>
 		<table class="form-table">
+			</tr>
+			<?php endif; ?>
+			<td class="woongkir-couriers-wrap woongkir-couriers-wrap--<?php echo esc_attr( $key ); ?>">
+				<h2 class="wc-settings-sub-title <?php echo esc_attr( $data['class'] ); ?>" id="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></h2>
+				<ul class="woongkir-couriers">
+					<?php
+					$i = 0;
+					foreach ( $couriers as $courier_id => $courier ) :
+						if ( empty( $courier['services'] ) ) :
+							continue;
+						endif;
+						?>
+						<li class="woongkir-couriers-item woongkir-couriers-item--<?php echo esc_attr( $key ); ?>--<?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>" data-zone="<?php echo esc_attr( $key ); ?>">
+							<div class="woongkir-couriers-item-inner">
+								<div class="woongkir-couriers-item-info">
+									<label>
+										<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service woongkir-service--bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
+										<?php echo wp_kses_post( $courier['label'] ); ?> (<span class="woongkir-couriers--selected"><?php echo esc_html( ( isset( $selected[ $courier_id ] ) ? count( $selected[ $courier_id ] ) : 0 ) ); ?></span> / <span class="woongkir-couriers--availabe"><?php echo esc_html( count( $courier['services'] ) ); ?></span>)
+									</label>
+									<div class="woongkir-couriers-item-info-toggle">
+										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-arrow-down"></span></a>
+									</div>
+									<div class="woongkir-couriers-item-info-link"><a href="<?php echo esc_attr( $courier['website'] ); ?>?utm_source=woongkir.com" target="blank"><?php echo esc_html( parse_url($courier['website'])['host'] ); ?></a></div>
+								</div>
+								<ul class="woongkir-services">
+									<?php foreach ( $courier['services'] as $index => $service ) : ?>
+									<li class="woongkir-services-item">
+										<label><input type="checkbox" class="woongkir-service woongkir-service--single" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $service ); ?>" <?php checked( ( isset( $selected[ $courier_id ] ) && in_array( $service, $selected[ $courier_id ], true ) ? $service : false ), $service ); ?>><?php echo wp_kses_post( $service ); ?></label>
+									</li>
+									<?php endforeach; ?>
+								</ul>
+							</div>
+						</li>
+						<?php
+						$i++;
+					endforeach;
+					?>
+				</ul>
+			</td>
+			<?php if ( 'international' === $key ) : ?>
+			</tr>
+		</table>
+		<table class="form-table">
+		<?php endif; ?>
 		<?php
 		return ob_get_clean();
 	}
@@ -676,7 +685,10 @@ class Woongkir extends WC_Shipping_Method {
 								'id'        => $rate_id,
 								'label'     => $label,
 								'cost'      => $cost,
-								'meta_data' => array( 'courier_code' => $courier_code, 'service' => $service ),
+								'meta_data' => array(
+									'courier_code' => $courier_code,
+									'service'      => $service,
+								),
 							)
 						);
 					}
@@ -1189,6 +1201,62 @@ class Woongkir extends WC_Shipping_Method {
 		}
 
 		return $shipping_fields;
+	}
+
+	/**
+	 * Sort domestic couriers lsit
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return bool
+	 */
+	private function sort_couriers_list_domestic( $a, $b ) {
+		$priority = [];
+
+		if ( empty( $this->domestic ) ) {
+			return 0;
+		}
+
+		foreach ( array_keys( $this->domestic ) as $index => $courier ) {
+			$priority[ $courier ] = $index;
+		}
+
+		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : 15;
+		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : 15;
+
+		if ( $al === $bl ) {
+			return 0;
+		}
+
+		return ( $al > $bl ) ? +1 : -1;
+	}
+
+	/**
+	 * Sort international couriers lsit
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return bool
+	 */
+	private function sort_couriers_list_international( $a, $b ) {
+		$priority = [];
+
+		if ( empty( $this->international ) ) {
+			return 0;
+		}
+
+		foreach ( array_keys( $this->international ) as $index => $courier ) {
+			$priority[ $courier ] = $index;
+		}
+
+		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : 15;
+		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : 15;
+
+		if ( $al === $bl ) {
+			return 0;
+		}
+
+		return ( $al > $bl ) ? +1 : -1;
 	}
 
 	/**

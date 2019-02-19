@@ -12,8 +12,8 @@
             th {
                 text-align: center;
                 width: 20% !important;
-                border-left: 1px solid #f8f8f8;
-                background: #f1f1f1;
+                border-left: 1px solid #f9f9f9;
+                background: #f9f9f9;
                 padding: 8px 5px !important;
                 &:first-child {
                     width: 40% !important;
@@ -48,49 +48,58 @@
             }
         }
     }
-    &-courier {
-        &-box {
-            vertical-align: top !important;
-            width: 20%;
-        }
-        &-list {
-            border: 1px solid #f8f8f8;
+    &-couriers {
+        &:after {
+            content: "";
+            display: block;
             width: 100%;
-            thead {
-                th,
-                td {
-                    background-color: #f1f1f1;
+            clear: both;
+        }
+        &-wrap {
+            background-color: #fff;
+            padding: 15px 15px 0 15px;
+            width: 50%;
+            float: left;
+        }
+        &-item {
+            margin-bottom: 0;
+            cursor: move;
+            &-inner {
+                margin-right: 15px;
+            }
+            &-info {
+                padding: 15px 15px;
+                background-color: #f9f9f9;
+                border: 1px solid #e1e1e1;
+                label {
+                    font-weight: bold;
+                }
+                &-toggle {
+                    float: right;
+                    a {
+                        text-decoration: none;
+                    }
+                }
+                &-link {
+                    display: none;
+                    padding-left: 25px;
+                    font-size: small !important;
+                    a {
+                        text-decoration: none;
+                    }
                 }
             }
-            tbody {
-                tr:nth-child(even) {
-                    background: #f9f9f9;
-                }
-                tr:nth-child(odd) {
-                    background: #ffffff;
-                }
-            }
         }
-        &-name {
-            white-space: nowrap;
-            font-weight: 700;
-            padding-top: 10px !important;
-            padding-bottom: 10px !important;
-        }
-        &-link {
-            display: block;
-            margin: 0 auto;
-        }
-        &-logo {
-            display: block;
-            margin: 0 auto;
-            max-width: 64px;
-            height: auto;
-        }
-        &-service {
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
-            white-space: nowrap;
+    }
+    &-services {
+        &-item {
+            display: none;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 7px 7px 7px 40px;
+            border-left: 1px solid #e1e1e1;
+            border-bottom: 1px solid #e1e1e1;
+            border-right: 1px solid #e1e1e1;
         }
     }
 }
