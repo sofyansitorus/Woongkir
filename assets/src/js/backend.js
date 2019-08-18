@@ -25,6 +25,9 @@ var woongkirBackend = {
         $(document.body).off('change', '#woocommerce_woongkir_account_type', woongkirBackend.highlightFeature);
         $(document.body).on('change', '#woocommerce_woongkir_account_type', woongkirBackend.highlightFeature);
 
+        $(document.body).off('change', '#woocommerce_woongkir_volumetric_calculator', woongkirBackend.toggleVolumetricFormula);
+        $(document.body).on('change', '#woocommerce_woongkir_volumetric_calculator', woongkirBackend.toggleVolumetricFormula);
+
         $(document.body).off('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleCouriersBox);
         $(document.body).on('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleCouriersBox);
 
@@ -112,6 +115,7 @@ var woongkirBackend = {
         }
 
         $('#woocommerce_woongkir_origin_city').selectWoo(cityParam).val(cityMatch).trigger('change');
+        $('#woocommerce_woongkir_volumetric_calculator').trigger('change');
     },
     loadFormSubdistrict: function () {
         var subdistrictParam = {
@@ -160,6 +164,15 @@ var woongkirBackend = {
         $('#woongkir-account-features')
             .find('.woongkir-account-features-col-' + selected)
             .addClass('selected');
+    },
+    toggleVolumetricFormula: function (e) {
+        var checked = $(e.currentTarget).is(':checked');
+
+        if (checked) {
+            $('#woocommerce_woongkir_volumetric_divider').closest('tr').show();
+        } else {
+            $('#woocommerce_woongkir_volumetric_divider').closest('tr').hide();
+        }
     },
     toggleCouriersBox: function (e) {
         var $accountType = $('#woocommerce_woongkir_account_type');
