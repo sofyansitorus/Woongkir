@@ -19,23 +19,13 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 // Give access to tests_add_filter() function.
 require_once $_tests_dir . '/includes/functions.php';
 
-function is_woocommerce_active() {
-	return true;
-}
-
-function woothemes_queue_update() {
-	return true;
-}
-
 /**
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
 	require dirname( dirname( __FILE__ ) ) . '/woongkir.php';
-	require dirname( dirname( __FILE__ ) ) . '../../woocommerce/woocommerce.php';
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Start up the WP testing environment.
 require $_tests_dir . '/includes/bootstrap.php';
-require_once dirname( __DIR__ ) . '/vendor/autoload.php';

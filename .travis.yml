@@ -32,6 +32,9 @@ matrix:
       env: WP_VERSION=trunk
     - php: 5.6
       env: WP_TRAVISCI=phpcs
+    - php: 5.3
+      env: WP_VERSION=latest
+      dist: precise
 
 before_script:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
@@ -41,15 +44,26 @@ before_script:
     else
       echo "xdebug.ini does not exist"
     fi
-  - composer install
+  - |
+    if [[ ! -z "$WP_VERSION" ]] ; then
+      bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+      composer global require "phpunit/phpunit=4.8.*|5.7.*"
+    fi
+  - |
+    if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+      composer global require wp-coding-standards/wpcs
+      composer global require phpcompatibility/phpcompatibility-wp
+      composer global require dealerdirect/phpcodesniffer-composer-installer
+      phpcs --standard=phpcs.xml
+    fi
 
 script:
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
-      ./vendor/bin/phpunit
-      WP_MULTISITE=1 ./vendor/bin/phpunit
+      phpunit
+      WP_MULTISITE=1 phpunit
     fi
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      ./vendor/bin/phpcs
+      phpcs
     fi
