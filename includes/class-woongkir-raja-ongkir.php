@@ -327,19 +327,28 @@ class Woongkir_Raja_Ongkir {
 	 * @return array
 	 */
 	public function get_cost( $destination, $origin, $dimension_weight, $courier ) {
-		$results        = array();
-		$account        = $this->get_account( $this->get_option( 'account_type' ) );
-		$endpoint       = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
-		$courier        = $account['multiple_coriers'] ? $courier : array_slice( $courier, 1 );
-		$courier_chunks = array_chunk( $courier, apply_filters( 'woongkir_api_courier_chunks', 3 ) );
+		$results  = array();
+		$account  = $this->get_account( $this->get_option( 'account_type' ) );
+		$endpoint = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
 
-		foreach ( $courier_chunks as $courier_chunk ) {
+		if ( $courier && ! $account['multiple_coriers'] ) {
+			$courier = array_slice( $courier, 0, 1 );
+		}
+
+		$courier_chunks = $courier ? array_chunk( $courier, apply_filters( 'woongkir_api_courier_chunks', 3 ) ) : false;
+
+		// Bail early when the couriers data is empty.
+		if ( ! $courier_chunks ) {
+			return $results;
+		}
+
+		foreach ( $courier_chunks as $couriers ) {
 			switch ( $endpoint ) {
 				case 'internationalCost':
 					$params = array(
 						'destination' => $destination['country'],
 						'origin'      => $origin['city'],
-						'courier'     => implode( ':', $courier_chunk ),
+						'courier'     => implode( ':', $couriers ),
 					);
 					break;
 
@@ -349,7 +358,7 @@ class Woongkir_Raja_Ongkir {
 						'destinationType' => ( $account['subdistrict'] && ! empty( $destination['subdistrict'] ) ) ? 'subdistrict' : 'city',
 						'origin'          => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? $origin['subdistrict'] : $origin['city'],
 						'originType'      => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? 'subdistrict' : 'city',
-						'courier'         => implode( ':', $courier_chunk ),
+						'courier'         => implode( ':', $couriers ),
 					);
 					break;
 			}
@@ -616,48 +625,35 @@ class Woongkir_Raja_Ongkir {
 	 * @since 1.0.0
 	 */
 	public function validate_account() {
-		$params = array(
-			'destination'      => array(
-				'country'     => 0,
-				'province'    => 0,
-				'city'        => 0,
-				'subdistrict' => 0,
-			),
-			'origin'           => array(
-				'province'    => 0,
-				'city'        => 0,
-				'subdistrict' => 0,
-			),
-			'dimension_weight' => array(
-				'width'  => 0,
-				'length' => 0,
-				'height' => 0,
-				'weight' => 1700,
-			),
-			'courier'          => array(
-				'jne',
-				'tiki',
-				'pos',
-			),
+		$account_type = $this->get_option( 'account_type' );
+
+		// Destination test data.
+		$destination = array(
+			'country'     => 0,
+			'province'    => 0,
+			'city'        => 'pro' !== $account_type ? 114 : 0,
+			'subdistrict' => 'pro' === $account_type ? 574 : 0,
 		);
 
-		switch ( $this->get_option( 'account_type' ) ) {
-			case 'pro':
-				$params['destination']['subdistrict'] = 574;
-				$params['origin']['subdistrict']      = 538;
-				break;
-			case 'basic':
-				$params['destination']['city'] = 114;
-				$params['origin']['city']      = 501;
-				break;
-			default:
-				$params['destination']['city'] = 114;
-				$params['origin']['city']      = 501;
-				$params['courier']             = array( 'jne' );
-				break;
-		}
+		// Origin test data.
+		$origin = array(
+			'province'    => 0,
+			'city'        => 'pro' !== $account_type ? 501 : 0,
+			'subdistrict' => 'pro' === $account_type ? 538 : 0,
+		);
 
-		return $this->get_cost( $params['destination'], $params['origin'], $params['dimension_weight'], $params['courier'] );
+		// Dimension & weight test data.
+		$dimension_weight = array(
+			'width'  => 0,
+			'length' => 0,
+			'height' => 0,
+			'weight' => 1700,
+		);
+
+		// Courier test data.
+		$courier = array( 'jne' );
+
+		return $this->get_cost( $destination, $origin, $dimension_weight, $courier );
 	}
 
 	/**
