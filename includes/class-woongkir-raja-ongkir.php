@@ -332,10 +332,10 @@ class Woongkir_Raja_Ongkir {
 		$endpoint = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
 
 		if ( $courier && ! $account['multiple_coriers'] ) {
-			$courier = array_splice( $courier, 0, 1 );
+			$courier = array_slice( $courier, 0, 1 );
 		}
 
-		$courier_chunks = array_chunk( $courier, apply_filters( 'woongkir_api_courier_chunks', 3 ) );
+		$courier_chunks = $courier ? array_chunk( $courier, apply_filters( 'woongkir_api_courier_chunks', 3 ) ) : false;
 
 		// Bail early when the couriers data is empty.
 		if ( ! $courier_chunks ) {
