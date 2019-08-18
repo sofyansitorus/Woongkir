@@ -626,41 +626,86 @@ class Woongkir extends WC_Shipping_Method {
 	 */
 	public function calculate_shipping( $package = array() ) {
 		try {
-			$params = array();
+			/**
+			 * Shipping origin info.
+			 *
+			 * @since 1.2.9
+			 *
+			 * @param array $origin_info Original origin info.
+			 * @param array $package     Current order package data.
+			 *
+			 * @return array
+			 */
+			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$origin_info = apply_filters( 'woocommerce_' . $this->id . '_shipping_origin_info', $this->get_origin_info(), $package );
+			// phpcs:enable
 
-			$params['origin'] = $this->get_origin_info();
-			if ( empty( $params['origin'] ) ) {
-				return;
+			if ( empty( $origin_info ) ) {
+				throw new Exception( __( 'Shipping origin info is empty or invalid', 'woongkir' ) );
 			}
 
-			$params['destination'] = $this->get_destination_info( $package['destination'] );
-			if ( ! $params['destination'] || ! array_filter( $params['destination'] ) ) {
-				return;
+			/**
+			 * Shipping destination info.
+			 *
+			 * @since 1.2.9
+			 *
+			 * @param array $destination_info Original destination info.
+			 * @param array $package          Current order package data.
+			 *
+			 * @return array
+			 */
+			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$destination_info = apply_filters( 'woocommerce_' . $this->id . '_shipping_destination_info', $this->get_destination_info( $package['destination'] ), $package );
+			// phpcs:enable
+			$this->show_debug( wp_json_encode( $destination_info ) );
+
+			if ( ! $destination_info || ! array_filter( $destination_info ) ) {
+				throw new Exception( __( 'Shipping destination info is empty or invalid', 'woongkir' ) );
 			}
 
-			$params['dimension_weight'] = $this->get_dimension_weight( $package['contents'] );
-			if ( ! $params['dimension_weight'] || ! array_filter( $params['dimension_weight'] ) ) {
-				return;
+			/**
+			 * Shipping dimension & weight info.
+			 *
+			 * @since 1.2.9
+			 *
+			 * @param array $dimension_weight Original dimension & weight info.
+			 * @param array $package          Current order package data.
+			 *
+			 * @return array
+			 */
+			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$dimension_weight = apply_filters( 'woocommerce_' . $this->id . '_shipping_dimension_weight', $this->get_dimension_weight( $package['contents'] ), $package );
+			// phpcs:enable
+
+			if ( ! $dimension_weight || ! array_filter( $dimension_weight ) ) {
+				throw new Exception( __( 'Cart dimension or weight is empty or invalid', 'woongkir' ) );
 			}
 
-			$params['courier'] = $params['destination']['country'] ? array_keys( (array) $this->international ) : array_keys( (array) $this->domestic );
-			if ( empty( $params['courier'] ) ) {
-				return;
+			if ( isset( $destination_info['country'] ) && $destination_info['country'] ) {
+				$courier = array_keys( (array) $this->international );
+			} else {
+				$courier = array_keys( (array) $this->domestic );
 			}
 
-			$cache_key = $this->id . '_' . $this->instance_id . '_' . md5(
-				wp_json_encode(
-					array(
-						'params'  => $params,
-						'package' => $package,
-					)
-				)
+			if ( empty( $courier ) ) {
+				throw new Exception( __( 'Shipping couriers empty or invalid', 'woongkir' ) );
+			}
+
+			$params = array(
+				'origin'           => $origin_info,
+				'destination'      => $destination_info,
+				'dimension_weight' => $dimension_weight,
+				'courier'          => $courier,
+				'package'          => $package,
 			);
+
+			$cache_key = $this->id . '_' . $this->instance_id . '_' . md5( wp_json_encode( $params ) );
 
 			$results = get_transient( $cache_key );
 
 			if ( false === $results ) {
 				$results = $this->api->get_cost( $params['destination'], $params['origin'], $params['dimension_weight'], $params['courier'] );
+
 				if ( $results && is_array( $results ) ) {
 					set_transient( $cache_key, $results, HOUR_IN_SECONDS ); // Store response data for 1 hour.
 				}
@@ -833,18 +878,21 @@ class Woongkir extends WC_Shipping_Method {
 	 * Get shipping origin info
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return array
 	 */
 	private function get_origin_info() {
-		if ( empty( $this->origin_province ) || empty( $this->origin_city ) || empty( $this->origin_subdistrict ) ) {
-			return false;
-		}
-
-		return array(
+		$origin_info = array(
 			'province'    => absint( $this->origin_province ),
 			'city'        => absint( $this->origin_city ),
 			'subdistrict' => absint( $this->origin_subdistrict ),
 		);
+
+		if ( empty( $origin_info['province'] ) || empty( $origin_info['city'] ) || empty( $origin_info['subdistrict'] ) ) {
+			return false;
+		}
+
+		return $origin_info;
 	}
 
 	/**
@@ -871,6 +919,7 @@ class Woongkir extends WC_Shipping_Method {
 					'country_code' => $data['country'],
 				)
 			);
+
 			if ( $country && isset( $country['country_id'] ) ) {
 				$destination['country'] = absint( $country['country_id'] );
 			}
@@ -999,31 +1048,13 @@ class Woongkir extends WC_Shipping_Method {
 			$data['weight'] = absint( $this->base_weight );
 		}
 
-		/**
-		 * Developers can modify the dimension and weight data via filter hooks.
-		 *
-		 * @since 1.0.1
-		 *
-		 * This example shows how you can modify the shipping destination data via custom function:
-		 *
-		 *      add_action( 'woocommerce_woongkir_shipping_dimension_weight', 'modify_shipping_dimension_weight', 10, 2 );
-		 *
-		 *      function modify_shipping_dimension_weight( $data, $method ) {
-		 *          return array(
-		 *              'width' => 0,
-		 *              'length' => 0,
-		 *              'height' => 0,
-		 *              'weight' => 0,
-		 *           );
-		 *      }
-		 */
-		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-		return apply_filters( 'woocommerce_' . $this->id . '_shipping_dimension_weight', $data, $this );
-		// phpcs:enable
+		return $data;
 	}
 
 	/**
 	 * Convert volume metric to weight.
+	 *
+	 * @since 1.2.9
 	 *
 	 * @param int $width  Package width in cm.
 	 * @param int $length Package width in cm.
