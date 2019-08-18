@@ -29,7 +29,7 @@
 class Woongkir extends WC_Shipping_Method {
 
 	/**
-	 * Raja_Ongkir API Class Object
+	 * Woongkir_Raja_Ongkir API Class Object
 	 *
 	 * @since 1.0.0
 	 * @var object
@@ -88,7 +88,7 @@ class Woongkir extends WC_Shipping_Method {
 		// Hook to woocommerce_cart_shipping_packages to inject filed address_2.
 		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
 
-		$this->api = new Raja_Ongkir();
+		$this->api = new Woongkir_Raja_Ongkir();
 
 		$this->init();
 	}
@@ -271,13 +271,13 @@ class Woongkir extends WC_Shipping_Method {
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
-				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
 			</th>
 			<td class="forminp">
 				<fieldset style="max-width: 50%;min-width: 250px;">
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-					<input class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>" type="<?php echo esc_attr( $data['type'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo $this->get_custom_attribute_html( $data ); // WPCS: XSS ok. ?> />
-					<?php echo $this->get_description_html( $data ); // WPCS: XSS ok. ?>
+					<input class="input-text regular-input <?php echo esc_attr( $data['class'] ); ?>" type="<?php echo esc_attr( $data['type'] ); ?>" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" placeholder="<?php echo esc_attr( $data['placeholder'] ); ?>" <?php disabled( $data['disabled'], true ); ?> <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+					<?php echo $this->get_description_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</fieldset>
 			</td>
 		</tr>
@@ -316,10 +316,10 @@ class Woongkir extends WC_Shipping_Method {
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
-				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
 			</th>
 			<td class="forminp">
-				<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" <?php echo $this->get_custom_attribute_html( $data ); // WPCS: XSS ok. ?> />
+				<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
 				<div class="woongkir-account-features-wrap">
 					<table id="woongkir-account-features" class="woongkir-account-features form-table">
 						<thead>
@@ -420,7 +420,7 @@ class Woongkir extends WC_Shipping_Method {
 									<div class="woongkir-couriers-item-info-toggle">
 										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-arrow-down"></span></a>
 									</div>
-									<div class="woongkir-couriers-item-info-link"><a href="<?php echo esc_attr( $courier['website'] ); ?>?utm_source=woongkir.com" target="blank"><?php echo esc_html( parse_url($courier['website'])['host'] ); ?></a></div>
+									<div class="woongkir-couriers-item-info-link"><a href="<?php echo esc_attr( $courier['website'] ); ?>?utm_source=woongkir.com" target="blank"><?php echo esc_html( wp_parse_url( $courier['website'] )['host'] ); ?></a></div>
 								</div>
 								<ul class="woongkir-services">
 									<?php foreach ( $courier['services'] as $index => $service ) : ?>
@@ -954,7 +954,6 @@ class Woongkir extends WC_Shipping_Method {
 			// Validate cart item weight value.
 			$item_weight = is_numeric( $item['data']->get_weight() ) ? $item['data']->get_weight() : 0;
 			array_push( $weight, $item_weight * $item_quantity );
-
 		}
 
 		$data['width']  = wc_get_dimension( max( $width ), 'cm' );
@@ -985,7 +984,9 @@ class Woongkir extends WC_Shipping_Method {
 		 *           );
 		 *      }
 		 */
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		return apply_filters( 'woocommerce_' . $this->id . '_shipping_dimension_weight', $data, $this );
+		// phpcs:enable
 	}
 
 	/**

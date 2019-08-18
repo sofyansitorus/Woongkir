@@ -1,6 +1,6 @@
 <?php
 /**
- * The file that defines the Raja_Ongkir class
+ * The file that defines the Woongkir_Raja_Ongkir class
  *
  * @link       https://github.com/sofyansitorus
  * @since      1.0.0
@@ -10,7 +10,7 @@
  */
 
 /**
- * The Raja_Ongkir API class.
+ * The Woongkir_Raja_Ongkir API class.
  *
  * This is used to make request to RajaOngkir.com API server.
  *
@@ -19,7 +19,7 @@
  * @subpackage Woongkir/includes
  * @author     Sofyan Sitorus <sofyansitorus@gmail.com>
  */
-class Raja_Ongkir {
+class Woongkir_Raja_Ongkir {
 
 	/**
 	 * Class options.

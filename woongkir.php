@@ -45,8 +45,9 @@ define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
  * @param string $plugin_file Plugin file name.
  */
 function woongkir_is_plugin_active( $plugin_file ) {
-
+	// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	$active_plugins = (array) apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) );
+	// phpcs:enable
 
 	if ( is_multisite() ) {
 		$active_plugins = array_merge( $active_plugins, (array) get_site_option( 'active_sitewide_plugins', array() ) );
@@ -78,7 +79,7 @@ add_action( 'plugins_loaded', 'woongkir_load_textdomain' );
  * @since 1.0.0
  */
 function woongkir_load_dependencies() {
-	require_once WOONGKIR_PATH . 'includes/class-raja-ongkir.php';
+	require_once WOONGKIR_PATH . 'includes/class-woongkir-raja-ongkir.php';
 	require_once WOONGKIR_PATH . 'includes/class-woongkir.php';
 }
 add_action( 'woocommerce_shipping_init', 'woongkir_load_dependencies' );
@@ -183,7 +184,9 @@ function woongkir_localize_script( $handle, $name, $data = array() ) {
 					),
 				),
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
+				// phpcs:disable WordPress.Security.NonceVerification.Recommended
 				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(),
+				// phpcs:enable
 				'method_id'     => WOONGKIR_METHOD_ID,
 				'method_title'  => WOONGKIR_METHOD_TITLE,
 			)
@@ -299,12 +302,15 @@ add_action( 'wp_enqueue_scripts', 'woongkir_enqueue_frontend_scripts', 999 );
  * @return void
  */
 function woongkir_after_shipping_calculator() {
-	// Address 2 hidden field.
-	if ( apply_filters( 'woocommerce_shipping_calculator_enable_address_2', true ) ) {
-		$address_2 = WC()->cart->get_customer()->get_shipping_address_2();
-		?>
-		<input type="hidden" id="calc_shipping_address_2_dummy" value="<?php echo esc_attr( $address_2 ); ?>" />
-		<?php
+	// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+	$enable_address_2 = apply_filters( 'woocommerce_shipping_calculator_enable_address_2', true );
+	// phpcs:enable
+
+	if ( ! $enable_address_2 ) {
+		return;
 	}
+	?>
+	<input type="hidden" id="calc_shipping_address_2_dummy" value="<?php echo esc_attr( WC()->cart->get_customer()->get_shipping_address_2() ); ?>" />
+	<?php
 }
 add_action( 'woocommerce_after_shipping_calculator', 'woongkir_after_shipping_calculator' );

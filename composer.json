@@ -1,0 +1,37 @@
+{
+    "name": "sofyan/woongkir",
+    "description": "WooCommerce shipping rates calculator using Indonesia shipping using couriers.",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Sofyan Sitorus",
+            "email": "sofyansitorus@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "woocommerce/woocommerce": "dev-master",
+        "phpcompatibility/phpcompatibility-wp": "*",
+        "wp-coding-standards/wpcs": "^2.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+        "phpunit/phpunit": "^7"
+    },
+    "autoload-dev": {
+        "classmap": [
+            "vendor/woocommerce/woocommerce/tests/framework"
+        ]
+    },
+    "extra": {
+        "installer-paths": {
+            "vendor/woocommerce/woocommerce": [
+                "woocommerce/woocommerce"
+            ],
+            "vendor/woocommerce/woocommerce-blocks": [
+                "woocommerce/woocommerce-blocks"
+            ],
+            "vendor/woocommerce/woocommerce-rest-api": [
+                "woocommerce/woocommerce-rest-api"
+            ]
+        }
+    }
+}

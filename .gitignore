@@ -6,3 +6,5 @@ assets/js/*
 assets/css/*
 languages/*
 dist/*
+
+/vendor/
