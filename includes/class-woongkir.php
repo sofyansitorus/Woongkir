@@ -141,19 +141,19 @@ class Woongkir extends WC_Shipping_Method {
 		}
 
 		$settings = array(
-			'origin_province'    => array(
+			'origin_province'       => array(
 				'title' => __( 'Shipping Origin Province', 'woongkir' ),
 				'type'  => 'origin',
 			),
-			'origin_city'        => array(
+			'origin_city'           => array(
 				'title' => __( 'Shipping Origin City', 'woongkir' ),
 				'type'  => 'origin',
 			),
-			'origin_subdistrict' => array(
+			'origin_subdistrict'    => array(
 				'title' => __( 'Shipping Origin Subdistrict', 'woongkir' ),
 				'type'  => 'origin',
 			),
-			'tax_status'         => array(
+			'tax_status'            => array(
 				'title'   => __( 'Tax Status', 'woongkir' ),
 				'type'    => 'select',
 				'default' => 'none',
@@ -162,13 +162,13 @@ class Woongkir extends WC_Shipping_Method {
 					'none'    => _x( 'None', 'Tax status', 'woongkir' ),
 				),
 			),
-			'show_eta'           => array(
+			'show_eta'              => array(
 				'title'       => __( 'Show ETA', 'woongkir' ),
 				'label'       => __( 'Yes', 'woongkir' ),
 				'type'        => 'checkbox',
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 			),
-			'base_weight'        => array(
+			'base_weight'           => array(
 				'title'             => __( 'Base Cart Contents Weight (gram)', 'woongkir' ),
 				'type'              => 'number',
 				'description'       => __( 'The base cart contents weight will be calculated. If the value is blank or zero, the couriers list will not displayed when the actual cart contents weight is empty.', 'woongkir' ),
@@ -177,14 +177,30 @@ class Woongkir extends WC_Shipping_Method {
 					'step' => '100',
 				),
 			),
-			'api_key'            => array(
+			'volumetric_calculator' => array(
+				'title'       => __( 'Volumetric Converter', 'woongkir' ),
+				'label'       => __( 'Enable', 'woongkir' ),
+				'type'        => 'checkbox',
+				'description' => __( 'Convert volumetric to weight before send request to API server.', 'woongkir' ),
+			),
+			'volumetric_divider'    => array(
+				'title'             => __( 'Volumetric Converter Divider', 'woongkir' ),
+				'type'              => 'number',
+				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimetres / Divider', 'woongkir' ),
+				'custom_attributes' => array(
+					'min'  => '0',
+					'step' => '100',
+				),
+				'default'           => '6000',
+			),
+			'api_key'               => array(
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
 				'placeholder' => '',
 				'description' => __( '<a href="http://www.rajaongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
 				'default'     => '',
 			),
-			'account_type'       => array(
+			'account_type'          => array(
 				'title'             => __( 'RajaOngkir Account Type', 'woongkir' ),
 				'type'              => 'account_type',
 				'default'           => 'starter',
@@ -194,11 +210,11 @@ class Woongkir extends WC_Shipping_Method {
 					'data-couriers' => wp_json_encode( $this->api->get_courier() ),
 				),
 			),
-			'domestic'           => array(
+			'domestic'              => array(
 				'title' => __( 'Domestic Shipping', 'woongkir' ),
 				'type'  => 'couriers_list',
 			),
-			'international'      => array(
+			'international'         => array(
 				'title' => __( 'International Shipping', 'woongkir' ),
 				'type'  => 'couriers_list',
 			),
@@ -969,6 +985,15 @@ class Woongkir extends WC_Shipping_Method {
 		$data['height'] = wc_get_dimension( array_sum( $height ), 'cm' );
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
+		// Convert the volumetric to weight.
+		if ( 'yes' === $this->volumetric_calculator && $this->volumetric_divider ) {
+			$data['weight'] = max( $data['weight'], $this->convert_volumetric( $data['width'], $data['length'], $data['height'] ) );
+
+			unset( $data['width'] );
+			unset( $data['length'] );
+			unset( $data['height'] );
+		}
+
 		// Set the package weight to based on base_weight setting value.
 		if ( absint( $this->base_weight ) && $data['weight'] < absint( $this->base_weight ) ) {
 			$data['weight'] = absint( $this->base_weight );
@@ -995,6 +1020,19 @@ class Woongkir extends WC_Shipping_Method {
 		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		return apply_filters( 'woocommerce_' . $this->id . '_shipping_dimension_weight', $data, $this );
 		// phpcs:enable
+	}
+
+	/**
+	 * Convert volume metric to weight.
+	 *
+	 * @param int $width  Package width in cm.
+	 * @param int $length Package width in cm.
+	 * @param int $height Package height in cm.
+	 *
+	 * @return int Weight in gram units.
+	 */
+	public function convert_volumetric( $width, $length, $height ) {
+		return( ( $width * $length * $height ) / $this->volumetric_divider ) * 1000;
 	}
 
 	/**

@@ -450,7 +450,7 @@ class Woongkir_Raja_Ongkir {
 		 *          return wp_json_encode( array() );
 		 *      }
 		 */
-		$response = apply_filters( 'woongkir_api_remote_request_pre', false, $endpoint, $args, $param, $this );
+		$response = apply_filters( 'woongkir_api_remote_request_pre', false, $endpoint, $args, $params, $this );
 
 		if ( false === $response ) {
 			$response = wp_remote_request( $this->api_url( $endpoint ), $args );
