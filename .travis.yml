@@ -54,7 +54,6 @@ before_script:
       composer global require wp-coding-standards/wpcs
       composer global require phpcompatibility/phpcompatibility-wp
       composer global require dealerdirect/phpcodesniffer-composer-installer
-      phpcs --standard=phpcs.xml
     fi
 
 script:
