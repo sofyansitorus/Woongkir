@@ -177,22 +177,6 @@ class Woongkir extends WC_Shipping_Method {
 					'step' => '100',
 				),
 			),
-			'volumetric_calculator' => array(
-				'title'       => __( 'Volumetric Converter', 'woongkir' ),
-				'label'       => __( 'Enable', 'woongkir' ),
-				'type'        => 'checkbox',
-				'description' => __( 'Convert volumetric to weight before send request to API server.', 'woongkir' ),
-			),
-			'volumetric_divider'    => array(
-				'title'             => __( 'Volumetric Converter Divider', 'woongkir' ),
-				'type'              => 'number',
-				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimetres / Divider', 'woongkir' ),
-				'custom_attributes' => array(
-					'min'  => '0',
-					'step' => '100',
-				),
-				'default'           => '6000',
-			),
 			'api_key'               => array(
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
@@ -210,6 +194,22 @@ class Woongkir extends WC_Shipping_Method {
 					'data-couriers' => wp_json_encode( $this->api->get_courier() ),
 				),
 			),
+			'volumetric_calculator' => array(
+				'title'       => __( 'Volumetric Converter', 'woongkir' ),
+				'label'       => __( 'Enable', 'woongkir' ),
+				'type'        => 'checkbox',
+				'description' => __( 'Convert volumetric to weight before send request to API server.', 'woongkir' ),
+			),
+			'volumetric_divider'    => array(
+				'title'             => __( 'Volumetric Converter Divider', 'woongkir' ),
+				'type'              => 'number',
+				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimetres / Divider', 'woongkir' ),
+				'custom_attributes' => array(
+					'min'  => '0',
+					'step' => '100',
+				),
+				'default'           => '6000',
+			),
 			'domestic'              => array(
 				'title' => __( 'Domestic Shipping', 'woongkir' ),
 				'type'  => 'couriers_list',
@@ -218,6 +218,13 @@ class Woongkir extends WC_Shipping_Method {
 				'title' => __( 'International Shipping', 'woongkir' ),
 				'type'  => 'couriers_list',
 			),
+		);
+
+		$fetaures = array(
+			'multiple_coriers' => __( 'Multiple Couriers', 'woongkir' ),
+			'subdistrict'      => __( 'Calculate Subdistrict', 'woongkir' ),
+			'volumetric'       => __( 'Calculate Volumetric', 'woongkir' ),
+			'dedicated_server' => __( 'Dedicated Server', 'woongkir' ),
 		);
 
 		$couriers = $this->api->get_courier();
@@ -233,8 +240,9 @@ class Woongkir extends WC_Shipping_Method {
 					'couriers' => array(),
 				),
 			);
+
 			foreach ( $couriers as $zone_id => $courier ) {
-				foreach ( $courier as $courier_id => $courier_data ) {
+				foreach ( $courier as $courier_data ) {
 					if ( in_array( $account_type, $courier_data['account'], true ) ) {
 						$zone_data[ $zone_id ]['couriers'][] = $courier_data;
 					}
@@ -243,18 +251,14 @@ class Woongkir extends WC_Shipping_Method {
 
 			$settings['account_type']['options'][ $account_type ] = $data['label'];
 			foreach ( $zone_data as $zone_id => $zone_info ) {
-				$settings['account_type']['features'][ $zone_id ]['label'] = $zone_info['label'];
-
+				$settings['account_type']['features'][ $zone_id ]['label']                  = $zone_info['label'];
 				$settings['account_type']['features'][ $zone_id ]['value'][ $account_type ] = count( $zone_info['couriers'] );
 			}
 
-			$settings['account_type']['features']['multiple_coriers']['label'] = __( 'Multiple Couriers', 'woongkir' );
-
-			$settings['account_type']['features']['multiple_coriers']['value'][ $account_type ] = $data['multiple_coriers'] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
-
-			$settings['account_type']['features']['subdistrict']['label'] = __( 'Calculate Subdistrict', 'woongkir' );
-
-			$settings['account_type']['features']['subdistrict']['value'][ $account_type ] = $data['subdistrict'] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
+			foreach ( $fetaures as $fetaure_key => $fetaure_label ) {
+				$settings['account_type']['features'][ $fetaure_key ]['label']                  = $fetaure_label;
+				$settings['account_type']['features'][ $fetaure_key ]['value'][ $account_type ] = $data[ $fetaure_key ] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
+			}
 		}
 
 		$this->instance_form_fields = $settings;
@@ -342,7 +346,7 @@ class Woongkir extends WC_Shipping_Method {
 							<tr>
 								<th>&nbsp;</th>
 								<?php foreach ( $this->api->get_account() as $account_type => $account_data ) { ?>
-									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><?php echo esc_html( $account_data['label'] ); ?></th>
+									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><a href="https://rajaongkir.com/dokumentasi#akun-ringkasan" target="_blank"><?php echo esc_html( $account_data['label'] ); ?></a></th>
 								<?php } ?>
 							</tr>
 						</thead>
@@ -575,7 +579,7 @@ class Woongkir extends WC_Shipping_Method {
 
 			$couriers    = $this->api->get_courier( $key );
 			$not_allowed = array();
-			foreach ( $value as $courier_id => $courier ) {
+			foreach ( array_keys( $value ) as $courier_id ) {
 				if ( ! in_array( $account_type, $couriers[ $courier_id ]['account'], true ) ) {
 					array_push( $not_allowed, strtoupper( $courier_id ) );
 				}
@@ -728,6 +732,7 @@ class Woongkir extends WC_Shipping_Method {
 				'dimension_weight' => $dimension_weight,
 				'courier'          => $courier,
 				'package'          => $package,
+				'api_key'          => $this->api_key,
 			);
 
 			$cache_key = $this->id . '_' . $this->instance_id . '_' . md5( wp_json_encode( $params ) );
@@ -1059,6 +1064,10 @@ class Woongkir extends WC_Shipping_Method {
 				continue;
 			}
 
+			// Validate cart item weight value.
+			$item_weight = is_numeric( $item['data']->get_weight() ) ? $item['data']->get_weight() : 0;
+			array_push( $weight, $item_weight * $item_quantity );
+
 			// Validate cart item width value.
 			$item_width = is_numeric( $item['data']->get_width() ) ? $item['data']->get_width() : 0;
 			array_push( $width, $item_width * 1 );
@@ -1070,24 +1079,25 @@ class Woongkir extends WC_Shipping_Method {
 			// Validate cart item height value.
 			$item_height = is_numeric( $item['data']->get_height() ) ? $item['data']->get_height() : 0;
 			array_push( $height, $item_height * $item_quantity );
-
-			// Validate cart item weight value.
-			$item_weight = is_numeric( $item['data']->get_weight() ) ? $item['data']->get_weight() : 0;
-			array_push( $weight, $item_weight * $item_quantity );
 		}
 
-		$data['width']  = wc_get_dimension( max( $width ), 'cm' );
-		$data['length'] = wc_get_dimension( max( $length ), 'cm' );
-		$data['height'] = wc_get_dimension( array_sum( $height ), 'cm' );
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
 		// Convert the volumetric to weight.
-		if ( 'yes' === $this->volumetric_calculator && $this->volumetric_divider ) {
-			$data['weight'] = max( $data['weight'], $this->convert_volumetric( $data['width'], $data['length'], $data['height'] ) );
+		$account = $this->api->get_account( $this->account_type );
 
-			unset( $data['width'] );
-			unset( $data['length'] );
-			unset( $data['height'] );
+		if ( $account && $account['volumetric'] ) {
+			$width  = wc_get_dimension( max( $width ), 'cm' );
+			$length = wc_get_dimension( max( $length ), 'cm' );
+			$height = wc_get_dimension( array_sum( $height ), 'cm' );
+
+			if ( 'yes' === $this->volumetric_calculator && $this->volumetric_divider ) {
+				$data['weight'] = max( $data['weight'], $this->convert_volumetric( $width, $length, $height ) );
+			} else {
+				$data['width']  = $width;
+				$data['length'] = $length;
+				$data['width']  = $height;
+			}
 		}
 
 		// Set the package weight to based on base_weight setting value.

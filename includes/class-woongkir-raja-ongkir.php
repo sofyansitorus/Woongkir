@@ -41,18 +41,24 @@ class Woongkir_Raja_Ongkir {
 			'api_url'          => 'http://api.rajaongkir.com/starter',
 			'subdistrict'      => false,
 			'multiple_coriers' => false,
+			'volumetric'       => false,
+			'dedicated_server' => false,
 		),
 		'basic'   => array(
 			'label'            => 'Basic',
 			'api_url'          => 'http://api.rajaongkir.com/basic',
 			'subdistrict'      => false,
 			'multiple_coriers' => true,
+			'volumetric'       => false,
+			'dedicated_server' => false,
 		),
 		'pro'     => array(
 			'label'            => 'Pro',
 			'api_url'          => 'http://pro.rajaongkir.com/api',
 			'subdistrict'      => true,
 			'multiple_coriers' => true,
+			'volumetric'       => true,
+			'dedicated_server' => true,
 		),
 	);
 
