@@ -420,7 +420,15 @@ class Woongkir extends WC_Shipping_Method {
 									<div class="woongkir-couriers-item-info-toggle">
 										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-arrow-down"></span></a>
 									</div>
-									<div class="woongkir-couriers-item-info-link"><a href="<?php echo esc_attr( $courier['website'] ); ?>?utm_source=woongkir.com" target="blank"><?php echo esc_html( wp_parse_url( $courier['website'] )['host'] ); ?></a></div>
+									<?php
+									$courier_website = wp_parse_url( $courier['website'] );
+
+									if ( isset( $courier_website['host'] ) ) {
+										?>
+									<div class="woongkir-couriers-item-info-link"><a href="<?php echo esc_attr( $courier['website'] ); ?>?utm_source=woongkir.com" target="blank"><?php echo esc_html( $courier_website['host'] ); ?></a></div>
+										<?php
+									}
+									?>
 								</div>
 								<ul class="woongkir-services">
 									<?php foreach ( $courier['services'] as $index => $service ) : ?>
@@ -1072,7 +1080,7 @@ class Woongkir extends WC_Shipping_Method {
 
 		$data = json_decode( $json, true );
 
-		if ( json_last_error() !== JSON_ERROR_NONE || ! $data ) {
+		if ( 'No error' !== json_last_error_msg() || ! $data ) {
 			return false;
 		}
 
@@ -1083,6 +1091,7 @@ class Woongkir extends WC_Shipping_Method {
 					return $row;
 				}
 			}
+
 			return false;
 		}
 
@@ -1212,7 +1221,7 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return bool
 	 */
 	private function sort_couriers_list_domestic( $a, $b ) {
-		$priority = [];
+		$priority = array();
 
 		if ( empty( $this->domestic ) ) {
 			return 0;
@@ -1240,7 +1249,7 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return bool
 	 */
 	private function sort_couriers_list_international( $a, $b ) {
-		$priority = [];
+		$priority = array();
 
 		if ( empty( $this->international ) ) {
 			return 0;
