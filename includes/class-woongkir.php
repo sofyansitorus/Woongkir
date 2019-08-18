@@ -644,6 +644,14 @@ class Woongkir extends WC_Shipping_Method {
 				throw new Exception( __( 'Shipping origin info is empty or invalid', 'woongkir' ) );
 			}
 
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$origin_info' => $origin_info,
+					)
+				)
+			);
+
 			/**
 			 * Shipping destination info.
 			 *
@@ -657,11 +665,18 @@ class Woongkir extends WC_Shipping_Method {
 			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			$destination_info = apply_filters( 'woocommerce_' . $this->id . '_shipping_destination_info', $this->get_destination_info( $package['destination'] ), $package );
 			// phpcs:enable
-			$this->show_debug( wp_json_encode( $destination_info ) );
 
 			if ( ! $destination_info || ! array_filter( $destination_info ) ) {
 				throw new Exception( __( 'Shipping destination info is empty or invalid', 'woongkir' ) );
 			}
+
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$destination_info' => $destination_info,
+					)
+				)
+			);
 
 			/**
 			 * Shipping dimension & weight info.
@@ -681,6 +696,14 @@ class Woongkir extends WC_Shipping_Method {
 				throw new Exception( __( 'Cart dimension or weight is empty or invalid', 'woongkir' ) );
 			}
 
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$dimension_weight' => $dimension_weight,
+					)
+				)
+			);
+
 			if ( isset( $destination_info['country'] ) && $destination_info['country'] ) {
 				$courier = array_keys( (array) $this->international );
 			} else {
@@ -691,6 +714,14 @@ class Woongkir extends WC_Shipping_Method {
 				throw new Exception( __( 'Shipping couriers empty or invalid', 'woongkir' ) );
 			}
 
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$courier' => $courier,
+					)
+				)
+			);
+
 			$params = array(
 				'origin'           => $origin_info,
 				'destination'      => $destination_info,
@@ -700,6 +731,14 @@ class Woongkir extends WC_Shipping_Method {
 			);
 
 			$cache_key = $this->id . '_' . $this->instance_id . '_' . md5( wp_json_encode( $params ) );
+
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$cache_key' => $cache_key,
+					)
+				)
+			);
 
 			$results = get_transient( $cache_key );
 
@@ -714,6 +753,14 @@ class Woongkir extends WC_Shipping_Method {
 			if ( ! $results ) {
 				throw new Exception( __( 'No couriers data found', 'woongkir' ) );
 			}
+
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$results' => $results,
+					)
+				)
+			);
 
 			if ( ! is_array( $results ) ) {
 				// translators: %s Encoded data response.
@@ -1360,14 +1407,17 @@ class Woongkir extends WC_Shipping_Method {
 	 * Show debug info
 	 *
 	 * @since 1.0.0
-	 * @param string $message The text to display in the notice.
+	 * @param string $message     The text to display in the notice.
+	 * @param string $notice_type The name of the notice type - either error, success or notice.
 	 * @return void
 	 */
-	private function show_debug( $message ) {
+	private function show_debug( $message, $notice_type = 'notice' ) {
 		$debug_mode = 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' );
 
-		if ( $debug_mode && ! defined( 'WOOCOMMERCE_CHECKOUT' ) && ! defined( 'WC_DOING_AJAX' ) && ! wc_has_notice( $message ) ) {
-			wc_add_notice( $message );
+		if ( ! $debug_mode || ! current_user_can( 'manage_options' ) || wc_has_notice( $message ) || ( defined( 'WC_DOING_AJAX' ) && WC_DOING_AJAX ) ) {
+			return;
 		}
+
+		wc_add_notice( $message, $notice_type );
 	}
 }
