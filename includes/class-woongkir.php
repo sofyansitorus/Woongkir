@@ -633,7 +633,7 @@ class Woongkir extends WC_Shipping_Method {
 			/**
 			 * Shipping origin info.
 			 *
-			 * @since 1.2.9
+			 * @since 1.2.8
 			 *
 			 * @param array $origin_info Original origin info.
 			 * @param array $package     Current order package data.
@@ -659,7 +659,7 @@ class Woongkir extends WC_Shipping_Method {
 			/**
 			 * Shipping destination info.
 			 *
-			 * @since 1.2.9
+			 * @since 1.2.8
 			 *
 			 * @param array $destination_info Original destination info.
 			 * @param array $package          Current order package data.
@@ -685,7 +685,7 @@ class Woongkir extends WC_Shipping_Method {
 			/**
 			 * Shipping dimension & weight info.
 			 *
-			 * @since 1.2.9
+			 * @since 1.2.8
 			 *
 			 * @param array $dimension_weight Original dimension & weight info.
 			 * @param array $package          Current order package data.
@@ -1111,7 +1111,7 @@ class Woongkir extends WC_Shipping_Method {
 	/**
 	 * Convert volume metric to weight.
 	 *
-	 * @since 1.2.9
+	 * @since 1.2.8
 	 *
 	 * @param int $width  Package width in cm.
 	 * @param int $length Package width in cm.

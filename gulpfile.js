@@ -407,6 +407,8 @@ gulp.task('dist', ['build'], function () {
     gulp.src([
         './**',
         '!dist/',
+        '!tests/',
+        '!vendor/',
         '!dist/**',
         '!node_modules/',
         '!node_modules/**',
@@ -414,6 +416,9 @@ gulp.task('dist', ['build'], function () {
         '!assets/src/**',
         '!gulpfile.js',
         '!package-lock.json',
-        '!package.json'
+        '!package.json',
+        '!composer.lock',
+        '!composer.json',
+        '!phpunit.xml'
     ]).pipe(gulp.dest('./dist'));
 });
