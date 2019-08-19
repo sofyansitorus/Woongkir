@@ -25,11 +25,14 @@ var woongkirBackend = {
         $(document.body).off('change', '#woocommerce_woongkir_account_type', woongkirBackend.highlightFeature);
         $(document.body).on('change', '#woocommerce_woongkir_account_type', woongkirBackend.highlightFeature);
 
-        $(document.body).off('change', '#woocommerce_woongkir_volumetric_calculator', woongkirBackend.toggleVolumetricFormula);
-        $(document.body).on('change', '#woocommerce_woongkir_volumetric_calculator', woongkirBackend.toggleVolumetricFormula);
-
         $(document.body).off('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleCouriersBox);
         $(document.body).on('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleCouriersBox);
+
+        $(document.body).off('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleVolumetricConverter);
+        $(document.body).on('change', '#woocommerce_woongkir_account_type', woongkirBackend.toggleVolumetricConverter);
+
+        $(document.body).off('change', '#woocommerce_woongkir_volumetric_calculator', woongkirBackend.toggleVolumetricDivider);
+        $(document.body).on('change', '#woocommerce_woongkir_volumetric_calculator', woongkirBackend.toggleVolumetricDivider);
 
         $(document.body).off('change', '.woongkir-account-type', woongkirBackend.selectAccountType);
         $(document.body).on('change', '.woongkir-account-type', woongkirBackend.selectAccountType);
@@ -165,7 +168,22 @@ var woongkirBackend = {
             .find('.woongkir-account-features-col-' + selected)
             .addClass('selected');
     },
-    toggleVolumetricFormula: function (e) {
+    toggleVolumetricConverter: function (e) {
+        var $accountType = $('#woocommerce_woongkir_account_type');
+        var accounts = $accountType.data('accounts');
+        var account = accounts[$(e.currentTarget).val()] || false;
+
+        if (!account) {
+            return;
+        }
+
+        if (!account.volumetric) {
+            $('#woocommerce_woongkir_volumetric_calculator, #woocommerce_woongkir_volumetric_divider').closest('tr').hide();
+        } else {
+            $('#woocommerce_woongkir_volumetric_calculator').trigger('change').closest('tr').show();
+        }
+    },
+    toggleVolumetricDivider: function (e) {
         var checked = $(e.currentTarget).is(':checked');
 
         if (checked) {
@@ -174,7 +192,7 @@ var woongkirBackend = {
             $('#woocommerce_woongkir_volumetric_divider').closest('tr').hide();
         }
     },
-    toggleCouriersBox: function (e) {
+    toggleCouriersBox: function () {
         var $accountType = $('#woocommerce_woongkir_account_type');
         var accounts = $accountType.data('accounts');
         var couriers = $accountType.data('couriers');
