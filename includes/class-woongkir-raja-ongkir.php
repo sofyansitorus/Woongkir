@@ -776,4 +776,21 @@ class Woongkir_Raja_Ongkir {
 
 		return $url;
 	}
+
+	/**
+	 * Get couriers names
+	 *
+	 * @return array
+	 */
+	public function get_couriers_names() {
+		$names = array();
+
+		foreach ( $this->couriers as $couriers ) {
+			foreach ( $couriers as $code => $courier ) {
+				$names[ $code ] = $courier['label'];
+			}
+		}
+
+		return $names;
+	}
 }

@@ -60,11 +60,13 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return void
 	 */
 	public function __construct( $instance_id = 0 ) {
-		$this->instance_id        = absint( $instance_id );
-		$this->id                 = WOONGKIR_METHOD_ID;
-		$this->method_title       = WOONGKIR_METHOD_TITLE;
-		$this->title              = WOONGKIR_METHOD_TITLE;
-		$this->method_description = __( 'Shipping rates calculator using Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO for Domestic and International shipment.', 'woongkir' );
+		$this->api          = new Woongkir_Raja_Ongkir();
+		$this->instance_id  = absint( $instance_id );
+		$this->id           = WOONGKIR_METHOD_ID;
+		$this->method_title = WOONGKIR_METHOD_TITLE;
+		$this->title        = WOONGKIR_METHOD_TITLE;
+		// translators: %s = List of supported couriers.
+		$this->method_description = sprintf( __( 'WooCommerce shipping rates calculator for Indonesia domestic and international shipment: %s.', 'woongkir' ), implode( ', ', $this->api->get_couriers_names() ) );
 		$this->supports           = array(
 			'shipping-zones',
 			'instance-settings',
@@ -87,8 +89,6 @@ class Woongkir extends WC_Shipping_Method {
 
 		// Hook to woocommerce_cart_shipping_packages to inject filed address_2.
 		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
-
-		$this->api = new Woongkir_Raja_Ongkir();
 
 		$this->init();
 	}
@@ -181,7 +181,7 @@ class Woongkir extends WC_Shipping_Method {
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
 				'placeholder' => '',
-				'description' => __( '<a href="http://www.rajaongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
+				'description' => __( '<a href="http://www.rajaongkir.com?utm_source=woongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
 				'default'     => '',
 			),
 			'account_type'          => array(
@@ -346,7 +346,7 @@ class Woongkir extends WC_Shipping_Method {
 							<tr>
 								<th>&nbsp;</th>
 								<?php foreach ( $this->api->get_account() as $account_type => $account_data ) { ?>
-									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><a href="https://rajaongkir.com/dokumentasi#akun-ringkasan" target="_blank"><?php echo esc_html( $account_data['label'] ); ?></a></th>
+									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank"><?php echo esc_html( $account_data['label'] ); ?></a></th>
 								<?php } ?>
 							</tr>
 						</thead>

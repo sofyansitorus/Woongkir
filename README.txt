@@ -1,6 +1,6 @@
 === Woongkir ===
 Contributors: sofyansitorus
-Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos shipping
+Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Express, SiCepat Express, J&T Express, Pahala Express, SAP Express, JET Express, Solusi Ekspres, 21 Express, Nusantara Card Semesta, Star Cargo, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic, Expedito
 Requires at least: 4.8
 Tested up to: 5.2.2
 Requires PHP: 5.6
@@ -8,13 +8,13 @@ Stable tag: 1.2.10
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 14 domestic couriers + 4 international shipping couriers: POS Indonesia, TIKI, JNE, RPX, PCP Express, Star Cargo, SiCepat, JET Express, SAP Express, Pahala Express, Solusi Ekspres, J&T Express, Pandu Logistics, Wahana Express, Expedito.
+WooCommerce shipping rates calculator for Indonesia domestic and international shipment: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Express, SiCepat Express, J&T Express, Pahala Express, SAP Express, JET Express, Solusi Ekspres, 21 Express, Nusantara Card Semesta, Star Cargo, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic, Expedito.
 
 == Description ==
 
-WooCommerce shipping rates calculator using Indonesia shipping using couriers. Available 14 domestic couriers + 4 international shipping couriers: POS Indonesia, TIKI, JNE, RPX, PCP Express, Star Cargo, SiCepat, JET Express, SAP Express, Pahala Express, Solusi Ekspres, J&T Express, Pandu Logistics, Wahana Express, Expedito.
+WooCommerce shipping rates calculator for Indonesia domestic and international shipment: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Express, SiCepat Express, J&T Express, Pahala Express, SAP Express, JET Express, Solusi Ekspres, 21 Express, Nusantara Card Semesta, Star Cargo, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic, Expedito.
 
-Please note that this plugin is using RajaOngkir.com API as the data source. You must have RajaOngkir.com API Key to use this plugin. [Click here](https://rajaongkir.com) to get RajaOngkir.com API Key. It is free.
+Please note that this plugin is using RajaOngkir.com API as the data source. You must have RajaOngkir.com API Key to use this plugin. [Click here](https://rajaongkir.com?utm_source=woongkir.com) to get RajaOngkir.com API Key. It is free.
 
 = Features =
 
