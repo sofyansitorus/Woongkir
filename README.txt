@@ -4,7 +4,7 @@ Tags: woocommerce shipping,indonesia shipping, jne shipping, tiki shipping, pos 
 Requires at least: 4.8
 Tested up to: 5.2.2
 Requires PHP: 5.6
-Stable tag: 1.2.9
+Stable tag: 1.2.10
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -85,6 +85,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.2.10 =
+
+* Fixed fail to parse the API response in some cases.
 
 = 1.2.9 =
 
