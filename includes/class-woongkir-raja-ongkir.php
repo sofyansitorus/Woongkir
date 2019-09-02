@@ -70,19 +70,38 @@ class Woongkir_Raja_Ongkir {
 	 */
 	private $couriers = array(
 		'domestic'      => array(
+			'jne'     => array(
+				'label'    => 'JNE',
+				'website'  => 'http://www.jne.co.id',
+				'services' => array(
+					'CTC'    => 'City Courier',
+					'CTCYES' => 'City Courier YES',
+					'OKE'    => 'Ongkos Kirim Ekonomis',
+					'REG'    => 'Layanan Reguler',
+					'YES'    => 'Yakin Esok Sampai',
+				),
+				'account'  => array(
+					'starter',
+					'basic',
+					'pro',
+				),
+			),
 			'pos'     => array(
 				'label'    => 'POS Indonesia',
 				'website'  => 'http://www.posindonesia.co.id',
 				'services' => array(
-					'Surat Kilat Khusus',
-					'Paketpos Biasa',
-					'Paket Kilat Khusus',
-					'Express Sameday Dokumen',
-					'Express Sameday Barang',
-					'Express Next Day Dokumen',
-					'Express Next Day Barang',
-					'Paketpos Dangerous Goods',
-					'Paketpos Valuable Goods',
+					'Surat Kilat Khusus'       => 'Surat Kilat Khusus',
+					'Paketpos Biasa'           => 'Paketpos Biasa',
+					'Paket Kilat Khusus'       => 'Paket Kilat Khusus',
+					'Express Samedat Barang'   => 'Express Samedat Barang',
+					'Express Samedat Dokumen'  => 'Express Samedat Dokumen',
+					'Express Next Day Barang'  => 'Express Next Day Barang',
+					'Express Next Day Dokumen' => 'Express Next Day Dokumen',
+					'Paketpos Dangerous Goods' => 'Paketpos Dangerous Goods',
+					'Paketpos Valuable Goods'  => 'Paketpos Valuable Goods',
+					'Kargopos Ritel Train'     => 'Kargopos Ritel Train',
+					'Kargopos Ritel Udara Dn'  => 'Kargopos Ritel Udara Dn',
+					'Paket Jumbo Ekonomi'      => 'Paket Jumbo Ekonomi',
 				),
 				'account'  => array(
 					'starter',
@@ -94,47 +113,15 @@ class Woongkir_Raja_Ongkir {
 				'label'    => 'TIKI',
 				'website'  => 'http://tiki.id',
 				'services' => array(
-					'TRC',
-					'REG',
-					'ECO',
-					'ONS',
-					'SDS',
-					'HDS',
+					'REG' => 'Regular Service',
+					'ECO' => 'Economy Service',
+					'ONS' => 'Over Night Service',
+					'SDS' => 'Same Day Service',
+					'HDS' => 'Holiday Services',
+					'TRC' => 'Trucking Service',
 				),
 				'account'  => array(
 					'starter',
-					'basic',
-					'pro',
-				),
-			),
-			'jne'     => array(
-				'label'    => 'JNE',
-				'website'  => 'http://www.jne.co.id',
-				'services' => array(
-					'CTC',
-					'CTCYES',
-					'OKE',
-					'REG',
-					'YES',
-				),
-				'account'  => array(
-					'starter',
-					'basic',
-					'pro',
-				),
-			),
-			'rpx'     => array(
-				'label'    => 'RPX',
-				'website'  => 'http://www.rpx.co.id',
-				'services' => array(
-					'SDP',
-					'MDP',
-					'NDP',
-					'RGP',
-					'REP',
-					'ERP',
-				),
-				'account'  => array(
 					'basic',
 					'pro',
 				),
@@ -143,94 +130,30 @@ class Woongkir_Raja_Ongkir {
 				'label'    => 'PCP Express',
 				'website'  => 'http://www.pcpexpress.com',
 				'services' => array(
-					'ONS',
-					'NFS',
-					'REG',
+					'TREX' => 'Titipan Regular Express',
+					'JET'  => 'Jaminan Esok Tiba',
+					'HIT'  => 'Hari Ini Tiba',
+					'EXIS' => 'Express Ekonomi',
+					'GODA' => 'Kargo Darat',
 				),
 				'account'  => array(
 					'basic',
 					'pro',
 				),
 			),
-			'star'    => array(
-				'label'    => 'Star Cargo',
-				'website'  => 'http://www.starcargo.co.id',
+			'rpx'     => array(
+				'label'    => 'RPX',
+				'website'  => 'http://www.rpx.co.id',
 				'services' => array(
-					'Express',
-					'Reguler',
-					'Dokumen',
-					'MOTOR',
-					'MOTOR 150 - 250 CC',
+					'SDP' => 'SameDay Package',
+					'MDP' => 'MidDay Package',
+					'NDP' => 'Next Day Package',
+					'RGP' => 'Regular Package',
+					'REP' => 'PAS Reguler',
+					'PAS' => 'Paket Ambil Suka-Suka',
 				),
 				'account'  => array(
-					'pro',
-				),
-			),
-			'sicepat' => array(
-				'label'    => 'SiCepat Express',
-				'website'  => 'http://www.sicepat.com',
-				'services' => array(
-					'REG',
-					'BEST',
-					'Priority',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
-			'jet'     => array(
-				'label'    => 'JET Express',
-				'website'  => 'http://www.jetexpress.co.id',
-				'services' => array(
-					'CRG',
-					'PRI',
-					'REG',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
-			'sap'     => array(
-				'label'    => 'SAP Express',
-				'website'  => 'http://sap-express.id',
-				'services' => array(
-					'REG',
-					'SDS',
-					'ODS',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
-			'pahala'  => array(
-				'label'    => 'Pahala Express',
-				'website'  => 'http://www.pahalaexpress.co.id',
-				'services' => array(
-					'EXPRESS',
-					'ONS',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
-			'slis'    => array(
-				'label'    => 'Solusi Ekspres',
-				'website'  => 'http://www.solusiekspres.com',
-				'services' => array(
-					'REGULAR',
-					'EXPRESS',
-				),
-				'account'  => array(
-					'pro',
-				),
-			),
-			'jnt'     => array(
-				'label'    => 'J&T Express',
-				'website'  => 'http://www.jet.co.id',
-				'services' => array(
-					'EZ',
-				),
-				'account'  => array(
+					'basic',
 					'pro',
 				),
 			),
@@ -238,7 +161,7 @@ class Woongkir_Raja_Ongkir {
 				'label'    => 'Pandu Logistics',
 				'website'  => 'http://www.pandulogistics.com',
 				'services' => array(
-					'REG',
+					'REG' => 'Regular Package',
 				),
 				'account'  => array(
 					'pro',
@@ -248,7 +171,180 @@ class Woongkir_Raja_Ongkir {
 				'label'    => 'Wahana Express',
 				'website'  => 'http://www.wahana.com',
 				'services' => array(
-					'DES',
+					'Normal' => 'Normal Service',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'sicepat' => array(
+				'label'    => 'SiCepat Express',
+				'website'  => 'http://www.sicepat.com',
+				'services' => array(
+					'REG'   => 'Layanan Reguler',
+					'BEST'  => 'Besok Sampai Tujuan',
+					'Cargo' => 'Cargo',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'jnt'     => array(
+				'label'    => 'J&T Express',
+				'website'  => 'http://www.jet.co.id',
+				'services' => array(
+					'EZ'  => 'Regular Service',
+					'JSD' => 'Same Day Service',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'pahala'  => array(
+				'label'    => 'Pahala Express',
+				'website'  => 'http://www.pahalaexpress.co.id',
+				'services' => array(
+					'EXPRESS'     => 'Express Service',
+					'ONS'         => 'One Night Service',
+					'SDS'         => 'Same Day Service',
+					'SEPEDA'      => 'Paket Sepeda',
+					'MOTOR SPORT' => 'Paket Motor Sport',
+					'MOTOR BESAR' => 'Paket Motor Besar',
+					'MOTOR BEBEK' => 'Paket Motor Bebek',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'sap'     => array(
+				'label'    => 'SAP Express',
+				'website'  => 'http://sap-express.id',
+				'services' => array(
+					'REG' => 'Regular Service',
+					'SDS' => 'Same Day Service',
+					'ODS' => 'One Day Service',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'jet'     => array(
+				'label'    => 'JET Express',
+				'website'  => 'http://www.jetexpress.co.id',
+				'services' => array(
+					'PRI' => 'Priority',
+					'XPS' => 'Express',
+					'REG' => 'Regular',
+					'CRG' => 'Cargo',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'slis'    => array(
+				'label'    => 'Solusi Ekspres',
+				'website'  => 'http://www.solusiekspres.com',
+				'services' => array(
+					'REGULAR' => 'Regular Service',
+					'EXPRESS' => 'Express Service',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'dse'     => array(
+				'label'    => '21 Express',
+				'website'  => 'http://21express.co.id',
+				'services' => array(
+					'ECO' => 'Regular Service',
+					'ONS' => 'Over Night Service',
+					'SDS' => 'Same Day Service',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'ncs'     => array(
+				'label'    => 'Nusantara Card Semesta',
+				'website'  => 'http://www.ptncs.com',
+				'services' => array(
+					'NRS' => 'REGULAR SERVICE',
+					'ONS' => 'OVERNIGHT SERVICE',
+					'SDS' => 'SAME DAY SERVICE',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'star'    => array(
+				'label'    => 'Star Cargo',
+				'website'  => 'http://www.starcargo.co.id',
+				'services' => array(
+					'Express'            => 'Express',
+					'Reguler'            => 'Reguler',
+					'Dokumen'            => 'Dokumen',
+					'MOTOR'              => 'MOTOR',
+					'MOTOR 150 - 250 CC' => 'MOTOR 150 - 250 CC',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'lion'    => array(
+				'label'    => 'Lion Parcel',
+				'website'  => 'http://lionparcel.com',
+				'services' => array(
+					'ONEPACK'  => 'One Day Service',
+					'LANDPACK' => 'Logistic Service',
+					'REGPACK'  => 'Regular Service',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'ninja'   => array(
+				'label'    => 'Ninja Xpress',
+				'website'  => 'https://www.ninjaxpress.co',
+				'services' => array(
+					'STANDARD' => 'Standard Service',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'idl'     => array(
+				'label'    => 'Indotama Domestik Lestari',
+				'website'  => 'http://www.idlcargo.co.id',
+				'services' => array(
+					'iSDS' => 'SAME DAY SERVICES',
+					'iONS' => 'OVERNIGHT SERVICES',
+					'iSCF' => 'SPECIAL FLEET',
+					'iREG' => 'REGULAR',
+					'iCon' => 'EKONOMIS',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'rex'     => array(
+				'label'    => 'Royal Express Indonesia',
+				'website'  => 'https://www.rex.co.id',
+				'services' => array(
+					'EXP'    => 'EXPRESS',
+					'REX-1'  => 'REX-1',
+					'REX-5'  => 'REX-5',
+					'REX-10' => 'REX-10',
+				),
+				'account'  => array(
+					'pro',
+				),
+			),
+			'indah'   => array(
+				'label'    => 'Indah Logistic',
+				'website'  => 'http://www.indahonline.com',
+				'services' => array(
+					'DARAT' => 'Cargo Darat',
+					'UDARA' => 'Cargo Udara',
 				),
 				'account'  => array(
 					'pro',
@@ -256,27 +352,27 @@ class Woongkir_Raja_Ongkir {
 			),
 		),
 		'international' => array(
-			'pos'      => array(
-				'label'    => 'POS Indonesia',
-				'website'  => 'http://www.posindonesia.co.id',
-				'services' => array(
-					'Surat R LN',
-					'EMS BARANG',
-					'PAKETPOS CEPAT LN',
-					'PAKETPOS BIASA LN',
-				),
-				'account'  => array(
-					'basic',
-					'pro',
-				),
-			),
 			'jne'      => array(
 				'label'    => 'JNE',
 				'website'  => 'http://www.jne.co.id',
 				'services' => array(
-					'INTL',
+					'INTL' => 'INTL',
 				),
 				'account'  => array(
+					'pro',
+				),
+			),
+			'pos'      => array(
+				'label'    => 'POS Indonesia',
+				'website'  => 'http://www.posindonesia.co.id',
+				'services' => array(
+					'R LN'              => 'R LN',
+					'EMS BARANG'        => 'EMS BARANG',
+					'PAKETPOS CEPAT LN' => 'PAKETPOS CEPAT LN',
+					'PAKETPOS BIASA LN' => 'PAKETPOS BIASA LN',
+				),
+				'account'  => array(
+					'basic',
 					'pro',
 				),
 			),
@@ -284,8 +380,8 @@ class Woongkir_Raja_Ongkir {
 				'label'    => 'Solusi Ekspres',
 				'website'  => 'http://www.solusiekspres.com',
 				'services' => array(
-					'PACKAGE',
-					'COSMETIC/FOOD',
+					'PACKAGE'       => 'PACKAGE',
+					'COSMETIC/FOOD' => 'COSMETIC/FOOD',
 				),
 				'account'  => array(
 					'pro',
@@ -295,11 +391,14 @@ class Woongkir_Raja_Ongkir {
 				'label'    => 'Expedito',
 				'website'  => 'http://www.expedito.co.id',
 				'services' => array(
-					'CityLink',
-					'DHL Indonesia',
-					'DPEX',
-					'FIRST FLIGHT',
-					'TNT | Fedex',
+					'CityLink'         => 'CityLink',
+					'DPEX'             => 'DPEX',
+					'ARAMEX Indonesia' => 'ARAMEX Indonesia',
+					'DHL  JKT'         => 'DHL  JKT',
+					'DHL Singapore'    => 'DHL Singapore',
+					'SF EXPRESS'       => 'SF EXPRESS',
+					'SkyNet Worldwide' => 'SkyNet Worldwide',
+					'TNT | Fedex'      => 'TNT | Fedex',
 				),
 				'account'  => array(
 					'pro',
@@ -598,11 +697,11 @@ class Woongkir_Raja_Ongkir {
 				throw new Exception( wp_sprintf( __( 'Error Code: %1$s, Error Description: %2$s', 'woongkir' ), $error_code, $error_description ) );
 			}
 
-			if ( $data && isset( $data->rajaongkir->results ) ) {
+			if ( $data && isset( $data->rajaongkir->results ) && is_array( $data->rajaongkir->results ) ) {
 				return $data->rajaongkir->results;
 			}
 
-			if ( $data && isset( $data->rajaongkir->result ) ) {
+			if ( $data && isset( $data->rajaongkir->result ) && is_array( $data->rajaongkir->result ) ) {
 				return $data->rajaongkir->result;
 			}
 
