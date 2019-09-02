@@ -90,7 +90,7 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 * Fixed bug to calculate volumetric.
 * Added new couriers: 21 Express, Nusantara Card Semesta, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic.
-* Updated existing coriers.
+* Updated existing couriers.
 
 = 1.2.10 =
 
