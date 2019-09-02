@@ -569,53 +569,45 @@ class Woongkir_Raja_Ongkir {
 	private function validate_api_response( $response ) {
 		try {
 			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_message(), 1 );
+				throw new Exception( $response->get_error_message() );
 			}
 
 			$body = wp_remote_retrieve_body( $response );
 
 			if ( empty( $body ) ) {
-				throw new Exception( __( 'API response is empty.', 'woongkir' ), 1 );
+				throw new Exception( __( 'API response is empty.', 'woongkir' ) );
+			}
+
+			// Try to capture the data for response that has incorrect JSON format.
+			if ( ! preg_match( '/^\{(.*)\}$/s', $body ) && preg_match( '/{"rajaongkir"(.*?)}}/m', $body, $matches, PREG_OFFSET_CAPTURE, 0 ) ) {
+				$body = isset( $matches[0][0] ) && ! empty( $matches[0][0] ) ? $matches[0][0] : $body;
 			}
 
 			$data       = json_decode( $body );
 			$json_error = json_last_error_msg();
 
-			if ( strtolower( $json_error ) !== 'no error' ) {
-				// Try to capture the JSON string for response that has output incorrect JSON format.
-				preg_match( '/{"rajaongkir"(.*?)}}/m', $body, $matches, PREG_OFFSET_CAPTURE, 0 );
-
-				if ( ! isset( $matches[0][0] ) || empty( $matches[0][0] ) ) {
-					$body = is_string( $body ) ? $body : wp_json_encode( $body );
-					// translators: %1$s - Error message from RajaOngkir.com, %2$s - API response body.
-					throw new Exception( wp_sprintf( __( '%1$s -- %2$s', 'woongkir' ), $json_error, $body ), 1 );
-				}
-
-				$body       = $matches[0][0];
-				$data       = json_decode( $matches[0][0] );
-				$json_error = json_last_error_msg();
-
-				if ( strtolower( $json_error ) !== 'no error' ) {
-					$body = is_string( $body ) ? $body : wp_json_encode( $body );
-					// translators: %1$s - Error message from RajaOngkir.com, %2$s - API response body.
-					throw new Exception( wp_sprintf( __( '%1$s -- %2$s', 'woongkir' ), $json_error, $body ), 1 );
-				}
+			if ( $json_error && strtolower( $json_error ) !== 'no error' ) {
+				// translators: %1$s - JSON error message, %2$s API response body.
+				throw new Exception( wp_sprintf( __( 'Failed to decode the JSON data: Error: %1$s, Body: %2$s', 'woongkir' ), $json_error, $body ) );
 			}
 
-			if ( isset( $data->rajaongkir->status ) && 200 !== $data->rajaongkir->status->code ) {
-				// translators: %s - Error message from RajaOngkir.com.
-				throw new Exception( $data->rajaongkir->status->description, 1 );
+			if ( $data && isset( $data->rajaongkir->status ) && 200 !== intval( $data->rajaongkir->status->code ) ) {
+				$error_code        = $data->rajaongkir->status->code;
+				$error_description = isset( $data->rajaongkir->status->description ) ? $data->rajaongkir->status->description : '';
+				// translators: %1$s - API error code, %2$s API error description.
+				throw new Exception( wp_sprintf( __( 'Error Code: %1$s, Error Description: %2$s', 'woongkir' ), $error_code, $error_description ) );
 			}
 
-			if ( isset( $data->rajaongkir->results ) ) {
+			if ( $data && isset( $data->rajaongkir->results ) ) {
 				return $data->rajaongkir->results;
 			}
 
-			if ( isset( $data->rajaongkir->result ) ) {
+			if ( $data && isset( $data->rajaongkir->result ) ) {
 				return $data->rajaongkir->result;
 			}
 
-			throw new Exception( __( 'API response is invalid.', 'woongkir' ), 1 );
+			// translators: %1$s - API response body.
+			throw new Exception( wp_sprintf( __( 'API response is invalid:  %1$s', 'woongkir' ), $body ), 1 );
 		} catch ( Exception $e ) {
 			$wc_log = wc_get_logger();
 			$wc_log->log( 'error', wp_strip_all_tags( $e->getMessage(), true ), array( 'source' => 'woongkir_api_error' ) );
