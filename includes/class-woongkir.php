@@ -1091,12 +1091,12 @@ class Woongkir extends WC_Shipping_Method {
 			$length = wc_get_dimension( max( $length ), 'cm' );
 			$height = wc_get_dimension( array_sum( $height ), 'cm' );
 
+			$data['width']  = $width;
+			$data['length'] = $length;
+			$data['height'] = $height;
+
 			if ( 'yes' === $this->volumetric_calculator && $this->volumetric_divider ) {
 				$data['weight'] = max( $data['weight'], $this->convert_volumetric( $width, $length, $height ) );
-			} else {
-				$data['width']  = $width;
-				$data['length'] = $length;
-				$data['width']  = $height;
 			}
 		}
 
@@ -1120,7 +1120,7 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return int Weight in gram units.
 	 */
 	public function convert_volumetric( $width, $length, $height ) {
-		return( ( $width * $length * $height ) / $this->volumetric_divider ) * 1000;
+		return ceil( ( ( $width * $length * $height ) / $this->volumetric_divider ) * 1000 );
 	}
 
 	/**
