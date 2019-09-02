@@ -4,7 +4,7 @@ Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Expres
 Requires at least: 4.8
 Tested up to: 5.2.2
 Requires PHP: 5.6
-Stable tag: 1.2.10
+Stable tag: 1.2.11
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -85,6 +85,12 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.2.11 =
+
+* Fixed bug to calculate volumetric.
+* Added new couriers: 21 Express, Nusantara Card Semesta, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic.
+* Updated existing coriers.
 
 = 1.2.10 =
 
