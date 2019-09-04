@@ -60,11 +60,13 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return void
 	 */
 	public function __construct( $instance_id = 0 ) {
-		$this->instance_id        = absint( $instance_id );
-		$this->id                 = WOONGKIR_METHOD_ID;
-		$this->method_title       = WOONGKIR_METHOD_TITLE;
-		$this->title              = WOONGKIR_METHOD_TITLE;
-		$this->method_description = __( 'Shipping rates calculator using Indonesia shipping couriers JNE, TIKI, POS, PCP, RPX, STAR, SICEPAT, JET, PANDU, J&T, SLIS, EXPEDITO for Domestic and International shipment.', 'woongkir' );
+		$this->api          = new Woongkir_Raja_Ongkir();
+		$this->instance_id  = absint( $instance_id );
+		$this->id           = WOONGKIR_METHOD_ID;
+		$this->method_title = WOONGKIR_METHOD_TITLE;
+		$this->title        = WOONGKIR_METHOD_TITLE;
+		// translators: %s = List of supported couriers.
+		$this->method_description = sprintf( __( 'WooCommerce shipping rates calculator for Indonesia domestic and international shipment: %s.', 'woongkir' ), implode( ', ', $this->api->get_couriers_names() ) );
 		$this->supports           = array(
 			'shipping-zones',
 			'instance-settings',
@@ -87,8 +89,6 @@ class Woongkir extends WC_Shipping_Method {
 
 		// Hook to woocommerce_cart_shipping_packages to inject filed address_2.
 		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
-
-		$this->api = new Woongkir_Raja_Ongkir();
 
 		$this->init();
 	}
@@ -181,7 +181,7 @@ class Woongkir extends WC_Shipping_Method {
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
 				'placeholder' => '',
-				'description' => __( '<a href="http://www.rajaongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
+				'description' => __( '<a href="http://www.rajaongkir.com?utm_source=woongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
 				'default'     => '',
 			),
 			'account_type'          => array(
@@ -346,7 +346,7 @@ class Woongkir extends WC_Shipping_Method {
 							<tr>
 								<th>&nbsp;</th>
 								<?php foreach ( $this->api->get_account() as $account_type => $account_data ) { ?>
-									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><a href="https://rajaongkir.com/dokumentasi#akun-ringkasan" target="_blank"><?php echo esc_html( $account_data['label'] ); ?></a></th>
+									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank"><?php echo esc_html( $account_data['label'] ); ?></a></th>
 								<?php } ?>
 							</tr>
 						</thead>
@@ -403,7 +403,9 @@ class Woongkir extends WC_Shipping_Method {
 			$couriers_raw[ $code ] = $courier;
 		}
 
-		usort( $couriers_raw, array( $this, 'sort_couriers_list_' . $key ) );
+		if ( ! empty( $this->{$key} ) ) {
+			usort( $couriers_raw, array( $this, 'sort_couriers_list_' . $key ) );
+		}
 
 		$couriers = array();
 
@@ -451,11 +453,18 @@ class Woongkir extends WC_Shipping_Method {
 									?>
 								</div>
 								<ul class="woongkir-services">
-									<?php foreach ( $courier['services'] as $index => $service ) : ?>
+									<?php
+									foreach ( $courier['services'] as $index => $service ) :
+										$service_label = $index !== $service ? wp_sprintf( '%1$s - %2$s', $index, $service ) : $service;
+										?>
 									<li class="woongkir-services-item">
-										<label><input type="checkbox" class="woongkir-service woongkir-service--single" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $service ); ?>" <?php checked( ( isset( $selected[ $courier_id ] ) && in_array( $service, $selected[ $courier_id ], true ) ? $service : false ), $service ); ?>><?php echo wp_kses_post( $service ); ?></label>
+										<label>
+											<input type="checkbox" class="woongkir-service woongkir-service--single" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" <?php checked( ( isset( $selected[ $courier_id ] ) && in_array( $index, $selected[ $courier_id ], true ) ? $index : false ), $index ); ?>><?php echo wp_kses_post( $service_label ); ?>
+										</label>
 									</li>
-									<?php endforeach; ?>
+										<?php
+									endforeach;
+									?>
 								</ul>
 							</div>
 						</li>
@@ -891,35 +900,50 @@ class Woongkir extends WC_Shipping_Method {
 		$label = wp_sprintf( '%s - %s', strtoupper( $courier_code ), $service->service );
 
 		if ( 'yes' === $this->show_eta ) {
-			$data = $this->parse_service_data( $service );
+			$data          = $this->parse_service_data( $service );
+			$etd           = isset( $data['etd'] ) ? strtolower( $data['etd'] ) : false;
+			$etd           = str_replace( array( 'jam', 'hari' ), array( 'hour', 'day' ), $etd );
+			$duration_text = '';
 
-			$etd = isset( $data['etd'] ) ? $data['etd'] : false;
+			if ( $etd && preg_match( '/\d\s?-\s?\d/', $etd, $matches ) ) {
+				$duration = isset( $matches[0] ) ? explode( '-', $matches[0] ) : false;
 
-			if ( $etd ) {
-				$etd = strtoupper( $etd );
+				if ( $duration && is_array( $duration ) && count( $duration ) === 2 ) {
+					$duration           = array_map( 'trim', $duration );
+					$duration_start     = intval( $duration[0] );
+					$duration_end       = intval( $duration[1] );
+					$duration_separated = $duration_start !== $duration_end;
 
-				if ( '1-1' === $etd ) {
-					$etd = '1';
+					if ( $duration_separated ) {
+						if ( false !== strpos( $etd, 'hour' ) ) {
+							// translators: %1$d duration start, %2$d duration end.
+							$duration_text = sprintf( __( '%1$d-%2$d hours', 'woongkir' ), number_format_i18n( $duration_start ), number_format_i18n( $duration_end ) );
+						} else {
+							// translators: %1$d duration start, %2$d duration end.
+							$duration_text = sprintf( __( '%1$d-%2$d days', 'woongkir' ), number_format_i18n( $duration_start ), number_format_i18n( $duration_end ) );
+						}
+					} else {
+						if ( false !== strpos( $etd, 'hour' ) ) {
+							// translators: %s duration length.
+							$duration_text = sprintf( _n( '%s hour', '%s hours', $duration_start, 'woongkir' ), number_format_i18n( $duration_start ) );
+						} else {
+							// translators: %s duration length.
+							$duration_text = sprintf( _n( '%s day', '%s days', $duration_start, 'woongkir' ), number_format_i18n( $duration_start ) );
+						}
+					}
 				}
-
-				if ( false === strpos( $etd, 'HARI' ) && false === strpos( $etd, 'JAM' ) ) {
-					$etd = ( '1' === $etd ) ? $etd . ' {day}' : $etd . ' {days}';
+			} elseif ( $etd && preg_match( '/\d/', $etd, $matches ) ) {
+				if ( false !== strpos( $etd, 'hour' ) ) {
+					// translators: %s duration length.
+					$duration_text = sprintf( _n( '%s hour', '%s hours', $matches[0], 'woongkir' ), number_format_i18n( $matches[0] ) );
+				} else {
+					// translators: %s duration length.
+					$duration_text = sprintf( _n( '%s day', '%s days', $matches[0], 'woongkir' ), number_format_i18n( $matches[0] ) );
 				}
+			}
 
-				if ( false !== strpos( $etd, 'HARI' ) ) {
-					$etd = ( str_replace( ' HARI', '', $etd ) === '1' ) ? str_replace( 'HARI', '{day}', $etd ) : str_replace( 'HARI', '{days}', $etd );
-				}
-
-				if ( false !== strpos( $etd, 'JAM' ) ) {
-					$etd = ( str_replace( ' JAM', '', $etd ) === '1' ) ? str_replace( 'JAM', '{hour}', $etd ) : str_replace( 'JAM', '{hours}', $etd );
-				}
-
-				$etd_find    = array( '{hour}', '{hours}', '{day}', '{days}' );
-				$etd_replace = array( __( 'Hour', 'woongkir' ), __( 'Hours', 'woongkir' ), __( 'Day', 'woongkir' ), __( 'Days', 'woongkir' ) );
-
-				$etd = str_replace( $etd_find, $etd_replace, $etd );
-
-				$label = wp_sprintf( '%s (%s)', $label, $etd );
+			if ( $duration_text ) {
+				$label = wp_sprintf( '%1$s (%2$s)', $label, $duration_text );
 			}
 		}
 
@@ -1091,12 +1115,12 @@ class Woongkir extends WC_Shipping_Method {
 			$length = wc_get_dimension( max( $length ), 'cm' );
 			$height = wc_get_dimension( array_sum( $height ), 'cm' );
 
+			$data['width']  = $width;
+			$data['length'] = $length;
+			$data['height'] = $height;
+
 			if ( 'yes' === $this->volumetric_calculator && $this->volumetric_divider ) {
 				$data['weight'] = max( $data['weight'], $this->convert_volumetric( $width, $length, $height ) );
-			} else {
-				$data['width']  = $width;
-				$data['length'] = $length;
-				$data['width']  = $height;
 			}
 		}
 
@@ -1120,7 +1144,7 @@ class Woongkir extends WC_Shipping_Method {
 	 * @return int Weight in gram units.
 	 */
 	public function convert_volumetric( $width, $length, $height ) {
-		return( ( $width * $length * $height ) / $this->volumetric_divider ) * 1000;
+		return ceil( ( ( $width * $length * $height ) / $this->volumetric_divider ) * 1000 );
 	}
 
 	/**
@@ -1346,7 +1370,7 @@ class Woongkir extends WC_Shipping_Method {
 	 * @param array $b Value to compare.
 	 * @return bool
 	 */
-	private function sort_couriers_list_domestic( $a, $b ) {
+	protected function sort_couriers_list_domestic( $a, $b ) {
 		$priority = array();
 
 		if ( empty( $this->domestic ) ) {
@@ -1364,7 +1388,7 @@ class Woongkir extends WC_Shipping_Method {
 			return 0;
 		}
 
-		return ( $al > $bl ) ? +1 : -1;
+		return ( $al > $bl ) ? 1 : -1;
 	}
 
 	/**
@@ -1374,7 +1398,7 @@ class Woongkir extends WC_Shipping_Method {
 	 * @param array $b Value to compare.
 	 * @return bool
 	 */
-	private function sort_couriers_list_international( $a, $b ) {
+	protected function sort_couriers_list_international( $a, $b ) {
 		$priority = array();
 
 		if ( empty( $this->international ) ) {
@@ -1392,7 +1416,7 @@ class Woongkir extends WC_Shipping_Method {
 			return 0;
 		}
 
-		return ( $al > $bl ) ? +1 : -1;
+		return ( $al > $bl ) ? 1 : -1;
 	}
 
 	/**
