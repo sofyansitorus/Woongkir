@@ -91,7 +91,7 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 	/**
 	 * Get localized scripts parameters.
 	 *
-	 * @since ??
+	 * @since 1.2.11
 	 *
 	 * @param array $params Custom localized scripts parameters.
 	 *
@@ -137,7 +137,7 @@ if ( ! function_exists( 'woongkir_is_dev' ) ) :
 	/**
 	 * Check is in development envirntment.
 	 *
-	 * @since ??
+	 * @since 1.2.11
 	 *
 	 * @return bool
 	 */
