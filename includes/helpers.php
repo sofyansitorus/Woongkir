@@ -8,7 +8,7 @@
 if ( ! function_exists( 'woongkir_is_plugin_active' ) ) :
 	/**
 	 * Check if plugin is active
-	 * 
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param string $plugin_file Plugin file name.
@@ -90,7 +90,7 @@ endif;
 if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 	/**
 	 * Get localized scripts parameters.
-	 * 
+	 *
 	 * @since ??
 	 *
 	 * @param array $params Custom localized scripts parameters.
@@ -136,7 +136,7 @@ endif;
 if ( ! function_exists( 'woongkir_is_dev' ) ) :
 	/**
 	 * Check is in development envirntment.
-	 * 
+	 *
 	 * @since ??
 	 *
 	 * @return bool
