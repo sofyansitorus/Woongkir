@@ -92,6 +92,9 @@ class Woongkir {
 		add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
 
 		// Hook to register the shipping method.
+		add_action( 'woocommerce_shipping_init', array( $this, 'load_dependencies' ) );
+
+		// Hook to register the shipping method.
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'register_shipping_method' ) );
 	}
 
@@ -440,6 +443,17 @@ class Woongkir {
 		?>
 		<input type="hidden" id="calc_shipping_address_2_dummy" value="<?php echo esc_attr( WC()->cart->get_customer()->get_shipping_address_2() ); ?>" />
 		<?php
+	}
+
+
+	/**
+	 * Wrap and load main class to ensure the classes need to extend is exist.
+	 *
+	 * @since 1.0.0
+	 */
+	public function load_dependencies() {
+		require_once WOONGKIR_PATH . 'includes/class-woongkir-raja-ongkir.php';
+		require_once WOONGKIR_PATH . 'includes/class-woongkir-shipping-method.php';
 	}
 
 	/**

@@ -43,8 +43,6 @@ define( 'WOONGKIR_VERSION', '1.2.11' );
 // Load the dependecies.
 require_once WOONGKIR_PATH . 'includes/helpers.php';
 require_once WOONGKIR_PATH . 'includes/class-woongkir.php';
-require_once WOONGKIR_PATH . 'includes/class-woongkir-raja-ongkir.php';
-require_once WOONGKIR_PATH . 'includes/class-woongkir-shipping-method.php';
 
 /**
  * Boot the plugin
