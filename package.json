@@ -21,11 +21,13 @@
     "gulp-phpcs": "^2.1.0",
     "gulp-plumber": "^1.2.0",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^1.0.0",
     "gulp-sass": "^4.0.1",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-uglify": "3.0.0",
     "gulp-wp-pot": "^2.2.0",
     "gulp-zip": "^4.1.0",
+    "semver": "^6.3.0",
     "yargs": "^11.0.0"
   }
 }

@@ -1,6 +1,8 @@
 /**
  * Import modules
  */
+const packageJSON = require('./package.json');
+const semver = require('semver');
 const gulp = require('gulp');
 const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
@@ -17,7 +19,7 @@ const cleanCSS = require('gulp-clean-css');
 const sourcemaps = require('gulp-sourcemaps');
 const wpPot = require('gulp-wp-pot');
 const phpcs = require('gulp-phpcs');
-const bump = require('gulp-bump');
+const replace = require('gulp-replace');
 
 /**
  * Local variables
@@ -371,34 +373,40 @@ gulp.task('default', tasksListDefault, function () {
 });
 
 gulp.task('bump', function () {
-    var sources = [
+    const versionCurrent = packageJSON.version;
+    const versionBump = semver.inc(packageJSON.version, (argv.type || 'patch'));
+
+    const assets = [
         {
-            file: ['./README.txt'],
-            config: {
-                key: "Stable tag",
-                type: argv.hasOwnProperty('type') ? argv.type : 'patch',
-            },
+            src: ['./README.txt'],
+            dest: './',
+            search: 'Stable tag: {versionCurrent}',
+            replaceWith: 'Stable tag: {versionBump}',
         },
         {
-            file: ['./woongkir.php'],
-            config: {
-                key: "Version",
-                type: argv.hasOwnProperty('type') ? argv.type : 'patch',
-            },
+            src: ['./woongkir.php'],
+            dest: './',
+            search: '{versionCurrent}',
+            replaceWith: '{versionBump}',
         },
         {
-            file: ['./package.json'],
-            config: {
-                key: "version",
-                type: argv.hasOwnProperty('type') ? argv.type : 'patch',
-            },
+            src: ['./package.json'],
+            dest: './',
+            search: '{versionCurrent}',
+            replaceWith: '{versionBump}',
+        },
+        {
+            src: ['./includes/*.php'],
+            dest: './includes/',
+            search: '@since ??',
+            replaceWith: '@since {versionBump}',
         },
     ];
 
-    sources.forEach(function (source) {
-        gulp.src(source.file)
-            .pipe(bump(source.config))
-            .pipe(gulp.dest('./'));
+    assets.forEach(function (asset) {
+        gulp.src(asset.src)
+            .pipe(replace(asset.search.replace('{versionCurrent}', versionCurrent), asset.replaceWith.replace('{versionBump}', versionBump)))
+            .pipe(gulp.dest(asset.dest));
     });
 });
 
@@ -423,6 +431,9 @@ gulp.task('dist', ['build'], function () {
         '!package.json',
         '!composer.lock',
         '!composer.json',
+        '!yarn.lock',
         '!phpunit.xml'
-    ]).pipe(gulp.dest('./dist'));
+    ])
+    .pipe(gulp.dest('./dist/trunk'))
+    .pipe(gulp.dest('./dist/tags/' + packageJSON.version));
 });
