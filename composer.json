@@ -8,6 +8,11 @@
             "email": "sofyansitorus@gmail.com"
         }
     ],
+    "config": {
+        "platform": {
+            "php": "5.6"
+        }
+    },
     "require": {},
     "require-dev": {
         "phpcompatibility/php-compatibility": "*",
