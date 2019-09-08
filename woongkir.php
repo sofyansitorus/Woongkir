@@ -40,9 +40,33 @@ define( 'WOONGKIR_METHOD_ID', 'woongkir' );
 define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
 define( 'WOONGKIR_VERSION', '1.2.11' );
 
-// Load the dependecies.
+// Load the helpers.
 require_once WOONGKIR_PATH . 'includes/helpers.php';
-require_once WOONGKIR_PATH . 'includes/class-woongkir.php';
+
+/**
+ * Class autoloader
+ *
+ * @since ??
+ *
+ * @param string $class Class name.
+ *
+ * @return void
+ */
+function woongkir_autoloader( $class ) {
+	$class = strtolower( $class );
+
+	if ( strpos( $class, 'woongkir' ) !== 0 ) {
+		return;
+	}
+
+	if ( strpos( $class, 'woongkir_courier_' ) === 0 ) {
+		require_once WOONGKIR_PATH . 'includes/couriers/class-' . str_replace( '_', '-', $class ) . '.php';
+	} else {
+		require_once WOONGKIR_PATH . 'includes/classes/class-' . str_replace( '_', '-', $class ) . '.php';
+	}
+}
+
+spl_autoload_register( 'woongkir_autoloader' );
 
 /**
  * Boot the plugin

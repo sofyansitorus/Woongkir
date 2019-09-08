@@ -12,6 +12,11 @@
  * @subpackage Woongkir/includes
  */
 
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * The core plugin class.
  *
@@ -29,7 +34,7 @@
 class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 	/**
-	 * Woongkir_Raja_Ongkir API Class Object
+	 * Woongkir_API API Class Object
 	 *
 	 * @since 1.0.0
 	 * @var object
@@ -60,7 +65,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return void
 	 */
 	public function __construct( $instance_id = 0 ) {
-		$this->api          = new Woongkir_Raja_Ongkir();
+		$this->api          = new Woongkir_API();
 		$this->instance_id  = absint( $instance_id );
 		$this->id           = WOONGKIR_METHOD_ID;
 		$this->method_title = WOONGKIR_METHOD_TITLE;

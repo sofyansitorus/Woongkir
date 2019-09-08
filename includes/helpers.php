@@ -5,6 +5,11 @@
  * @package Woongkir
  */
 
+// If this file is called directly, abort.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! function_exists( 'woongkir_is_plugin_active' ) ) :
 	/**
 	 * Check if plugin is active
