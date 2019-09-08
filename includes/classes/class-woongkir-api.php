@@ -47,6 +47,7 @@ class Woongkir_API {
 			'subdistrict'      => false,
 			'multiple_coriers' => false,
 			'volumetric'       => false,
+			'weight_over_30kg' => false,
 			'dedicated_server' => false,
 		),
 		'basic'   => array(
@@ -55,6 +56,7 @@ class Woongkir_API {
 			'subdistrict'      => false,
 			'multiple_coriers' => true,
 			'volumetric'       => false,
+			'weight_over_30kg' => false,
 			'dedicated_server' => false,
 		),
 		'pro'     => array(
@@ -63,6 +65,7 @@ class Woongkir_API {
 			'subdistrict'      => true,
 			'multiple_coriers' => true,
 			'volumetric'       => true,
+			'weight_over_30kg' => true,
 			'dedicated_server' => true,
 		),
 	);

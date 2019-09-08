@@ -215,6 +215,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			'multiple_coriers' => __( 'Multiple Couriers', 'woongkir' ),
 			'subdistrict'      => __( 'Calculate Subdistrict', 'woongkir' ),
 			'volumetric'       => __( 'Calculate Volumetric', 'woongkir' ),
+			'weight_over_30kg' => __( 'Weight Over 30kg', 'woongkir' ),
 			'dedicated_server' => __( 'Dedicated Server', 'woongkir' ),
 		);
 
@@ -1145,8 +1146,12 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$priority[ $courier ] = $index;
 		}
 
-		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : 15;
-		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : 15;
+		$letter_index = range( 'a', 'z' );
+		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index ) + 10 );
+		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index ) + 10 );
+
+		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : ( count( $this->domestic ) + $a_code_index );
+		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : ( count( $this->domestic ) + $b_code_index );
 
 		if ( $al === $bl ) {
 			return 0;
@@ -1173,8 +1178,12 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$priority[ $courier ] = $index;
 		}
 
-		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : 15;
-		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : 15;
+		$letter_index = range( 'a', 'z' );
+		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index ) + 10 );
+		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index ) + 10 );
+
+		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : ( count( $this->international ) + $a_code_index );
+		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : ( count( $this->international ) + $b_code_index );
 
 		if ( $al === $bl ) {
 			return 0;
