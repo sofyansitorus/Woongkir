@@ -226,7 +226,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			'dedicated_server'  => __( 'Dedicated Server', 'woongkir' ),
 		);
 
-		$accounts = $this->api->get_accounts( false );
+		$accounts = $this->api->get_accounts();
 
 		foreach ( $fetaures as $fetaure_key => $fetaure_label ) {
 			$settings['account_type']['features'][ $fetaure_key ]['label'] = $fetaure_label;
@@ -324,8 +324,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 						<thead>
 							<tr>
 								<th>&nbsp;</th>
-								<?php foreach ( $this->api->get_accounts() as $account_type => $account_data ) { ?>
-									<th class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank"><?php echo esc_html( $account_data['label'] ); ?></a></th>
+								<?php foreach ( $this->api->get_accounts() as $account ) { ?>
+									<th class="woongkir-account-features-col-<?php echo esc_attr( $account->get_type() ); ?>"><a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank"><?php echo esc_html( $account->get_label() ); ?></a></th>
 								<?php } ?>
 							</tr>
 						</thead>
@@ -553,7 +553,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 		if ( $value ) {
 			$field   = $this->instance_form_fields[ $key ];
-			$account = $this->api->get_account( $this->posted_field_value( 'account_type' ), false );
+			$account = $this->api->get_account( $this->posted_field_value( 'account_type' ) );
 
 			if ( ! $account ) {
 				throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
@@ -626,9 +626,9 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 				if ( false === $results ) {
 					if ( 'domestic' === $api_request_params['zone'] ) {
-						$results = $this->api->query_cost( $api_request_params );
+						$results = $this->api->request_cost( $api_request_params );
 					} else {
-						$results = $this->api->query_international_cost( $api_request_params );
+						$results = $this->api->request_cost_international( $api_request_params );
 					}
 				}
 
@@ -670,33 +670,33 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				)
 			);
 
-			foreach ( $results as $result_key => $result ) {
-				if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {
-					continue;
-				}
+			// foreach ( $results as $result_key => $result ) {
+			// if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {
+			// continue;
+			// }
 
-				if ( ! in_array( $result['service'], $allowed_services[ $result['courier'] ], true ) ) {
-					continue;
-				}
+			// if ( ! in_array( $result['service'], $allowed_services[ $result['courier'] ], true ) ) {
+			// continue;
+			// }
 
-				$rate_id    = $this->get_rate_id( $result_key );
-				$rate_label = wp_sprintf( '%s - %s', strtoupper( $result['courier'] ), $result['service'] );
+			// $rate_id    = $this->get_rate_id( $result_key );
+			// $rate_label = wp_sprintf( '%s - %s', strtoupper( $result['courier'] ), $result['service'] );
 
-				if ( 'yes' === $this->show_eta && $result['etd'] ) {
-					$rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
-				}
+			// if ( 'yes' === $this->show_eta && $result['etd'] ) {
+			// $rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
+			// }
 
-				$this->add_rate(
-					array(
-						'id'        => $rate_id,
-						'label'     => $rate_label,
-						'cost'      => $result['cost'],
-						'meta_data' => array(
-							'result' => $result,
-						),
-					)
-				);
-			}
+			// $this->add_rate(
+			// array(
+			// 'id'        => $rate_id,
+			// 'label'     => $rate_label,
+			// 'cost'      => $result['cost'],
+			// 'meta_data' => array(
+			// 'result' => $result,
+			// ),
+			// )
+			// );
+			// }
 		} catch ( Exception $e ) {
 			$this->show_debug( $e->getMessage() );
 		}
@@ -718,7 +718,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		$domestic = 'ID' === $shipping_address['country'];
 
 		if ( $domestic ) {
-			$account = $this->api->get_account( $this->account_type, false );
+			$account = $this->api->get_account( $this->account_type );
 
 			return array(
 				'origin'     => $account && $account->feature_enable( 'subdistrict' ) ? $this->origin_subdistrict : $this->origin_city,
@@ -912,7 +912,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		}
 
 		// Get current API account.
-		$account = $this->api->get_account( $this->account_type, false );
+		$account = $this->api->get_account( $this->account_type );
 
 		if ( $account && $account->feature_enable( 'subdistrict' ) && ! empty( $shipping_address['address_2'] ) ) {
 			// Get subdistrict ID data.
@@ -986,7 +986,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
 		// Convert the volumetric to weight.
-		$account = $this->api->get_account( $this->account_type, false );
+		$account = $this->api->get_account( $this->account_type );
 
 		if ( $account && $account->feature_enable( 'volumetric' ) ) {
 			$width  = wc_get_dimension( max( $width ), 'cm' );

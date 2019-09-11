@@ -164,7 +164,7 @@ class Woongkir_API {
 		$account  = $this->get_account( $this->get_option( 'account_type' ) );
 		$endpoint = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
 
-		if ( $courier && ! $account['multiple_couriers'] ) {
+		if ( $courier && ! $account->feature_enable( 'multiple_couriers' ) ) {
 			$courier = array_slice( $courier, 0, 1 );
 		}
 
@@ -187,10 +187,10 @@ class Woongkir_API {
 
 				default:
 					$params = array(
-						'destination'     => ( $account['subdistrict'] && ! empty( $destination['subdistrict'] ) ) ? $destination['subdistrict'] : $destination['city'],
-						'destinationType' => ( $account['subdistrict'] && ! empty( $destination['subdistrict'] ) ) ? 'subdistrict' : 'city',
-						'origin'          => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? $origin['subdistrict'] : $origin['city'],
-						'originType'      => ( $account['subdistrict'] && ! empty( $origin['subdistrict'] ) ) ? 'subdistrict' : 'city',
+						'destination'     => ( $account->feature_enable( 'subdistrict' ) && ! empty( $destination['subdistrict'] ) ) ? $destination['subdistrict'] : $destination['city'],
+						'destinationType' => ( $account->feature_enable( 'subdistrict' ) && ! empty( $destination['subdistrict'] ) ) ? 'subdistrict' : 'city',
+						'origin'          => ( $account->feature_enable( 'subdistrict' ) && ! empty( $origin['subdistrict'] ) ) ? $origin['subdistrict'] : $origin['city'],
+						'originType'      => ( $account->feature_enable( 'subdistrict' ) && ! empty( $origin['subdistrict'] ) ) ? 'subdistrict' : 'city',
 						'courier'         => implode( ':', $couriers ),
 					);
 					break;
@@ -271,7 +271,7 @@ class Woongkir_API {
 			$response = wp_remote_request( $this->api_url( $endpoint ), $args );
 		}
 
-		return $this->validate_api_response( $response );
+		return $this->response_http_parser( $response );
 	}
 
 	/**
@@ -311,7 +311,7 @@ class Woongkir_API {
 			$response = wp_remote_post( $this->api_url( $endpoint ), $args );
 		}
 
-		return $this->validate_api_response( $response );
+		return $this->response_http_parser( $response );
 	}
 
 	/**
@@ -355,66 +355,7 @@ class Woongkir_API {
 			$response = wp_remote_get( $url, $args );
 		}
 
-		return $this->validate_api_response( $response );
-	}
-
-	/**
-	 * Validate API request response.
-	 *
-	 * @since 1.0.0
-	 * @param mixed $response API request response data.
-	 * @throws Exception Error exception when response data is invalid.
-	 * @return mixed WP_Error object on failure.
-	 */
-	private function validate_api_response( $response ) {
-		try {
-			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_message() );
-			}
-
-			$body = wp_remote_retrieve_body( $response );
-
-			if ( empty( $body ) ) {
-				throw new Exception( __( 'API response is empty.', 'woongkir' ) );
-			}
-
-			// Try to capture the data for response that has incorrect JSON format.
-			if ( ! preg_match( '/^\{(.*)\}$/s', $body ) && preg_match( '/{"rajaongkir"(.*?)}}/m', $body, $matches, PREG_OFFSET_CAPTURE, 0 ) ) {
-				$body = isset( $matches[0][0] ) && ! empty( $matches[0][0] ) ? $matches[0][0] : $body;
-			}
-
-			$data       = json_decode( $body );
-			$json_error = json_last_error_msg();
-
-			if ( $json_error && strtolower( $json_error ) !== 'no error' ) {
-				// translators: %1$s - JSON error message, %2$s API response body.
-				throw new Exception( wp_sprintf( __( 'Failed to decode the JSON data: Error: %1$s, Body: %2$s', 'woongkir' ), $json_error, $body ) );
-			}
-
-			if ( $data && isset( $data->rajaongkir->status ) && 200 !== intval( $data->rajaongkir->status->code ) ) {
-				$error_code        = $data->rajaongkir->status->code;
-				$error_description = isset( $data->rajaongkir->status->description ) ? $data->rajaongkir->status->description : '';
-				// translators: %1$s - API error code, %2$s API error description.
-				throw new Exception( wp_sprintf( __( 'Error Code: %1$s, Error Description: %2$s', 'woongkir' ), $error_code, $error_description ) );
-			}
-
-			if ( $data && isset( $data->rajaongkir->results ) && is_array( $data->rajaongkir->results ) ) {
-				return $data->rajaongkir->results;
-			}
-
-			if ( $data && isset( $data->rajaongkir->result ) && is_array( $data->rajaongkir->result ) ) {
-				return $data->rajaongkir->result;
-			}
-
-			// translators: %1$s - API response body.
-			throw new Exception( wp_sprintf( __( 'API response is invalid:  %1$s', 'woongkir' ), $body ), 1 );
-		} catch ( Exception $e ) {
-			$wc_log = wc_get_logger();
-			$wc_log->log( 'error', wp_strip_all_tags( $e->getMessage(), true ), array( 'source' => 'woongkir_api_error' ) );
-
-			// translators: %s - Error message from RajaOngkir.com.
-			return new WP_Error( 'invalid_api_response', wp_sprintf( __( '<strong>Error from RajaOngkir.com</strong>: %s', 'woongkir' ), $e->getMessage() ) );
-		}
+		return $this->response_http_parser( $response );
 	}
 
 	/**
@@ -463,15 +404,16 @@ class Woongkir_API {
 	 */
 	private function api_url( $endpoint ) {
 		$account = $this->get_account( $this->get_option( 'account_type' ) );
+
 		switch ( $endpoint ) {
 			case 'internationalOrigin':
 			case 'internationalDestination':
 			case 'internationalCost':
-				$url = $account['api_url'] . '/v2/' . $endpoint;
+				$url = $account->get_api_url() . '/v2/' . $endpoint;
 				break;
 
 			default:
-				$url = $account['api_url'] . '/' . $endpoint;
+				$url = $account->get_api_url() . '/' . $endpoint;
 				break;
 		}
 
@@ -487,7 +429,7 @@ class Woongkir_API {
 	 *
 	 * @return array
 	 */
-	public function get_accounts( $as_array = true ) {
+	public function get_accounts( $as_array = false ) {
 		if ( ! $as_array ) {
 			return $this->accounts;
 		}
@@ -509,9 +451,9 @@ class Woongkir_API {
 	 * @param string $type Account type key.
 	 * @param bool   $as_array Wethere to return data as array or not.
 	 *
-	 * @return (object|array|bool) Courier object or array data. False on failure.
+	 * @return (Woongkir_Account|array|bool) Courier object or array data. False on failure.
 	 */
-	public function get_account( $type, $as_array = true ) {
+	public function get_account( $type, $as_array = false ) {
 		$accounts = $this->get_accounts( $as_array );
 
 		if ( isset( $accounts[ $type ] ) ) {
@@ -574,7 +516,7 @@ class Woongkir_API {
 	 * @param string $code Courier code.
 	 * @param bool   $as_array Wethere to return data as array or not.
 	 *
-	 * @return (object|array|bool) Courier object or array data. False on failure.
+	 * @return (Woongkir_Courier|array|bool) Courier object or array data. False on failure.
 	 */
 	public function get_courier( $code, $as_array = false ) {
 		$couriers = $this->get_couriers( 'all', 'all', $as_array );
@@ -585,6 +527,33 @@ class Woongkir_API {
 
 		return false;
 	}
+
+	/**
+	 * Get courier object or data by response code.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $code Courier code.
+	 * @param bool   $as_array Wethere to return data as array or not.
+	 *
+	 * @return (Woongkir_Courier|array|bool) Courier object or array data. False on failure.
+	 */
+	public function get_courier_by_response( $code, $as_array = false ) {
+		$couriers = $this->get_couriers( 'all', 'all', $as_array );
+
+		foreach ( $couriers as $courier ) {
+			if ( is_object( $courier ) && $courier->get_response_code() === $code ) {
+				return $courier;
+			}
+
+			if ( is_array( $courier ) && $courier['response_code'] === $code ) {
+				return $courier;
+			}
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * Get couriers names
@@ -599,5 +568,195 @@ class Woongkir_API {
 		}
 
 		return $names;
+	}
+
+	/**
+	 * Validate API request response.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $response API request response data.
+	 *
+	 * @throws Exception Error exception when response data is invalid.
+	 *
+	 * @return mixed WP_Error object on failure.
+	 */
+	public function response_http_parser( $response ) {
+		try {
+			if ( is_wp_error( $response ) ) {
+				throw new Exception( $response->get_error_message() );
+			}
+
+			$body = wp_remote_retrieve_body( $response );
+
+			if ( empty( $body ) ) {
+				throw new Exception( __( 'API response is empty.', 'woongkir' ) );
+			}
+
+			// Try to capture the data for response that has incorrect JSON format.
+			if ( ! preg_match( '/^\{(.*)\}$/s', $body ) && preg_match( '/{"rajaongkir"(.*?)}}/m', $body, $matches, PREG_OFFSET_CAPTURE, 0 ) ) {
+				$body = isset( $matches[0][0] ) && ! empty( $matches[0][0] ) ? $matches[0][0] : $body;
+			}
+
+			$json_data  = json_decode( $body, true );
+			$json_error = json_last_error_msg();
+
+			if ( $json_error && strtolower( $json_error ) !== 'no error' ) {
+				// translators: %1$s - JSON error message, %2$s API response body.
+				throw new Exception( wp_sprintf( __( 'Failed to decode the JSON data: Error: %1$s, Body: %2$s', 'woongkir' ), $json_error, $body ) );
+			}
+
+			if ( isset( $json_data['rajaongkir']['status'] ) && 200 !== intval( $json_data['rajaongkir']['status']['code'] ) ) {
+				$error_code        = $json_data['rajaongkir']['status']['code'];
+				$error_description = isset( $json_data['rajaongkir']['status']['description'] ) ? $json_data['rajaongkir']['status']['description'] : '';
+
+				// translators: %1$s - API error code, %2$s API error description.
+				throw new Exception( wp_sprintf( __( 'Code: %1$s, Description: %2$s', 'woongkir' ), $error_code, $error_description ) );
+			}
+
+			if ( isset( $json_data['rajaongkir']['results'] ) && is_array( $json_data['rajaongkir']['results'] ) ) {
+				return $json_data['rajaongkir']['results'];
+			}
+
+			if ( isset( $json_data['rajaongkir']['result'] ) && is_array( $json_data['rajaongkir']['result'] ) ) {
+				return $json_data['rajaongkir']['result'];
+			}
+
+			// translators: %1$s - API response body.
+			throw new Exception( wp_sprintf( __( 'API response is invalid:  %1$s', 'woongkir' ), $body ) );
+		} catch ( Exception $e ) {
+			wc_get_logger()->log( 'error', wp_strip_all_tags( $e->getMessage(), true ), array( 'source' => 'woongkir_api_error' ) );
+
+			// translators: %s - Error message from RajaOngkir.com.
+			return new WP_Error( 'invalid_api_response', wp_sprintf( __( '<strong>Error from RajaOngkir.com</strong>: %s', 'woongkir' ), $e->getMessage() ) );
+		}
+	}
+
+	public function request_url( $endpoint = '' ) {
+		$account = $this->get_account( $this->get_option( 'account_type' ) );
+
+		if ( ! $account ) {
+			return $endpoint;
+		}
+
+		$request_url = rtrim( $account->get_api_url(), '/' );
+
+		if ( ! $endpoint ) {
+			return $request_url;
+		}
+
+		return $request_url . '/' . ltrim( $endpoint, '/' );
+	}
+
+	public function request_params( $custom_params = array() ) {
+		$args = array(
+			'timeout' => 10,
+			'headers' => array(
+				'key' => $this->get_option( 'api_key' ),
+			),
+		);
+
+		return array_merge_recursive( $args, $custom_params );
+	}
+
+	public function request_http_post( $endpoint = '', $body = array(), $custom_params = array() ) {
+		$response = apply_filters( 'woongkir_api_request_http_post_pre', false, $endpoint, $body, $custom_params, $this );
+
+		if ( false === $response ) {
+			$response = wp_remote_post(
+				$this->request_url( $endpoint ),
+				array_merge(
+					$this->request_params( $custom_params ),
+					array(
+						'body' => $body,
+					)
+				)
+			);
+		}
+
+		return $response;
+	}
+
+	public function request_http_get( $endpoint = '', $query_string = array(), $custom_params = array() ) {
+		$response = apply_filters( 'woongkir_api_request_http_get_pre', false, $endpoint, $query_string, $custom_params, $this );
+
+		if ( false === $response ) {
+			$response = wp_remote_get( add_query_arg( $query_string, $this->request_url( $endpoint ) ), $this->request_params( $custom_params ) );
+		}
+
+		return $response;
+	}
+
+	public function request_cost( $params = array(), $formatted = true ) {
+		if ( isset( $params['courier'] ) && is_array( $params['courier'] ) ) {
+			$params['courier'] = implode( ':', $params['courier'] );
+		}
+
+		$response = $this->request_http_post( '/cost', $params );
+
+		$raw = $this->response_http_parser( $response );
+
+		if ( ! $raw || is_wp_error( $raw ) || ! $formatted ) {
+			return $raw;
+		}
+
+		$rates = array();
+
+		foreach ( $raw as $response ) {
+			if ( empty( $response['code'] ) || empty( $response['costs'] ) ) {
+				continue;
+			}
+
+			$courier = $this->get_courier_by_response( $response['code'] );
+
+			if ( ! $courier ) {
+				continue;
+			}
+
+			foreach ( $response['costs'] as $rate ) {
+				if ( empty( $rate['service'] ) || empty( $rate['cost'][0]['value'] ) ) {
+					continue;
+				}
+
+				$rates[] = array_merge(
+					array(
+						'courier'     => $courier->get_code(),
+						'service'     => $rate['service'],
+						'description' => isset( $rate['description'] ) ? $rate['description'] : '',
+					),
+					$rate['cost'][0]
+				);
+
+				// $rates[] = array(
+				// 'courier_code'        => $courier->get_code(),
+				// 'courier_label'       => $courier->get_label(),
+				// 'service_code'        => $rate['service'],
+				// 'service_description' => $rate['description'],
+				// 'cost'                => isset( $rate['cost'][0]['value'] ) ? $rate['cost'][0]['value'] : '',
+				// 'etd'                 => isset( $rate['cost'][0]['etd'] ) ? $rate['cost'][0]['etd'] : '',
+				// 'note'                => isset( $rate['cost'][0]['note'] ) ? $rate['cost'][0]['note'] : '',
+				// );
+			}
+		}
+
+		return $rates;
+
+		return array(
+			'rates' => $rates,
+			'raw'   => $raw,
+		);
+	}
+
+	public function request_cost_international( $params = array() ) {
+		// if ( isset( $params['courier'] ) && is_array( $params['courier'] ) ) {
+		// $params['courier'] = implode( ':', $params['courier'] );
+		// }
+
+		// $response = $this->request_http_post(
+		// '/cost',
+		// array(
+		// 'body' => $params,
+		// )
+		// );
 	}
 }

@@ -40,7 +40,7 @@ class Woongkir_Courier_JNT extends Woongkir_Courier {
 	 *
 	 * @var string
 	 */
-	public $response_code = 'j&t';
+	public $response_code = 'J&T';
 
 	/**
 	 * Courier Label
