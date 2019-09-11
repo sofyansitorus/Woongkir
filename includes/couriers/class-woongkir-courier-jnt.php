@@ -25,13 +25,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Woongkir_Courier_JNT extends Woongkir_Courier {
 
 	/**
-	 * Courier ID
+	 * Courier Code
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $id = 'jnt';
+	public $code = 'jnt';
 
 	/**
 	 * API Response ID
@@ -40,16 +40,16 @@ class Woongkir_Courier_JNT extends Woongkir_Courier {
 	 *
 	 * @var string
 	 */
-	public $response_id = 'j&t';
+	public $response_code = 'j&t';
 
 	/**
-	 * Courier Name
+	 * Courier Label
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $name = 'J&T Express';
+	public $label = 'J&T Express';
 
 	/**
 	 * Courier Website

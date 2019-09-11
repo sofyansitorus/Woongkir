@@ -188,7 +188,7 @@ const phpcsHandler = function (asset) {
 
     const config = Object.assign({}, asset.config, {
         bin: 'vendor/bin/phpcs',
-        standard: '.phpcs.xml',
+        standard: 'phpcs.xml',
         warningSeverity: 0,
     });
 
@@ -432,7 +432,7 @@ gulp.task('dist', ['build'], function () {
         '!composer.lock',
         '!composer.json',
         '!yarn.lock',
-        '!phpunit.xml'
+        '!phpcs.xml'
     ])
     .pipe(gulp.dest('./dist/trunk'))
     .pipe(gulp.dest('./dist/tags/' + packageJSON.version));

@@ -181,8 +181,13 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				'default'           => 'starter',
 				'options'           => array(),
 				'custom_attributes' => array(
-					'data-accounts' => wp_json_encode( $this->api->get_accounts() ),
-					'data-couriers' => wp_json_encode( $this->api->get_courier() ),
+					'data-accounts' => wp_json_encode( $this->api->get_accounts( true ) ),
+					'data-couriers' => wp_json_encode(
+						array(
+							'domestic'      => $this->api->get_couriers( 'domestic', 'all', true ),
+							'international' => $this->api->get_couriers( 'international', 'all', true ),
+						)
+					),
 				),
 			),
 			'volumetric_calculator' => array(
@@ -212,6 +217,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		);
 
 		$fetaures = array(
+			'domestic'          => __( 'Domestic Couriers', 'woongkir' ),
+			'international'     => __( 'International Couriers', 'woongkir' ),
 			'multiple_couriers' => __( 'Multiple Couriers', 'woongkir' ),
 			'subdistrict'       => __( 'Calculate Subdistrict', 'woongkir' ),
 			'volumetric'        => __( 'Calculate Volumetric', 'woongkir' ),
@@ -219,37 +226,17 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			'dedicated_server'  => __( 'Dedicated Server', 'woongkir' ),
 		);
 
-		$couriers = $this->api->get_courier();
+		$accounts = $this->api->get_accounts( false );
 
-		foreach ( $this->api->get_accounts() as $account_type => $data ) {
-			$zone_data = array(
-				'domestic'      => array(
-					'label'    => __( 'Domestic Couriers', 'woongkir' ),
-					'couriers' => array(),
-				),
-				'international' => array(
-					'label'    => __( 'International Couriers', 'woongkir' ),
-					'couriers' => array(),
-				),
-			);
+		foreach ( $fetaures as $fetaure_key => $fetaure_label ) {
+			$settings['account_type']['features'][ $fetaure_key ]['label'] = $fetaure_label;
 
-			foreach ( $couriers as $zone_id => $courier ) {
-				foreach ( $courier as $courier_data ) {
-					if ( in_array( $account_type, $courier_data['account'], true ) ) {
-						$zone_data[ $zone_id ]['couriers'][] = $courier_data;
-					}
+			foreach ( $accounts as $type => $account ) {
+				if ( in_array( $fetaure_key, array( 'domestic', 'international' ), true ) ) {
+					$settings['account_type']['features'][ $fetaure_key ]['value'][ $type ] = count( $this->api->get_couriers( $fetaure_key, $type ) );
+				} else {
+					$settings['account_type']['features'][ $fetaure_key ]['value'][ $type ] = $account->feature_enable( $fetaure_key ) ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
 				}
-			}
-
-			$settings['account_type']['options'][ $account_type ] = $data['label'];
-			foreach ( $zone_data as $zone_id => $zone_info ) {
-				$settings['account_type']['features'][ $zone_id ]['label']                  = $zone_info['label'];
-				$settings['account_type']['features'][ $zone_id ]['value'][ $account_type ] = count( $zone_info['couriers'] );
-			}
-
-			foreach ( $fetaures as $fetaure_key => $fetaure_label ) {
-				$settings['account_type']['features'][ $fetaure_key ]['label']                  = $fetaure_label;
-				$settings['account_type']['features'][ $fetaure_key ]['value'][ $account_type ] = $data[ $fetaure_key ] ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
 			}
 		}
 
@@ -388,21 +375,10 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 		$data = wp_parse_args( $data, $defaults );
 
-		$couriers_raw = $this->api->get_courier( $key );
-
-		foreach ( $couriers_raw as $code => $courier ) {
-			$courier['code']       = $code;
-			$couriers_raw[ $code ] = $courier;
-		}
+		$couriers = $this->api->get_couriers( $key, 'all', true );
 
 		if ( ! empty( $this->{$key} ) ) {
-			usort( $couriers_raw, array( $this, 'sort_couriers_list_' . $key ) );
-		}
-
-		$couriers = array();
-
-		foreach ( $couriers_raw as $courier ) {
-			$couriers[ $courier['code'] ] = $courier;
+			uasort( $couriers, array( $this, 'sort_couriers_list_' . $key ) );
 		}
 
 		$selected = $this->{$key};
@@ -563,42 +539,36 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		// Format the value as associative array courier => services.
 		if ( $value && is_array( $value ) ) {
 			$format_value = array();
+
 			foreach ( $value as $val ) {
 				$parts = explode( '_', $val );
+
 				if ( count( $parts ) === 2 ) {
 					$format_value[ $parts[0] ][] = $parts[1];
 				}
 			}
+
 			$value = $format_value;
 		}
 
 		if ( $value ) {
-			$account_type = $this->posted_field_value( 'account_type' );
-
-			$account = $this->api->get_account( $account_type );
+			$field   = $this->instance_form_fields[ $key ];
+			$account = $this->api->get_account( $this->posted_field_value( 'account_type' ), false );
 
 			if ( ! $account ) {
 				throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
 			}
 
-			$couriers    = $this->api->get_courier( $key );
-			$not_allowed = array();
-			foreach ( array_keys( $value ) as $courier_id ) {
-				if ( ! in_array( $account_type, $couriers[ $courier_id ]['account'], true ) ) {
-					array_push( $not_allowed, strtoupper( $courier_id ) );
-				}
+			if ( ! $account->feature_enable( 'multiple_couriers' ) && count( $value ) > 1 ) {
+				// Translators: %1$s Shipping zone name, %2$s Account label.
+				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account->get_label( 'label' ) ) );
 			}
 
-			$field = $this->instance_form_fields[ $key ];
+			$not_allowed = array_diff_key( $value, $this->api->get_couriers( $key, $account->get_type() ) );
 
 			if ( ! empty( $not_allowed ) ) {
 				// Translators: %1$s Shipping zone name, %2$s Account label, %3$s Couriers name.
-				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account['label'], implode( ', ', $not_allowed ) ) );
-			}
-
-			if ( ! $account['multiple_couriers'] && count( $value ) > 1 ) {
-				// Translators: %1$s Shipping zone name, %2$s Account label.
-				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account['label'] ) );
+				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account->get_label( 'label' ), strtoupper( implode( ', ', array_keys( $not_allowed ) ) ) ) );
 			}
 		}
 

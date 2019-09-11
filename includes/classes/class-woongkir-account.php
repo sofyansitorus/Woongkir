@@ -148,7 +148,7 @@ abstract class Woongkir_Account {
 	 *
 	 * @since ??
 	 *
-	 * @return bool
+	 * @return array
 	 */
 	public function to_array() {
 		return array_merge(

@@ -113,39 +113,22 @@ class Woongkir_API {
 
 			$courier = new $class_name();
 
-			$services_domestic = $courier->get_services_domestic();
+			$this->couriers[ $courier->get_code() ] = $courier;
+		}
 
-			if ( $services_domestic ) {
-				if ( ! isset( $this->couriers['domestic'] ) ) {
-					$this->couriers['domestic'] = array();
-				}
-
-				$this->couriers['domestic'][ $courier->get_id() ] = array(
-					'label'    => $courier->get_name(),
-					'website'  => $courier->get_website(),
-					'account'  => $courier->get_account_domestic(),
-					'services' => $services_domestic,
-				);
-			}
-
-			$services_international = $courier->get_services_international();
-
-			if ( $services_international ) {
-				if ( ! isset( $this->couriers['international'] ) ) {
-					$this->couriers['international'] = array();
-				}
-
-				$this->couriers['international'][ $courier->get_id() ] = array(
-					'response_id' => $courier->get_response_id(),
-					'label'       => $courier->get_name(),
-					'website'     => $courier->get_website(),
-					'account'     => $courier->get_account_international(),
-					'services'    => $services_international,
-				);
-			}
+		if ( $this->couriers ) {
+			uasort( $this->couriers, array( $this, 'sort_by_priority' ) );
 		}
 	}
 
+	/**
+	 * Sort data by priority
+	 *
+	 * @param array $a Item to compare.
+	 * @param array $b Item to compare.
+	 *
+	 * @return int
+	 */
 	private function sort_by_priority( $a, $b ) {
 		$a_priority = 0;
 
@@ -226,20 +209,6 @@ class Woongkir_API {
 	 */
 	public function get_currency() {
 		return $this->remote_get( 'currency' );
-	}
-
-	/**
-	 * Get courier data.
-	 *
-	 * @since 1.0.0
-	 * @param string $zone_id Courier key.
-	 */
-	public function get_courier( $zone_id = null ) {
-		if ( ! is_null( $zone_id ) ) {
-			return isset( $this->couriers[ $zone_id ] ) ? $this->couriers[ $zone_id ] : false;
-		}
-
-		return $this->couriers;
 	}
 
 	/**
@@ -510,24 +479,11 @@ class Woongkir_API {
 	}
 
 	/**
-	 * Get couriers names
+	 * Get accounts object or data.
 	 *
-	 * @return array
-	 */
-	public function get_couriers_names() {
-		$names = array();
-
-		foreach ( $this->couriers as $couriers ) {
-			foreach ( $couriers as $code => $courier ) {
-				$names[ $code ] = $courier['label'];
-			}
-		}
-
-		return $names;
-	}
-
-	/**
-	 * Get accounts data.
+	 * @since ??
+	 *
+	 * @param bool $as_array Wethere to return data as array or not.
 	 *
 	 * @return array
 	 */
@@ -546,10 +502,14 @@ class Woongkir_API {
 	}
 
 	/**
-	 * Get account data.
+	 * Get account object or data.
 	 *
 	 * @since 1.0.0
-	 * @param string $type Acoount type key.
+	 *
+	 * @param string $type Account type key.
+	 * @param bool   $as_array Wethere to return data as array or not.
+	 *
+	 * @return (object|array|bool) Courier object or array data. False on failure.
 	 */
 	public function get_account( $type, $as_array = true ) {
 		$accounts = $this->get_accounts( $as_array );
@@ -559,5 +519,85 @@ class Woongkir_API {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get couriers object or data.
+	 *
+	 * @since ??
+	 *
+	 * @param string  $zone Couriers zone: domestic, international, all.
+	 * @param string  $account_type Filters couriers allowed for specific account type: starter, basic, prop, all.
+	 * @param boolean $as_array Wethere to return data as array or not.
+	 *
+	 * @return array
+	 */
+	public function get_couriers( $zone = 'all', $account_type = 'all', $as_array = false ) {
+		$couriers = array();
+
+		foreach ( $this->couriers as $id => $courier ) {
+			if ( 'domestic' === $zone ) {
+				$services = $courier->get_services_domestic();
+
+				if ( 'all' === $account_type && $services ) {
+					$couriers[ $id ] = $as_array ? $courier->to_array( $zone ) : $courier;
+				} elseif ( in_array( $account_type, $courier->get_account_domestic(), true ) ) {
+					$couriers[ $id ] = $as_array ? $courier->to_array( $zone ) : $courier;
+				}
+			} elseif ( 'international' === $zone ) {
+				$services = $courier->get_services_international();
+
+				if ( 'all' === $account_type && $services ) {
+					$couriers[ $id ] = $as_array ? $courier->to_array( $zone ) : $courier;
+				} elseif ( in_array( $account_type, $courier->get_account_international(), true ) ) {
+					$couriers[ $id ] = $as_array ? $courier->to_array( $zone ) : $courier;
+				}
+			} else {
+				if ( 'all' === $account_type ) {
+					$couriers[ $id ] = $as_array ? $courier->to_array( $zone ) : $courier;
+				} elseif ( in_array( $account_type, $courier->get_account_domestic(), true ) ) {
+					$couriers[ $id ] = $as_array ? $courier->to_array( $zone ) : $courier;
+				} elseif ( in_array( $account_type, $courier->get_account_international(), true ) ) {
+					$couriers[ $id ] = $as_array ? $courier->to_array( $zone ) : $courier;
+				}
+			}
+		}
+
+		return $couriers;
+	}
+
+	/**
+	 * Get courier object or data.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $code Courier code.
+	 * @param bool   $as_array Wethere to return data as array or not.
+	 *
+	 * @return (object|array|bool) Courier object or array data. False on failure.
+	 */
+	public function get_courier( $code, $as_array = false ) {
+		$couriers = $this->get_couriers( 'all', 'all', $as_array );
+
+		if ( isset( $couriers[ $code ] ) ) {
+			return $couriers[ $code ];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get couriers names
+	 *
+	 * @return array
+	 */
+	public function get_couriers_names() {
+		$names = array();
+
+		foreach ( $this->couriers as $courier ) {
+			$names[ $courier->get_code() ] = $courier->get_label();
+		}
+
+		return $names;
 	}
 }
