@@ -40,35 +40,7 @@ class Woongkir_API {
 	 * @since 1.0.0
 	 * @var array
 	 */
-	private $accounts = array(
-		'starter' => array(
-			'label'            => 'Starter',
-			'api_url'          => 'http://api.rajaongkir.com/starter',
-			'subdistrict'      => false,
-			'multiple_coriers' => false,
-			'volumetric'       => false,
-			'weight_over_30kg' => false,
-			'dedicated_server' => false,
-		),
-		'basic'   => array(
-			'label'            => 'Basic',
-			'api_url'          => 'http://api.rajaongkir.com/basic',
-			'subdistrict'      => false,
-			'multiple_coriers' => true,
-			'volumetric'       => false,
-			'weight_over_30kg' => false,
-			'dedicated_server' => false,
-		),
-		'pro'     => array(
-			'label'            => 'Pro',
-			'api_url'          => 'http://pro.rajaongkir.com/api',
-			'subdistrict'      => true,
-			'multiple_coriers' => true,
-			'volumetric'       => true,
-			'weight_over_30kg' => true,
-			'dedicated_server' => true,
-		),
-	);
+	private $accounts = array();
 
 	/**
 	 * List of used delivery couriers and services.
@@ -91,7 +63,35 @@ class Woongkir_API {
 			}
 		}
 
+		$this->populate_accounts();
 		$this->populate_couriers();
+	}
+
+	/**
+	 * Populate accounts list
+	 *
+	 * @since ??
+	 *
+	 * @return void
+	 */
+	private function populate_accounts() {
+		$files = glob( WOONGKIR_PATH . 'includes/accounts/class-woongkir-account-*.php' );
+
+		foreach ( $files as $file ) {
+			$class_name = str_replace( array( 'class-', '-' ), array( '', '_' ), basename( $file, '.php' ) );
+
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+
+			$account = new $class_name();
+
+			$this->accounts[ $account->get_type() ] = $account;
+		}
+
+		if ( $this->accounts ) {
+			uasort( $this->accounts, array( $this, 'sort_by_priority' ) );
+		}
 	}
 
 	/**
@@ -144,6 +144,26 @@ class Woongkir_API {
 				);
 			}
 		}
+	}
+
+	private function sort_by_priority( $a, $b ) {
+		$a_priority = 0;
+
+		if ( is_callable( array( $a, 'get_priority' ) ) ) {
+			$a_priority = $a->get_priority();
+		} elseif ( isset( $a['priority'] ) ) {
+			$a_priority = $a['priority'];
+		}
+
+		$b_priority = 0;
+
+		if ( is_callable( array( $b, 'get_priority' ) ) ) {
+			$b_priority = $b->get_priority();
+		} elseif ( isset( $b['priority'] ) ) {
+			$b_priority = $b['priority'];
+		}
+
+		return strcasecmp( $a_priority, $b_priority );
 	}
 
 	/**
@@ -206,19 +226,6 @@ class Woongkir_API {
 	 */
 	public function get_currency() {
 		return $this->remote_get( 'currency' );
-	}
-
-	/**
-	 * Get account data.
-	 *
-	 * @since 1.0.0
-	 * @param string $account_type Acoount type key.
-	 */
-	public function get_account( $account_type = null ) {
-		if ( ! is_null( $account_type ) ) {
-			return isset( $this->accounts[ $account_type ] ) ? $this->accounts[ $account_type ] : false;
-		}
-		return $this->accounts;
 	}
 
 	/**
@@ -517,5 +524,40 @@ class Woongkir_API {
 		}
 
 		return $names;
+	}
+
+	/**
+	 * Get accounts data.
+	 *
+	 * @return array
+	 */
+	public function get_accounts( $as_array = true ) {
+		if ( ! $as_array ) {
+			return $this->accounts;
+		}
+
+		$accounts = array();
+
+		foreach ( $this->accounts as $type => $account ) {
+			$accounts[ $type ] = $account->to_array();
+		}
+
+		return $accounts;
+	}
+
+	/**
+	 * Get account data.
+	 *
+	 * @since 1.0.0
+	 * @param string $type Acoount type key.
+	 */
+	public function get_account( $type, $as_array = true ) {
+		$accounts = $this->get_accounts( $as_array );
+
+		if ( isset( $accounts[ $type ] ) ) {
+			return $accounts[ $type ];
+		}
+
+		return false;
 	}
 }
