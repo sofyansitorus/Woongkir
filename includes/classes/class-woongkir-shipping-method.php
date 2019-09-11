@@ -1129,6 +1129,16 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
+	 * Check wether api response to be cached
+	 *
+	 * @return boolean
+	 * @since ??
+	 */
+	private function is_enable_cache() {
+		return defined( 'WOONGKIR_ENABLE_CACHE' ) ? WOONGKIR_ENABLE_CACHE : true;
+	}
+
+	/**
 	 * Sort domestic couriers lsit
 	 *
 	 * @param array $a Value to compare.
