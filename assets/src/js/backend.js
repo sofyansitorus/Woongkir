@@ -199,7 +199,7 @@ var woongkirBackend = {
         var account = $accountType.val();
 
         _.each(couriers, function (zoneCouriers, zoneId) {
-            var selected_coriers = 0;
+            var selected_couriers = 0;
 
             _.each(zoneCouriers, function (courier, courierId) {
                 if (courier.account.indexOf(account) === -1) {
@@ -209,13 +209,13 @@ var woongkirBackend = {
                     $('.woongkir-couriers-item--' + zoneId + '--' + courierId).show();
                 }
 
-                if (!accounts[account].multiple_coriers) {
-                    if (selected_coriers) {
+                if (!accounts[account].multiple_couriers) {
+                    if (selected_couriers) {
                         $('.woongkir-couriers-item--' + zoneId + '--' + courierId).find('.woongkir-service').prop('checked', false);
                     }
 
                     if ($('.woongkir-couriers-item--' + zoneId + '--' + courierId).find('.woongkir-service--single:checked').length) {
-                        selected_coriers++;
+                        selected_couriers++;
                     }
                 }
 
@@ -233,7 +233,7 @@ var woongkirBackend = {
         if ($(this).is(':checked')) {
             $(this).closest('.woongkir-couriers-item').find('.woongkir-service--single').prop('checked', true);
 
-            if (!accounts[account].multiple_coriers) {
+            if (!accounts[account].multiple_couriers) {
                 $('.woongkir-couriers-item').not('.woongkir-couriers-item--' + zoneId + '--' + courierId).find('.woongkir-service').prop('checked', false);
             }
         } else {
@@ -252,7 +252,7 @@ var woongkirBackend = {
         if ($(this).is(':checked')) {
             $(this).closest('.woongkir-couriers-item').find('.woongkir-service--bulk').prop('checked', true);
 
-            if (!accounts[account].multiple_coriers) {
+            if (!accounts[account].multiple_couriers) {
                 $('.woongkir-couriers-item').not('.woongkir-couriers-item--' + zoneId + '--' + courierId).each(function (index, item) {
                     $(item).find('.woongkir-service').prop('checked', false);
                 })

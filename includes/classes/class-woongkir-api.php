@@ -181,7 +181,7 @@ class Woongkir_API {
 		$account  = $this->get_account( $this->get_option( 'account_type' ) );
 		$endpoint = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
 
-		if ( $courier && ! $account['multiple_coriers'] ) {
+		if ( $courier && ! $account['multiple_couriers'] ) {
 			$courier = array_slice( $courier, 0, 1 );
 		}
 

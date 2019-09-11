@@ -68,11 +68,11 @@ abstract class Woongkir_Account {
 	 * @var array
 	 */
 	public $features = array(
-		'subdistrict'      => false,
-		'multiple_coriers' => false,
-		'volumetric'       => false,
-		'weight_over_30kg' => false,
-		'dedicated_server' => false,
+		'subdistrict'       => false,
+		'multiple_couriers' => false,
+		'volumetric'        => false,
+		'weight_over_30kg'  => false,
+		'dedicated_server'  => false,
 	);
 
 	/**

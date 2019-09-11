@@ -68,10 +68,10 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	 * @var array
 	 */
 	public $features = array(
-		'subdistrict'      => false,
-		'multiple_coriers' => true,
-		'volumetric'       => false,
-		'weight_over_30kg' => false,
-		'dedicated_server' => false,
+		'subdistrict'       => false,
+		'multiple_couriers' => true,
+		'volumetric'        => false,
+		'weight_over_30kg'  => false,
+		'dedicated_server'  => false,
 	);
 }

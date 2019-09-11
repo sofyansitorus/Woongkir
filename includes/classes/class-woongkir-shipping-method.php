@@ -212,11 +212,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		);
 
 		$fetaures = array(
-			'multiple_coriers' => __( 'Multiple Couriers', 'woongkir' ),
-			'subdistrict'      => __( 'Calculate Subdistrict', 'woongkir' ),
-			'volumetric'       => __( 'Calculate Volumetric', 'woongkir' ),
-			'weight_over_30kg' => __( 'Weight Over 30kg', 'woongkir' ),
-			'dedicated_server' => __( 'Dedicated Server', 'woongkir' ),
+			'multiple_couriers' => __( 'Multiple Couriers', 'woongkir' ),
+			'subdistrict'       => __( 'Calculate Subdistrict', 'woongkir' ),
+			'volumetric'        => __( 'Calculate Volumetric', 'woongkir' ),
+			'weight_over_30kg'  => __( 'Weight Over 30kg', 'woongkir' ),
+			'dedicated_server'  => __( 'Dedicated Server', 'woongkir' ),
 		);
 
 		$couriers = $this->api->get_courier();
@@ -596,7 +596,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account['label'], implode( ', ', $not_allowed ) ) );
 			}
 
-			if ( ! $account['multiple_coriers'] && count( $value ) > 1 ) {
+			if ( ! $account['multiple_couriers'] && count( $value ) > 1 ) {
 				// Translators: %1$s Shipping zone name, %2$s Account label.
 				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account['label'] ) );
 			}
