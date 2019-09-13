@@ -586,14 +586,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		try {
 			$api_request_params = $this->calculate_shipping_api_request_params( $package );
 
-			$this->show_debug(
-				wp_json_encode(
-					array(
-						'calculate_shipping.$api_request_params' => $api_request_params,
-					)
-				)
-			);
-
 			if ( is_wp_error( $api_request_params ) ) {
 				throw new Exception( $api_request_params->get_error_message() );
 			}
@@ -626,9 +618,9 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 				if ( false === $results ) {
 					if ( 'domestic' === $api_request_params['zone'] ) {
-						$results = $this->api->request_cost( $api_request_params );
+						$results = $this->api->calculate_shipping( $api_request_params );
 					} else {
-						$results = $this->api->request_cost_international( $api_request_params );
+						$results = $this->api->calculate_shipping_international( $api_request_params );
 					}
 				}
 
@@ -670,33 +662,33 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				)
 			);
 
-			// foreach ( $results as $result_key => $result ) {
-			// if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {
-			// continue;
-			// }
+			foreach ( $results as $result_key => $result ) {
+				if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {
+					continue;
+				}
 
-			// if ( ! in_array( $result['service'], $allowed_services[ $result['courier'] ], true ) ) {
-			// continue;
-			// }
+				if ( ! in_array( $result['service'], $allowed_services[ $result['courier'] ], true ) ) {
+					continue;
+				}
 
-			// $rate_id    = $this->get_rate_id( $result_key );
-			// $rate_label = wp_sprintf( '%s - %s', strtoupper( $result['courier'] ), $result['service'] );
+				$rate_id    = $this->get_rate_id( $result_key );
+				$rate_label = wp_sprintf( '%s - %s', strtoupper( $result['courier'] ), $result['service'] );
 
-			// if ( 'yes' === $this->show_eta && $result['etd'] ) {
-			// $rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
-			// }
+				if ( 'yes' === $this->show_eta && $result['etd'] ) {
+					$rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
+				}
 
-			// $this->add_rate(
-			// array(
-			// 'id'        => $rate_id,
-			// 'label'     => $rate_label,
-			// 'cost'      => $result['cost'],
-			// 'meta_data' => array(
-			// 'result' => $result,
-			// ),
-			// )
-			// );
-			// }
+				$this->add_rate(
+					array(
+						'id'        => $rate_id,
+						'label'     => $rate_label,
+						'cost'      => $result['cost'],
+						'meta_data' => array(
+							'result' => $result,
+						),
+					)
+				);
+			}
 		} catch ( Exception $e ) {
 			$this->show_debug( $e->getMessage() );
 		}
@@ -1147,6 +1139,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			return;
 		}
 
-		wc_add_notice( $message, $notice_type );
+		wc_add_notice( (WOONGKIR_METHOD_ID . ' : ' . $message), $notice_type );
 	}
 }

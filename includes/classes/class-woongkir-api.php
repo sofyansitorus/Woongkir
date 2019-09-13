@@ -271,7 +271,7 @@ class Woongkir_API {
 			$response = wp_remote_request( $this->api_url( $endpoint ), $args );
 		}
 
-		return $this->response_http_parser( $response );
+		return $this->api_response_parser( $response );
 	}
 
 	/**
@@ -311,7 +311,7 @@ class Woongkir_API {
 			$response = wp_remote_post( $this->api_url( $endpoint ), $args );
 		}
 
-		return $this->response_http_parser( $response );
+		return $this->api_response_parser( $response );
 	}
 
 	/**
@@ -355,7 +355,7 @@ class Woongkir_API {
 			$response = wp_remote_get( $url, $args );
 		}
 
-		return $this->response_http_parser( $response );
+		return $this->api_response_parser( $response );
 	}
 
 	/**
@@ -581,7 +581,7 @@ class Woongkir_API {
 	 *
 	 * @return mixed WP_Error object on failure.
 	 */
-	public function response_http_parser( $response ) {
+	public function api_response_parser( $response ) {
 		try {
 			if ( is_wp_error( $response ) ) {
 				throw new Exception( $response->get_error_message() );
@@ -614,12 +614,8 @@ class Woongkir_API {
 				throw new Exception( wp_sprintf( __( 'Code: %1$s, Description: %2$s', 'woongkir' ), $error_code, $error_description ) );
 			}
 
-			if ( isset( $json_data['rajaongkir']['results'] ) && is_array( $json_data['rajaongkir']['results'] ) ) {
-				return $json_data['rajaongkir']['results'];
-			}
-
-			if ( isset( $json_data['rajaongkir']['result'] ) && is_array( $json_data['rajaongkir']['result'] ) ) {
-				return $json_data['rajaongkir']['result'];
+			if ( ! empty( $json_data['rajaongkir'] ) ) {
+				return $json_data['rajaongkir'];
 			}
 
 			// translators: %1$s - API response body.
@@ -632,7 +628,7 @@ class Woongkir_API {
 		}
 	}
 
-	public function request_url( $endpoint = '' ) {
+	public function api_request_url( $endpoint = '' ) {
 		$account = $this->get_account( $this->get_option( 'account_type' ) );
 
 		if ( ! $account ) {
@@ -648,7 +644,7 @@ class Woongkir_API {
 		return $request_url . '/' . ltrim( $endpoint, '/' );
 	}
 
-	public function request_params( $custom_params = array() ) {
+	public function api_request_params( $custom_params = array() ) {
 		$args = array(
 			'timeout' => 10,
 			'headers' => array(
@@ -659,14 +655,14 @@ class Woongkir_API {
 		return array_merge_recursive( $args, $custom_params );
 	}
 
-	public function request_http_post( $endpoint = '', $body = array(), $custom_params = array() ) {
-		$response = apply_filters( 'woongkir_api_request_http_post_pre', false, $endpoint, $body, $custom_params, $this );
+	public function api_request_post( $endpoint = '', $body = array(), $custom_params = array() ) {
+		$response = apply_filters( 'woongkir_api_request_post_pre', false, $endpoint, $body, $custom_params, $this );
 
 		if ( false === $response ) {
 			$response = wp_remote_post(
-				$this->request_url( $endpoint ),
+				$this->api_request_url( $endpoint ),
 				array_merge(
-					$this->request_params( $custom_params ),
+					$this->api_request_params( $custom_params ),
 					array(
 						'body' => $body,
 					)
@@ -677,86 +673,208 @@ class Woongkir_API {
 		return $response;
 	}
 
-	public function request_http_get( $endpoint = '', $query_string = array(), $custom_params = array() ) {
-		$response = apply_filters( 'woongkir_api_request_http_get_pre', false, $endpoint, $query_string, $custom_params, $this );
+	public function api_request_get( $endpoint = '', $query_string = array(), $custom_params = array() ) {
+		$response = apply_filters( 'woongkir_api_request_get_pre', false, $endpoint, $query_string, $custom_params, $this );
 
 		if ( false === $response ) {
-			$response = wp_remote_get( add_query_arg( $query_string, $this->request_url( $endpoint ) ), $this->request_params( $custom_params ) );
+			$response = wp_remote_get( add_query_arg( $query_string, $this->api_request_url( $endpoint ) ), $this->api_request_params( $custom_params ) );
 		}
 
 		return $response;
 	}
 
-	public function request_cost( $params = array(), $formatted = true ) {
+	public function calculate_shipping( $params = array(), $formatted = true ) {
 		if ( isset( $params['courier'] ) && is_array( $params['courier'] ) ) {
 			$params['courier'] = implode( ':', $params['courier'] );
 		}
 
-		$response = $this->request_http_post( '/cost', $params );
+		$raw_response    = $this->api_request_post( '/cost', $params );
+		$parsed_response = $this->api_response_parser( $raw_response );
 
-		$raw = $this->response_http_parser( $response );
-
-		if ( ! $raw || is_wp_error( $raw ) || ! $formatted ) {
-			return $raw;
+		if ( ! $parsed_response || is_wp_error( $parsed_response ) || ! $formatted ) {
+			return $parsed_response;
 		}
 
 		$rates = array();
 
-		foreach ( $raw as $response ) {
-			if ( empty( $response['code'] ) || empty( $response['costs'] ) ) {
+		foreach ( $parsed_response['results'] as $result ) {
+			if ( empty( $result['code'] ) || empty( $result['costs'] ) ) {
 				continue;
 			}
 
-			$courier = $this->get_courier_by_response( $response['code'] );
+			$courier = $this->get_courier_by_response( $result['code'] );
 
 			if ( ! $courier ) {
+				// Add unregistered courier to log.
+				wc_get_logger()->log(
+					'info',
+					wp_strip_all_tags(
+						wp_json_encode(
+							array_merge(
+								$result,
+								array(
+									'query' => $parsed_response['query'],
+								)
+							)
+						),
+						true
+					),
+					array( 'source' => 'woongkir_api_unregistered_domestic_courier' )
+				);
+
 				continue;
 			}
 
-			foreach ( $response['costs'] as $rate ) {
+			$courier_services = $courier->get_services_domestic();
+
+			foreach ( $result['costs'] as $rate ) {
 				if ( empty( $rate['service'] ) || empty( $rate['cost'][0]['value'] ) ) {
 					continue;
 				}
 
-				$rates[] = array_merge(
-					array(
-						'courier'     => $courier->get_code(),
-						'service'     => $rate['service'],
-						'description' => isset( $rate['description'] ) ? $rate['description'] : '',
-					),
-					$rate['cost'][0]
-				);
+				if ( ! isset( $courier_services[ $rate['service'] ] ) ) {
+					// Add unregistered service to log.
+					wc_get_logger()->log(
+						'info',
+						wp_strip_all_tags(
+							wp_json_encode(
+								array_merge(
+									$rate,
+									array(
+										'courier' => $courier->get_code(),
+										'query'   => $parsed_response['query'],
+									)
+								)
+							)
+						),
+						array( 'source' => 'woongkir_api_unregistered_domestic_service' )
+					);
+				}
 
-				// $rates[] = array(
-				// 'courier_code'        => $courier->get_code(),
-				// 'courier_label'       => $courier->get_label(),
-				// 'service_code'        => $rate['service'],
-				// 'service_description' => $rate['description'],
-				// 'cost'                => isset( $rate['cost'][0]['value'] ) ? $rate['cost'][0]['value'] : '',
-				// 'etd'                 => isset( $rate['cost'][0]['etd'] ) ? $rate['cost'][0]['etd'] : '',
-				// 'note'                => isset( $rate['cost'][0]['note'] ) ? $rate['cost'][0]['note'] : '',
-				// );
+				$etd  = isset( $rate['cost'][0]['etd'] ) ? $this->parse_etd( $rate['cost'][0]['etd'] ) : '';
+				$cost = $rate['cost'][0]['value'];
+
+				$rates[] = array(
+					'courier'  => $courier->get_code(),
+					'service'  => $rate['service'],
+					'etd'      => $etd,
+					'cost'     => $cost,
+					'currency' => 'IDR',
+				);
 			}
 		}
 
 		return $rates;
-
-		return array(
-			'rates' => $rates,
-			'raw'   => $raw,
-		);
 	}
 
-	public function request_cost_international( $params = array() ) {
-		// if ( isset( $params['courier'] ) && is_array( $params['courier'] ) ) {
-		// $params['courier'] = implode( ':', $params['courier'] );
-		// }
+	public function calculate_shipping_international( $params = array(), $formatted = true ) {
+		if ( isset( $params['courier'] ) && is_array( $params['courier'] ) ) {
+			$params['courier'] = implode( ':', $params['courier'] );
+		}
 
-		// $response = $this->request_http_post(
-		// '/cost',
-		// array(
-		// 'body' => $params,
-		// )
-		// );
+		$raw_response    = $this->api_request_post( '/v2/internationalCost', $params );
+		$parsed_response = $this->api_response_parser( $raw_response );
+
+		if ( ! $parsed_response || is_wp_error( $parsed_response ) || ! $formatted ) {
+			return $parsed_response;
+		}
+
+		$rates = array();
+
+		foreach ( $parsed_response['results'] as $result ) {
+			if ( empty( $result['code'] ) || empty( $result['costs'] ) ) {
+				continue;
+			}
+
+			$courier = $this->get_courier_by_response( $result['code'] );
+
+			if ( ! $courier ) {
+				// Add unregistered courier to log.
+				wc_get_logger()->log(
+					'info',
+					wp_strip_all_tags(
+						wp_json_encode(
+							array_merge(
+								$result,
+								array(
+									'query' => $parsed_response['query'],
+								)
+							)
+						),
+						true
+					),
+					array( 'source' => 'woongkir_api_unregistered_international_courier' )
+				);
+
+				continue;
+			}
+
+			$courier_services = $courier->get_services_international();
+
+			foreach ( $result['costs'] as $rate ) {
+				if ( empty( $rate['service'] ) || empty( $rate['cost'] ) ) {
+					continue;
+				}
+
+				if ( ! isset( $courier_services[ $rate['service'] ] ) ) {
+					// Add unregistered service to log.
+					wc_get_logger()->log(
+						'info',
+						wp_strip_all_tags(
+							wp_json_encode(
+								array_merge(
+									$rate,
+									array(
+										'courier' => $courier->get_code(),
+										'query'   => $parsed_response['query'],
+									)
+								)
+							)
+						),
+						array( 'source' => 'woongkir_api_unregistered_international_service' )
+					);
+				}
+
+				$etd      = isset( $rate['etd'] ) ? $this->parse_etd( $rate['etd'] ) : '';
+				$cost     = $rate['cost'];
+				$currency = isset( $rate['currency'] ) ? $rate['currency'] : 'IDR';
+
+				if ( 'IDR' !== $currency && ! empty( $parsed_response['currency']['value'] ) ) {
+					$cost     = $cost * $parsed_response['currency']['value'];
+					$currency = 'IDR';
+				}
+
+				$rates[] = array(
+					'courier'  => $courier->get_code(),
+					'service'  => $rate['service'],
+					'etd'      => $etd,
+					'cost'     => $cost,
+					'currency' => $currency,
+				);
+			}
+		}
+
+		return $rates;
+	}
+
+	private function parse_etd( $etd ) {
+		if ( ! $etd ) {
+			return '';
+		}
+
+		$etd = str_replace(
+			array( 'jam', 'hari' ),
+			array( __( 'hours', 'woongkir' ), __( 'days', 'woongkir' ) ),
+			strtolower( $etd )
+		);
+
+		if ( false === strpos( $etd, 'hours' ) && false === strpos( $etd, 'days' ) ) {
+			$etd = trim( $etd ) . ' ' . __( 'days', 'woongkir' );
+		}
+
+		$etd = array_map( 'trim', explode( '-', $etd ) );
+		$etd = implode( ' - ', $etd );
+
+		return $etd;
 	}
 }
