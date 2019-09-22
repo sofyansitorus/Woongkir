@@ -70,9 +70,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			'instance-settings-modal',
 		);
 
-		// Set the base weight for cart contents.
-		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_cart_contents_base_weight' ), 10 );
-
 		$this->init();
 	}
 
@@ -996,21 +993,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 */
 	public function convert_volumetric( $width, $length, $height ) {
 		return ceil( ( ( $width * $length * $height ) / $this->volumetric_divider ) * 1000 );
-	}
-
-	/**
-	 * Set the base weight for cart contents.
-	 *
-	 * @since 1.1.4
-	 * @param int $weight Current cart contents weight.
-	 * @return int
-	 */
-	public function set_cart_contents_base_weight( $weight ) {
-		if ( absint( $this->base_weight ) && $weight < absint( $this->base_weight ) ) {
-			return wc_get_weight( absint( $this->base_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
-		}
-
-		return $weight;
 	}
 
 	/**
