@@ -366,33 +366,19 @@ class Woongkir_API {
 	public function validate_account() {
 		$account_type = $this->get_option( 'account_type', 'starter' );
 
-		// Destination test data.
-		$destination = array(
-			'country'     => 0,
-			'province'    => 0,
-			'city'        => 'pro' !== $account_type ? 114 : 0,
-			'subdistrict' => 'pro' === $account_type ? 574 : 0,
+		$params = array(
+			'courier'     => array( 'jne' ),
+			'weight'      => 1700,
+			'origin'      => 'pro' === $account_type ? '538' : '501',
+			'destination' => 'pro' === $account_type ? '574' : '114',
 		);
 
-		// Origin test data.
-		$origin = array(
-			'province'    => 0,
-			'city'        => 'pro' !== $account_type ? 501 : 0,
-			'subdistrict' => 'pro' === $account_type ? 538 : 0,
-		);
+		if ( 'pro' === $account_type ) {
+			$params['originType']      = 'subdistrict';
+			$params['destinationType'] = 'subdistrict';
+		}
 
-		// Dimension & weight test data.
-		$dimension_weight = array(
-			'width'  => 0,
-			'length' => 0,
-			'height' => 0,
-			'weight' => 1700,
-		);
-
-		// Courier test data.
-		$courier = array( 'jne' );
-
-		return $this->get_cost( $destination, $origin, $dimension_weight, $courier );
+		return $this->calculate_shipping( $params );
 	}
 
 	/**
