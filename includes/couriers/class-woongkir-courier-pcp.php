@@ -25,22 +25,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Woongkir_Courier_PCP extends Woongkir_Courier {
 
 	/**
-	 * Courier ID
+	 * Courier Code
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $id = 'pcp';
+	public $code = 'pcp';
 
 	/**
-	 * Courier Name
+	 * Courier Label
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $name = 'PCP';
+	public $label = 'PCP';
 
 	/**
 	 * Courier Website

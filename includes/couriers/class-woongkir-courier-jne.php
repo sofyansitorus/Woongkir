@@ -25,22 +25,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Woongkir_Courier_JNE extends Woongkir_Courier {
 
 	/**
-	 * Courier ID
+	 * Courier Code
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $id = 'jne';
+	public $code = 'jne';
 
 	/**
-	 * Courier Name
+	 * Courier Label
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $name = 'JNE';
+	public $label = 'JNE';
 
 	/**
 	 * Courier Website

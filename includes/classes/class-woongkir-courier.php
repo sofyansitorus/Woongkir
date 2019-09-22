@@ -25,13 +25,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 abstract class Woongkir_Courier {
 
 	/**
-	 * Courier ID
+	 * Courier priority
+	 *
+	 * @since ??
+	 *
+	 * @var int
+	 */
+	public $priority = 0;
+
+	/**
+	 * Courier Code
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $id = '';
+	public $code = '';
 
 	/**
 	 * API Response ID
@@ -40,16 +49,16 @@ abstract class Woongkir_Courier {
 	 *
 	 * @var string
 	 */
-	public $response_id = '';
+	public $response_code = '';
 
 	/**
-	 * Courier Name
+	 * Courier Label
 	 *
 	 * @since ??
 	 *
 	 * @var string
 	 */
-	public $name = '';
+	public $label = '';
 
 	/**
 	 * Courier Website
@@ -61,14 +70,25 @@ abstract class Woongkir_Courier {
 	public $website = '';
 
 	/**
-	 * Get courier ID
+	 * Get courier priority
+	 *
+	 * @since ??
+	 *
+	 * @return int
+	 */
+	public function get_priority() {
+		return $this->priority;
+	}
+
+	/**
+	 * Get courier code
 	 *
 	 * @since ??
 	 *
 	 * @return string
 	 */
-	public function get_id() {
-		return $this->id;
+	public function get_code() {
+		return $this->code;
 	}
 
 	/**
@@ -78,19 +98,19 @@ abstract class Woongkir_Courier {
 	 *
 	 * @return string
 	 */
-	public function get_response_id() {
-		return $this->response_id ? $this->response_id : $this->id;
+	public function get_response_code() {
+		return $this->response_code ? $this->response_code : $this->code;
 	}
 
 	/**
-	 * Get courier name
+	 * Get courier label
 	 *
 	 * @since ??
 	 *
 	 * @return string
 	 */
-	public function get_name() {
-		return $this->name;
+	public function get_label() {
+		return $this->label;
 	}
 
 	/**
@@ -146,5 +166,52 @@ abstract class Woongkir_Courier {
 	 */
 	public function get_account_international() {
 		return array();
+	}
+
+	/**
+	 * Populate properties as array
+	 *
+	 * @since ??
+	 *
+	 * @param string $zone Couriers zone: domestic, international, all.
+	 *
+	 * @return array
+	 */
+	public function to_array( $zone = 'all' ) {
+		if ( 'domestic' === $zone ) {
+			return array(
+				'priority'      => $this->get_priority(),
+				'code'          => $this->get_code(),
+				'response_code' => $this->get_response_code(),
+				'label'         => $this->get_label(),
+				'website'       => $this->get_website(),
+				'services'      => $this->get_services_domestic(),
+				'account'       => $this->get_account_domestic(),
+			);
+		}
+
+		if ( 'international' === $zone ) {
+			return array(
+				'priority'      => $this->get_priority(),
+				'code'          => $this->get_code(),
+				'response_code' => $this->get_response_code(),
+				'label'         => $this->get_label(),
+				'website'       => $this->get_website(),
+				'services'      => $this->get_services_international(),
+				'account'       => $this->get_account_international(),
+			);
+		}
+
+		return array(
+			'priority'               => $this->get_priority(),
+			'code'                   => $this->get_code(),
+			'response_code'          => $this->get_response_code(),
+			'label'                  => $this->get_label(),
+			'website'                => $this->get_website(),
+			'services_domestic'      => $this->get_services_domestic(),
+			'services_international' => $this->get_services_international(),
+			'account_domestic'       => $this->get_account_domestic(),
+			'account_international'  => $this->get_account_international(),
+		);
 	}
 }

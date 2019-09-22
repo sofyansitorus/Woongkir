@@ -59,7 +59,9 @@ function woongkir_autoloader( $class ) {
 		return;
 	}
 
-	if ( strpos( $class, 'woongkir_courier_' ) === 0 ) {
+	if ( strpos( $class, 'woongkir_account_' ) === 0 ) {
+		require_once WOONGKIR_PATH . 'includes/accounts/class-' . str_replace( '_', '-', $class ) . '.php';
+	} elseif ( strpos( $class, 'woongkir_courier_' ) === 0 ) {
 		require_once WOONGKIR_PATH . 'includes/couriers/class-' . str_replace( '_', '-', $class ) . '.php';
 	} else {
 		require_once WOONGKIR_PATH . 'includes/classes/class-' . str_replace( '_', '-', $class ) . '.php';
