@@ -50,14 +50,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	private $posted_field_values;
 
 	/**
-	 * Posted values of settings fields.
-	 *
-	 * @since 1.0.0
-	 * @var array
-	 */
-	private $currency_exchange = false;
-
-	/**
 	 * Constructor for your shipping class
 	 *
 	 * @since 1.0.0
