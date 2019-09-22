@@ -435,6 +435,20 @@ class Woongkir_API {
 	 * @return (WP_Error|array) The response or WP_Error on failure.
 	 */
 	public function api_request_post( $endpoint = '', $body = array(), $custom_params = array() ) {
+		/**
+		 * Filter POST method API request.
+		 *
+		 * Allows modification of the POST method API request before the actual API request is made.
+		 *
+		 * @since ??
+		 *
+		 * @param bool   $response API response data. Default is false.
+		 * @param string $endpoint API request endpoint.
+		 * @param array  $body Body API request parameters.
+		 * @param array  $custom_params Custom API request parameters.
+		 *
+		 * @return bool
+		 */
 		$response = apply_filters( 'woongkir_api_request_post_pre', false, $endpoint, $body, $custom_params, $this );
 
 		if ( false === $response ) {
@@ -464,6 +478,20 @@ class Woongkir_API {
 	 * @return (WP_Error|array) The response or WP_Error on failure.
 	 */
 	public function api_request_get( $endpoint = '', $query_string = array(), $custom_params = array() ) {
+		/**
+		 * Filter GET method API request.
+		 *
+		 * Allows modification of the GET method API request before the actual API request is made.
+		 *
+		 * @since ??
+		 *
+		 * @param bool   $response API response data. Default is false.
+		 * @param string $endpoint API request endpoint.
+		 * @param array  $query_string API request Query string URL parameters.
+		 * @param array  $custom_params Custom API request parameters.
+		 *
+		 * @return bool
+		 */
 		$response = apply_filters( 'woongkir_api_request_get_pre', false, $endpoint, $query_string, $custom_params, $this );
 
 		if ( false === $response ) {

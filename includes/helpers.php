@@ -19,13 +19,11 @@ if ( ! function_exists( 'woongkir_is_plugin_active' ) ) :
 	 * @param string $plugin_file Plugin file name.
 	 */
 	function woongkir_is_plugin_active( $plugin_file ) {
-		$active_plugins = (array) apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-
-		if ( is_multisite() ) {
-			$active_plugins = array_merge( $active_plugins, (array) get_site_option( 'active_sitewide_plugins', array() ) );
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		return in_array( $plugin_file, $active_plugins, true ) || array_key_exists( $plugin_file, $active_plugins );
+		return is_plugin_active( $plugin_file );
 	}
 endif;
 

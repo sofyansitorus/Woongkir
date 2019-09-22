@@ -592,17 +592,24 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$results = $this->is_enable_cache() ? get_transient( $cache_key ) : false;
 
 			if ( false === $results ) {
-				$results = apply_filters( 'woongkir_calculate_shipping_before', false, $package, $this );
-
-				if ( false === $results ) {
-					if ( 'domestic' === $api_request_params['zone'] ) {
-						$results = $this->api->calculate_shipping( $api_request_params );
-					} else {
-						$results = $this->api->calculate_shipping_international( $api_request_params );
-					}
+				if ( 'domestic' === $api_request_params['zone'] ) {
+					$results = $this->api->calculate_shipping( $api_request_params );
+				} else {
+					$results = $this->api->calculate_shipping_international( $api_request_params );
 				}
 
-				$results = apply_filters( 'woongkir_calculate_shipping_after', $results, $package, $this );
+				/**
+				 * Filter the shipping calculation results.
+				 *
+				 * @since ??
+				 *
+				 * @param bool   $results API shipping calculation results.
+				 * @param string $package Current order package data.
+				 * @param Woongkir_Shipping_Method  $object Current class object.
+				 *
+				 * @return array
+				 */
+				$results = apply_filters( 'woongkir_shipping_results', $results, $package, $this );
 
 				if ( $results && ! is_wp_error( $results ) && $this->is_enable_cache() ) {
 					set_transient( $cache_key, $results, HOUR_IN_SECONDS ); // Store response data for 1 hour.
@@ -719,13 +726,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			/**
 			 * Shipping origin info.
 			 *
+			 * @since 1.2.9
+			 *
 			 * @param array $origin_info Original origin info.
 			 * @param array $package Current order package data.
 			 *
 			 * @return array
-			 * @since 1.2.9
 			 */
-			$origin_info = apply_filters( 'woocommerce_' . $this->id . '_shipping_origin_info', $this->get_origin_info( $package['destination'] ), $package ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$origin_info = apply_filters( 'woongkir_shipping_origin_info', $this->get_origin_info( $package['destination'] ), $package );
 
 			$this->show_debug(
 				wp_json_encode(
@@ -742,13 +750,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			/**
 			 * Shipping destination info.
 			 *
+			 * @since 1.2.9
+			 *
 			 * @param array $destination_info Original destination info.
 			 * @param array $package Current order package data.
 			 *
 			 * @return array
-			 * @since 1.2.9
 			 */
-			$destination_info = apply_filters( 'woocommerce_' . $this->id . '_shipping_destination_info', $this->get_destination_info( $package['destination'] ), $package ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$destination_info = apply_filters( 'woongkir_shipping_destination_info', $this->get_destination_info( $package['destination'] ), $package );
 
 			$this->show_debug(
 				wp_json_encode(
@@ -765,13 +774,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			/**
 			 * Shipping dimension & weight info.
 			 *
+			 * @since 1.2.9
+			 *
 			 * @param array $dimension_weight Original dimension & weight info.
 			 * @param array $package Current order package data.
 			 *
 			 * @return array
-			 * @since 1.2.9
 			 */
-			$dimension_weight = apply_filters( 'woocommerce_' . $this->id . '_shipping_dimension_weight', $this->get_dimension_weight( $package['contents'] ), $package ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$dimension_weight = apply_filters( 'woongkir_shipping_dimension_weight', $this->get_dimension_weight( $package['contents'] ), $package );
 
 			$this->show_debug(
 				wp_json_encode(
