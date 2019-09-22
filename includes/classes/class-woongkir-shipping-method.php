@@ -662,7 +662,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				)
 			);
 
-			foreach ( $results as $result_key => $result ) {
+			foreach ( $results['formatted'] as $result_key => $result ) {
 				if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {
 					continue;
 				}
@@ -826,7 +826,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				$destination_info,
 				$dimension_weight,
 				array(
-					'courier' => implode( ':', $courier ),
+					'courier' => $courier,
 					'zone'    => $domestic ? 'domestic' : 'international',
 				)
 			);
@@ -1139,6 +1139,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			return;
 		}
 
-		wc_add_notice( (WOONGKIR_METHOD_ID . ' : ' . $message), $notice_type );
+		wc_add_notice( ( WOONGKIR_METHOD_ID . ' : ' . $message ), $notice_type );
 	}
 }

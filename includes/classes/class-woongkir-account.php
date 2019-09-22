@@ -76,6 +76,74 @@ abstract class Woongkir_Account {
 	);
 
 	/**
+	 * Allowed API Request parameters
+	 *
+	 * @since ??
+	 *
+	 * @var array
+	 */
+	protected $api_request_params = array(
+		'origin'          => array(
+			'type'          => 'string',
+			'validate_type' => 'is_string',
+		),
+		'originType'      => array(
+			'type'          => 'string',
+			'validate_type' => 'is_string',
+		),
+		'destination'     => array(
+			'type'          => 'string',
+			'validate_type' => 'is_string',
+		),
+		'destinationType' => array(
+			'type'          => 'string',
+			'validate_type' => 'is_string',
+		),
+		'weight'          => array(
+			'type'          => 'numeric',
+			'validate_type' => 'is_numeric',
+		),
+		'courier'         => array(
+			'type'          => 'array',
+			'validate_type' => 'is_array',
+		),
+		'length'          => array(
+			'type'          => 'numeric',
+			'validate_type' => 'is_numeric',
+		),
+		'width'           => array(
+			'type'          => 'numeric',
+			'validate_type' => 'is_numeric',
+		),
+		'height'          => array(
+			'type'          => 'numeric',
+			'validate_type' => 'is_numeric',
+		),
+		'diameter'        => array(
+			'type'          => 'numeric',
+			'validate_type' => 'is_numeric',
+		),
+	);
+
+	/**
+	 * Required API Request parameters
+	 *
+	 * @since ??
+	 *
+	 * @var array
+	 */
+	protected $api_request_params_requireds = array();
+
+	/**
+	 * Optionals API Request parameters
+	 *
+	 * @since ??
+	 *
+	 * @var array
+	 */
+	protected $api_request_params_optionals = array();
+
+	/**
 	 * Get account priority
 	 *
 	 * @since ??
@@ -141,6 +209,131 @@ abstract class Woongkir_Account {
 	 */
 	public function feature_enable( $feature_key ) {
 		return isset( $this->features[ $feature_key ] ) ? $this->features[ $feature_key ] : false;
+	}
+
+	/**
+	 * Parse API request parameters.
+	 *
+	 * @since ??
+	 *
+	 * @param array $params API request parameters to parse.
+	 *
+	 * @throws Exception Error message.
+	 *
+	 * @return (array|WP_Error)
+	 */
+	public function api_request_parser( $params = array() ) {
+		try {
+			$parsed = array();
+
+			foreach ( $this->api_request_params as $allowed_key => $allowed ) {
+				if ( ! in_array( $allowed_key, $this->api_request_params_requireds, true ) && ! in_array( $allowed_key, $this->api_request_params_optionals, true ) ) {
+					continue;
+				}
+
+				$value     = isset( $params[ $allowed_key ] ) ? $params[ $allowed_key ] : null;
+				$has_value = is_numeric( $value ) || is_string( $value ) || is_integer( $value ) ? strlen( $value ) : $value;
+
+				if ( in_array( $allowed_key, $this->api_request_params_requireds, true ) && ! $has_value ) {
+					// translators: %s API request parameter key.
+					throw new Exception( sprintf( __( 'Required API request parameter is empty: %s.', 'woongkir' ), $allowed_key ) );
+				}
+
+				if ( ! is_null( $value ) && isset( $allowed['validate_type'] ) && is_callable( $allowed['validate_type'] ) && ! call_user_func( $allowed['validate_type'], $value ) ) {
+					// translators: %1$s API request parameter key, %2$s Expected data type, %1$s Passed data type.
+					throw new Exception( sprintf( __( 'Invalid API request parameter data type: %1$s. Passed %2$s instead %3$s', 'woongkir' ), $allowed_key, gettype( $value ), $allowed['type'] ) );
+				}
+
+				$value_modifier_callback = array( $this, 'api_request_param_' . $allowed_key . '_value_modifier' );
+				if ( is_callable( $value_modifier_callback ) ) {
+					$value = call_user_func( $value_modifier_callback, $value );
+				}
+
+				if ( is_wp_error( $value ) ) {
+					throw new Exception( $value->get_error_message() );
+				}
+
+				if ( ! is_null( $value ) ) {
+					$parsed[ $allowed_key ] = $value;
+				}
+			}
+
+			if ( empty( $parsed ) ) {
+				throw new Exception( __( 'API request parameters is empty.', 'woongkir' ) );
+			}
+
+			return $parsed;
+		} catch ( Exception $e ) {
+			return new WP_Error( 'invalid_request_params', $e->getMessage() );
+		}
+	}
+
+	/**
+	 * API Request parameter value modifier and validator: weight
+	 *
+	 * @since ??
+	 *
+	 * @param string $value weight parameter value.
+	 *
+	 * @return (float|int|double)
+	 */
+	protected function api_request_param_weight_value_modifier( $value ) {
+		if ( ! $this->feature_enable( 'weight_over_30kg' ) && $value > 30000 ) {
+			return new WP_Error( 'invalid_api_request_param_weight_value', __( 'Account type not support weight over 30 kg.', 'woongkir' ) );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * API Request parameter value modifier and validator: originType
+	 *
+	 * @since ??
+	 *
+	 * @param string $value originType parameter value.
+	 *
+	 * @return string
+	 */
+	protected function api_request_param_originType_value_modifier( $value ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		if ( ! $this->feature_enable( 'subdistrict' ) && 'subdistrict' === $value ) {
+			return new WP_Error( 'invalid_api_request_param_originType_value', __( 'Account type not support subdistrict origin.', 'woongkir' ) );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * API Request parameter value modifier and validator: destinationType
+	 *
+	 * @since ??
+	 *
+	 * @param string $value destinationType parameter value.
+	 *
+	 * @return string
+	 */
+	protected function api_request_param_destinationType_value_modifier( $value ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		if ( ! $this->feature_enable( 'subdistrict' ) && 'subdistrict' === $value ) {
+			return new WP_Error( 'invalid_api_request_param_destinationType_value', __( 'Account type not support subdistrict destination.', 'woongkir' ) );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * API Request parameter value modifier and validator: courier
+	 *
+	 * @since ??
+	 *
+	 * @param array $value courier parameter value.
+	 *
+	 * @return string
+	 */
+	protected function api_request_param_courier_value_modifier( $value ) {
+		if ( ! $this->feature_enable( 'multiple_couriers' ) && count( $value ) > 1 ) {
+			return new WP_Error( 'invalid_api_request_param_courier_value', __( 'Account type not support multiple couriers.', 'woongkir' ) );
+		}
+
+		return implode( ':', $value );
 	}
 
 	/**

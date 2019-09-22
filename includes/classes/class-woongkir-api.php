@@ -129,7 +129,7 @@ class Woongkir_API {
 	 *
 	 * @return int
 	 */
-	private function sort_by_priority( $a, $b ) {
+	protected function sort_by_priority( $a, $b ) {
 		$a_priority = 0;
 
 		if ( is_callable( array( $a, 'get_priority' ) ) ) {
@@ -161,7 +161,7 @@ class Woongkir_API {
 	 */
 	public function get_cost( $destination, $origin, $dimension_weight, $courier ) {
 		$results  = array();
-		$account  = $this->get_account( $this->get_option( 'account_type' ) );
+		$account  = $this->get_account();
 		$endpoint = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
 
 		if ( $courier && ! $account->feature_enable( 'multiple_couriers' ) ) {
@@ -364,7 +364,7 @@ class Woongkir_API {
 	 * @since 1.0.0
 	 */
 	public function validate_account() {
-		$account_type = $this->get_option( 'account_type' );
+		$account_type = $this->get_option( 'account_type', 'starter' );
 
 		// Destination test data.
 		$destination = array(
@@ -403,7 +403,7 @@ class Woongkir_API {
 	 * @return string
 	 */
 	private function api_url( $endpoint ) {
-		$account = $this->get_account( $this->get_option( 'account_type' ) );
+		$account = $this->get_account();
 
 		switch ( $endpoint ) {
 			case 'internationalOrigin':
@@ -448,16 +448,20 @@ class Woongkir_API {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $type Account type key.
+	 * @param string $account_type Account type key.
 	 * @param bool   $as_array Wethere to return data as array or not.
 	 *
 	 * @return (Woongkir_Account|array|bool) Courier object or array data. False on failure.
 	 */
-	public function get_account( $type, $as_array = false ) {
+	public function get_account( $account_type = null, $as_array = false ) {
 		$accounts = $this->get_accounts( $as_array );
 
-		if ( isset( $accounts[ $type ] ) ) {
-			return $accounts[ $type ];
+		if ( is_null( $account_type ) ) {
+			$account_type = $this->get_option( 'account_type', 'starter' );
+		}
+
+		if ( isset( $accounts[ $account_type ] ) ) {
+			return $accounts[ $account_type ];
 		}
 
 		return false;
@@ -628,8 +632,17 @@ class Woongkir_API {
 		}
 	}
 
+	/**
+	 * Get API request full URL.
+	 *
+	 * @since ??
+	 *
+	 * @param string $endpoint API request endpoint.
+	 *
+	 * @return string
+	 */
 	public function api_request_url( $endpoint = '' ) {
-		$account = $this->get_account( $this->get_option( 'account_type' ) );
+		$account = $this->get_account();
 
 		if ( ! $account ) {
 			return $endpoint;
@@ -644,6 +657,15 @@ class Woongkir_API {
 		return $request_url . '/' . ltrim( $endpoint, '/' );
 	}
 
+	/**
+	 * Populate API request parameters.
+	 *
+	 * @since ??
+	 *
+	 * @param array $custom_params Custom API request parameters.
+	 *
+	 * @return array
+	 */
 	public function api_request_params( $custom_params = array() ) {
 		$args = array(
 			'timeout' => 10,
@@ -655,6 +677,17 @@ class Woongkir_API {
 		return array_merge_recursive( $args, $custom_params );
 	}
 
+	/**
+	 * POST method API request
+	 *
+	 * @since ??
+	 *
+	 * @param string $endpoint API request endpoint.
+	 * @param array  $body Body API request parameters.
+	 * @param array  $custom_params Custom API request parameters.
+	 *
+	 * @return (WP_Error|array) The response or WP_Error on failure.
+	 */
 	public function api_request_post( $endpoint = '', $body = array(), $custom_params = array() ) {
 		$response = apply_filters( 'woongkir_api_request_post_pre', false, $endpoint, $body, $custom_params, $this );
 
@@ -673,6 +706,17 @@ class Woongkir_API {
 		return $response;
 	}
 
+	/**
+	 * GET method API request
+	 *
+	 * @since ??
+	 *
+	 * @param string $endpoint API request endpoint.
+	 * @param array  $query_string API request Query string URL parameters.
+	 * @param array  $custom_params Custom API request parameters.
+	 *
+	 * @return (WP_Error|array) The response or WP_Error on failure.
+	 */
 	public function api_request_get( $endpoint = '', $query_string = array(), $custom_params = array() ) {
 		$response = apply_filters( 'woongkir_api_request_get_pre', false, $endpoint, $query_string, $custom_params, $this );
 
@@ -683,15 +727,28 @@ class Woongkir_API {
 		return $response;
 	}
 
-	public function calculate_shipping( $params = array(), $formatted = true ) {
-		if ( isset( $params['courier'] ) && is_array( $params['courier'] ) ) {
-			$params['courier'] = implode( ':', $params['courier'] );
+	/**
+	 * Calculate domestic shipping cost
+	 *
+	 * @since ??
+	 *
+	 * @param array $params API request parameters.
+	 *
+	 * @return (WP_Error|array) The response or WP_Error on failure.
+	 */
+	public function calculate_shipping( $params = array() ) {
+		$endpoint = '/cost';
+
+		$parsed_params = $this->get_account()->api_request_parser( $params, $endpoint );
+
+		if ( is_wp_error( $parsed_params ) ) {
+			return $parsed_params;
 		}
 
-		$raw_response    = $this->api_request_post( '/cost', $params );
+		$raw_response    = $this->api_request_post( $endpoint, $parsed_params );
 		$parsed_response = $this->api_response_parser( $raw_response );
 
-		if ( ! $parsed_response || is_wp_error( $parsed_response ) || ! $formatted ) {
+		if ( ! $parsed_response || is_wp_error( $parsed_response ) ) {
 			return $parsed_response;
 		}
 
@@ -764,18 +821,35 @@ class Woongkir_API {
 			}
 		}
 
-		return $rates;
+		return array(
+			'formatted' => $rates,
+			'raw'       => $parsed_response,
+		);
 	}
 
-	public function calculate_shipping_international( $params = array(), $formatted = true ) {
-		if ( isset( $params['courier'] ) && is_array( $params['courier'] ) ) {
-			$params['courier'] = implode( ':', $params['courier'] );
+	/**
+	 * Calculate international shipping cost
+	 *
+	 * @since ??
+	 *
+	 * @param array $params API request parameters.
+	 *
+	 * @return (WP_Error|array) The response or WP_Error on failure.
+	 */
+	public function calculate_shipping_international( $params = array() ) {
+		$account  = $this->get_account();
+		$endpoint = '/v2/internationalCost';
+
+		$parsed_params = $account->api_request_parser( $params, $endpoint );
+
+		if ( is_wp_error( $parsed_params ) ) {
+			return $parsed_params;
 		}
 
-		$raw_response    = $this->api_request_post( '/v2/internationalCost', $params );
+		$raw_response    = $this->api_request_post( $endpoint, $parsed_params );
 		$parsed_response = $this->api_response_parser( $raw_response );
 
-		if ( ! $parsed_response || is_wp_error( $parsed_response ) || ! $formatted ) {
+		if ( ! $parsed_response || is_wp_error( $parsed_response ) ) {
 			return $parsed_response;
 		}
 
@@ -854,9 +928,21 @@ class Woongkir_API {
 			}
 		}
 
-		return $rates;
+		return array(
+			'formatted' => $rates,
+			'raw'       => $parsed_response,
+		);
 	}
 
+	/**
+	 * Parse API response ETD data.
+	 *
+	 * @since ??
+	 *
+	 * @param string $etd API response ETD data.
+	 *
+	 * @return string
+	 */
 	private function parse_etd( $etd ) {
 		if ( ! $etd ) {
 			return '';
@@ -872,7 +958,10 @@ class Woongkir_API {
 			$etd = trim( $etd ) . ' ' . __( 'days', 'woongkir' );
 		}
 
+		// Trim the etd data.
 		$etd = array_map( 'trim', explode( '-', $etd ) );
+
+		// Join the etd data.
 		$etd = implode( ' - ', $etd );
 
 		return $etd;

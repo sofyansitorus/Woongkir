@@ -74,4 +74,34 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 		'weight_over_30kg'  => false,
 		'dedicated_server'  => false,
 	);
+
+	/**
+	 * Parse API request parameters.
+	 *
+	 * @since ??
+	 *
+	 * @param array  $params   API request parameters to parse.
+	 * @param string $endpoint API request endpoint.
+	 *
+	 * @return (array|WP_Error)
+	 */
+	public function api_request_parser( $params = array(), $endpoint = '' ) {
+		if ( '/cost' === $endpoint ) {
+			$this->api_request_params_requireds = array(
+				'origin',
+				'destination',
+				'weight',
+				'courier',
+			);
+		} elseif ( '/v2/internationalCost' === $endpoint ) {
+			$this->api_request_params_requireds = array(
+				'origin',
+				'destination',
+				'weight',
+				'courier',
+			);
+		}
+
+		return parent::api_request_parser( $params );
+	}
 }

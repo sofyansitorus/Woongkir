@@ -64,8 +64,8 @@ class Woongkir_Courier_RPX extends Woongkir_Courier {
 			'MDP' => 'MidDay Package',
 			'NDP' => 'Next Day Package',
 			'RGP' => 'Regular Package',
-			'REP' => 'PAS Reguler',
 			'PAS' => 'Paket Ambil Suka-Suka',
+			'PSR' => 'PAS Reguler',
 		);
 	}
 
