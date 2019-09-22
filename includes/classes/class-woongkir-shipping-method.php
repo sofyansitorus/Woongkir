@@ -588,16 +588,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				throw new Exception( $api_request_params->get_error_message() );
 			}
 
-			$cache_key = $this->id . '_' . $this->instance_id . '_' . md5(
-				wp_json_encode(
-					array_merge(
-						$api_request_params,
-						array(
-							'api_key' => $this->api_key,
-						)
-					)
-				)
-			);
+			$cache_key = $this->generate_cache_key( $api_request_params );
 
 			if ( $this->is_enable_cache() ) {
 				$this->show_debug(
@@ -1038,6 +1029,32 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 */
 	private function is_enable_cache() {
 		return defined( 'WOONGKIR_ENABLE_CACHE' ) ? WOONGKIR_ENABLE_CACHE : true;
+	}
+
+	/**
+	 * Generate cache key
+	 *
+	 * @since ??
+	 *
+	 * @param array $api_request_params API request parameters.
+	 *
+	 * @return boolean
+	 */
+	private function generate_cache_key( $api_request_params = array() ) {
+		$cache_keys = array();
+
+		foreach ( array_keys( $this->instance_form_fields ) as $cache_key ) {
+			$cache_keys[ $cache_key ] = $this->get_option( $cache_key );
+		}
+
+		return $this->id . '_' . $this->instance_id . '_' . md5(
+			wp_json_encode(
+				array_merge(
+					$api_request_params,
+					$cache_keys
+				)
+			)
+		);
 	}
 
 	/**
