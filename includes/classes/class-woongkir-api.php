@@ -568,8 +568,8 @@ class Woongkir_API {
 		}
 
 		return array(
-			'formatted' => $rates,
-			'raw'       => $parsed_response,
+			'parsed' => $rates,
+			'raw'    => $parsed_response,
 		);
 	}
 
@@ -675,8 +675,8 @@ class Woongkir_API {
 		}
 
 		return array(
-			'formatted' => $rates,
-			'raw'       => $parsed_response,
+			'parsed' => $rates,
+			'raw'    => $parsed_response,
 		);
 	}
 
