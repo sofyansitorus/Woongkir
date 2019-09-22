@@ -90,7 +90,7 @@ class Woongkir_API {
 		}
 
 		if ( $this->accounts ) {
-			uasort( $this->accounts, array( $this, 'sort_by_priority' ) );
+			uasort( $this->accounts, 'woongkir_sort_by_priority' );
 		}
 	}
 
@@ -117,98 +117,8 @@ class Woongkir_API {
 		}
 
 		if ( $this->couriers ) {
-			uasort( $this->couriers, array( $this, 'sort_by_priority' ) );
+			uasort( $this->couriers, 'woongkir_sort_by_priority' );
 		}
-	}
-
-	/**
-	 * Sort data by priority
-	 *
-	 * @param array $a Item to compare.
-	 * @param array $b Item to compare.
-	 *
-	 * @return int
-	 */
-	protected function sort_by_priority( $a, $b ) {
-		$a_priority = 0;
-
-		if ( is_callable( array( $a, 'get_priority' ) ) ) {
-			$a_priority = $a->get_priority();
-		} elseif ( isset( $a['priority'] ) ) {
-			$a_priority = $a['priority'];
-		}
-
-		$b_priority = 0;
-
-		if ( is_callable( array( $b, 'get_priority' ) ) ) {
-			$b_priority = $b->get_priority();
-		} elseif ( isset( $b['priority'] ) ) {
-			$b_priority = $b['priority'];
-		}
-
-		return strcasecmp( $a_priority, $b_priority );
-	}
-
-	/**
-	 * Get shipping cost.
-	 *
-	 * @since 1.0.0
-	 * @param array $destination Shipping destination data.
-	 * @param array $origin Shipping origin data.
-	 * @param array $dimension_weight Shipping package weight and dimension data.
-	 * @param array $courier Request Shipping couriers data.
-	 * @return array
-	 */
-	public function get_cost( $destination, $origin, $dimension_weight, $courier ) {
-		$results  = array();
-		$account  = $this->get_account();
-		$endpoint = empty( $destination['country'] ) ? 'cost' : 'internationalCost';
-
-		if ( $courier && ! $account->feature_enable( 'multiple_couriers' ) ) {
-			$courier = array_slice( $courier, 0, 1 );
-		}
-
-		$courier_chunks = $courier ? array_chunk( $courier, apply_filters( 'woongkir_api_courier_chunks', 3 ) ) : false;
-
-		// Bail early when the couriers data is empty.
-		if ( ! $courier_chunks ) {
-			return $results;
-		}
-
-		foreach ( $courier_chunks as $couriers ) {
-			switch ( $endpoint ) {
-				case 'internationalCost':
-					$params = array(
-						'destination' => $destination['country'],
-						'origin'      => $origin['city'],
-						'courier'     => implode( ':', $couriers ),
-					);
-					break;
-
-				default:
-					$params = array(
-						'destination'     => ( $account->feature_enable( 'subdistrict' ) && ! empty( $destination['subdistrict'] ) ) ? $destination['subdistrict'] : $destination['city'],
-						'destinationType' => ( $account->feature_enable( 'subdistrict' ) && ! empty( $destination['subdistrict'] ) ) ? 'subdistrict' : 'city',
-						'origin'          => ( $account->feature_enable( 'subdistrict' ) && ! empty( $origin['subdistrict'] ) ) ? $origin['subdistrict'] : $origin['city'],
-						'originType'      => ( $account->feature_enable( 'subdistrict' ) && ! empty( $origin['subdistrict'] ) ) ? 'subdistrict' : 'city',
-						'courier'         => implode( ':', $couriers ),
-					);
-					break;
-			}
-
-			$results[] = $this->remote_post( $endpoint, array_merge( $params, $dimension_weight ) );
-		}
-
-		return $results;
-	}
-
-	/**
-	 * Get currency exchange value.
-	 *
-	 * @since 1.0.0
-	 */
-	public function get_currency() {
-		return $this->remote_get( 'currency' );
 	}
 
 	/**
@@ -234,131 +144,6 @@ class Woongkir_API {
 	}
 
 	/**
-	 * Make request to API server.
-	 *
-	 * @since 1.0.0
-	 * @param string $endpoint API request URL endpoint.
-	 * @param array  $params API request parameters.
-	 */
-	public function remote_request( $endpoint, $params = array() ) {
-		$args = wp_parse_args(
-			$params,
-			array(
-				'timeout' => 10,
-				'headers' => array(
-					'key' => $this->get_option( 'api_key' ),
-				),
-			)
-		);
-
-		/**
-		 * Developers can modify the api request via filter hooks.
-		 *
-		 * @since 1.2.7
-		 *
-		 * This example shows how you can modify the $response var via custom function:
-		 *
-		 *      add_filter( 'woongkir_api_remote_request_pre', 'my_api_remote_request_pre', 10, 4 );
-		 *
-		 *      function my_api_remote_request_pre( $false, $endpoint, $args, $param, $obj ) {
-		 *          // Return the response data JSON
-		 *          return wp_json_encode( array() );
-		 *      }
-		 */
-		$response = apply_filters( 'woongkir_api_remote_request_pre', false, $endpoint, $args, $params, $this );
-
-		if ( false === $response ) {
-			$response = wp_remote_request( $this->api_url( $endpoint ), $args );
-		}
-
-		return $this->api_response_parser( $response );
-	}
-
-	/**
-	 * Make request to API server using the POST method.
-	 *
-	 * @since 1.0.0
-	 * @param string $endpoint API request URL endpoint.
-	 * @param array  $body API request body parameters.
-	 */
-	public function remote_post( $endpoint, $body = array() ) {
-		$args = array(
-			'timeout' => 10,
-			'headers' => array(
-				'key'          => $this->get_option( 'api_key' ),
-				'content-type' => 'application/x-www-form-urlencoded',
-			),
-			'body'    => $body,
-		);
-
-		/**
-		 * Developers can modify the api request via filter hooks.
-		 *
-		 * @since 1.2.7
-		 *
-		 * This example shows how you can modify the $response var via custom function:
-		 *
-		 *      add_filter( 'woongkir_api_remote_post_pre', 'my_api_remote_post_pre', 10, 4 );
-		 *
-		 *      function my_api_remote_post_pre( $false, $endpoint, $args, $body, $obj ) {
-		 *          // Return the response data JSON
-		 *          return wp_json_encode( array() );
-		 *      }
-		 */
-		$response = apply_filters( 'woongkir_api_remote_post_pre', false, $endpoint, $args, $body, $this );
-
-		if ( false === $response ) {
-			$response = wp_remote_post( $this->api_url( $endpoint ), $args );
-		}
-
-		return $this->api_response_parser( $response );
-	}
-
-	/**
-	 * Make request to API server using the GET method.
-	 *
-	 * @since 1.0.0
-	 * @param string $endpoint API request URL endpoint.
-	 * @param array  $query_url API request URL query string parameters.
-	 */
-	public function remote_get( $endpoint, $query_url = array() ) {
-		$args = array(
-			'timeout' => 10,
-			'headers' => array(
-				'key' => $this->get_option( 'api_key' ),
-			),
-		);
-
-		/**
-		 * Developers can modify the api request via filter hooks.
-		 *
-		 * @since 1.2.7
-		 *
-		 * This example shows how you can modify the $response var via custom function:
-		 *
-		 *      add_filter( 'woongkir_api_remote_get_pre', 'my_api_remote_get_pre', 10, 4 );
-		 *
-		 *      function my_api_remote_get_pre( $false, $endpoint, $args, $query_url, $obj ) {
-		 *          // Return the response data JSON
-		 *          return wp_json_encode( array() );
-		 *      }
-		 */
-		$response = apply_filters( 'woongkir_api_remote_get_pre', false, $endpoint, $args, $query_url, $this );
-
-		if ( false === $response ) {
-			$url = $this->api_url( $endpoint );
-
-			if ( $query_url ) {
-				$url = add_query_arg( $query_url, $url );
-			}
-
-			$response = wp_remote_get( $url, $args );
-		}
-
-		return $this->api_response_parser( $response );
-	}
-
-	/**
 	 * Validate API account.
 	 *
 	 * @since 1.0.0
@@ -379,31 +164,6 @@ class Woongkir_API {
 		}
 
 		return $this->calculate_shipping( $params );
-	}
-
-	/**
-	 * Get API request URL.
-	 *
-	 * @since 1.0.0
-	 * @param string $endpoint API URL endpoint.
-	 * @return string
-	 */
-	private function api_url( $endpoint ) {
-		$account = $this->get_account();
-
-		switch ( $endpoint ) {
-			case 'internationalOrigin':
-			case 'internationalDestination':
-			case 'internationalCost':
-				$url = $account->get_api_url() . '/v2/' . $endpoint;
-				break;
-
-			default:
-				$url = $account->get_api_url() . '/' . $endpoint;
-				break;
-		}
-
-		return $url;
 	}
 
 	/**

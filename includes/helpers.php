@@ -138,6 +138,36 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'woongkir_sort_by_priority' ) ) :
+	/**
+	 * Sort data by priority
+	 *
+	 * @param array $a Item to compare.
+	 * @param array $b Item to compare.
+	 *
+	 * @return int
+	 */
+	function woongkir_sort_by_priority( $a, $b ) {
+		$a_priority = 0;
+
+		if ( is_object( $a ) && is_callable( array( $a, 'get_priority' ) ) ) {
+			$a_priority = $a->get_priority();
+		} elseif ( isset( $a['priority'] ) ) {
+			$a_priority = $a['priority'];
+		}
+
+		$b_priority = 0;
+
+		if ( is_object( $b ) && is_callable( array( $b, 'get_priority' ) ) ) {
+			$b_priority = $b->get_priority();
+		} elseif ( isset( $b['priority'] ) ) {
+			$b_priority = $b['priority'];
+		}
+
+		return strcasecmp( $a_priority, $b_priority );
+	}
+endif;
+
 if ( ! function_exists( 'woongkir_is_dev' ) ) :
 	/**
 	 * Check is in development envirntment.
