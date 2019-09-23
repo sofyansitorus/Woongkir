@@ -1031,7 +1031,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$cache_keys[ $cache_key ] = $this->get_option( $cache_key );
 		}
 
-		return $this->id . '_' . $this->instance_id . '_' . md5(
+		return $this->id . '_' . $this->instance_id . '_' . WC()->cart->get_cart_hash() . '_' . md5(
 			wp_json_encode(
 				array_merge(
 					$api_request_params,
