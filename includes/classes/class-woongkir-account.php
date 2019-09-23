@@ -3,7 +3,7 @@
  * The file that defines the Woongkir_Account class
  *
  * @link       https://github.com/sofyansitorus
- * @since      ??
+ * @since      1.2.12
  *
  * @package    Woongkir
  * @subpackage Woongkir/includes
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The Woongkir_Account class.
  *
- * @since      ??
+ * @since      1.2.12
  * @package    Woongkir
  * @subpackage Woongkir/includes
  * @author     Sofyan Sitorus <sofyansitorus@gmail.com>
@@ -27,7 +27,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Account priority
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var int
 	 */
@@ -36,7 +36,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Account type
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -45,7 +45,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Account label
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -54,7 +54,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Account API URL
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -63,7 +63,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Account features
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var array
 	 */
@@ -78,7 +78,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Allowed API Request parameters
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var array
 	 */
@@ -128,7 +128,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Required API Request parameters
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var array
 	 */
@@ -137,7 +137,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Optionals API Request parameters
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var array
 	 */
@@ -146,7 +146,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Get account priority
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return int
 	 */
@@ -157,7 +157,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Get account type
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return string
 	 */
@@ -168,7 +168,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Get account label
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return string
 	 */
@@ -179,7 +179,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Get account API URL
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return string
 	 */
@@ -190,7 +190,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Get account features
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -201,7 +201,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Check is feature enabled
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $feature_key Feature key.
 	 *
@@ -214,7 +214,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Parse API request parameters.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $params API request parameters to parse.
 	 *
@@ -271,7 +271,7 @@ abstract class Woongkir_Account {
 	/**
 	 * API Request parameter value modifier and validator: weight
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $value weight parameter value.
 	 *
@@ -288,7 +288,7 @@ abstract class Woongkir_Account {
 	/**
 	 * API Request parameter value modifier and validator: originType
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $value originType parameter value.
 	 *
@@ -305,7 +305,7 @@ abstract class Woongkir_Account {
 	/**
 	 * API Request parameter value modifier and validator: destinationType
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $value destinationType parameter value.
 	 *
@@ -322,7 +322,7 @@ abstract class Woongkir_Account {
 	/**
 	 * API Request parameter value modifier and validator: courier
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $value courier parameter value.
 	 *
@@ -339,7 +339,7 @@ abstract class Woongkir_Account {
 	/**
 	 * Populate properties as array
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */

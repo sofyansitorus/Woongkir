@@ -4,7 +4,7 @@ Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Expres
 Requires at least: 4.8
 Tested up to: 5.2.2
 Requires PHP: 5.6
-Stable tag: 1.2.11
+Stable tag: 1.2.12
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -85,6 +85,12 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.2.12 =
+
+* Improved UI/UX in admin area for mobile mobile devices.
+* Refactored code base to make it modular for easy to extend.
+* Introduced new filters: woongkir_api_request_post_pre, woongkir_api_request_get_pre, woongkir_shipping_results, woongkir_shipping_origin_info, woongkir_shipping_destination_info, woongkir_shipping_dimension_weight
 
 = 1.2.11 =
 

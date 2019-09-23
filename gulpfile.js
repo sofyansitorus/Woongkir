@@ -378,10 +378,10 @@ gulp.task('bump', function () {
 
     const assets = [
         {
-            src: ['./README.txt'],
-            dest: './',
-            search: 'Stable tag: {versionCurrent}',
-            replaceWith: 'Stable tag: {versionBump}',
+            src: ['./includes/**/*.php'],
+            dest: './includes/',
+            search: ' ??\n',
+            replaceWith: ' {versionBump}\n',
         },
         {
             src: ['./woongkir.php'],
@@ -390,16 +390,16 @@ gulp.task('bump', function () {
             replaceWith: '{versionBump}',
         },
         {
+            src: ['./README.txt'],
+            dest: './',
+            search: 'Stable tag: {versionCurrent}',
+            replaceWith: 'Stable tag: {versionBump}',
+        },
+        {
             src: ['./package.json'],
             dest: './',
             search: '{versionCurrent}',
             replaceWith: '{versionBump}',
-        },
-        {
-            src: ['./includes/*.php'],
-            dest: './includes/',
-            search: '@since ??',
-            replaceWith: '@since {versionBump}',
         },
     ];
 

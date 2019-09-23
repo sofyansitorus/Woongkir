@@ -3,7 +3,7 @@
  * The file that defines the Woongkir_Account_Basic class
  *
  * @link       https://github.com/sofyansitorus
- * @since      ??
+ * @since      1.2.12
  *
  * @package    Woongkir
  * @subpackage Woongkir/includes
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The Woongkir_Account_Basic class.
  *
- * @since      ??
+ * @since      1.2.12
  * @package    Woongkir
  * @subpackage Woongkir/includes
  * @author     Sofyan Sitorus <sofyansitorus@gmail.com>
@@ -27,7 +27,7 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	/**
 	 * Account priority
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var int
 	 */
@@ -36,7 +36,7 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	/**
 	 * Account type
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -45,7 +45,7 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	/**
 	 * Account label
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -54,7 +54,7 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	/**
 	 * Account API URL
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -63,7 +63,7 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	/**
 	 * Account features
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var array
 	 */
@@ -78,7 +78,7 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	/**
 	 * Parse API request parameters.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array  $params   API request parameters to parse.
 	 * @param string $endpoint API request endpoint.

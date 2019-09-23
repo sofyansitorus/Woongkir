@@ -19,13 +19,38 @@ if ( ! function_exists( 'woongkir_is_plugin_active' ) ) :
 	 * @param string $plugin_file Plugin file name.
 	 */
 	function woongkir_is_plugin_active( $plugin_file ) {
-		$active_plugins = (array) apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-
-		if ( is_multisite() ) {
-			$active_plugins = array_merge( $active_plugins, (array) get_site_option( 'active_sitewide_plugins', array() ) );
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		return in_array( $plugin_file, $active_plugins, true ) || array_key_exists( $plugin_file, $active_plugins );
+		return is_plugin_active( $plugin_file );
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_autoloader' ) ) :
+	/**
+	 * Class autoloader
+	 *
+	 * @since 1.2.12
+	 *
+	 * @param string $class Class name.
+	 *
+	 * @return void
+	 */
+	function woongkir_autoloader( $class ) {
+		$class = strtolower( $class );
+
+		if ( strpos( $class, 'woongkir' ) !== 0 ) {
+			return;
+		}
+
+		if ( strpos( $class, 'woongkir_account_' ) === 0 ) {
+			require_once WOONGKIR_PATH . 'includes/accounts/class-' . str_replace( '_', '-', $class ) . '.php';
+		} elseif ( strpos( $class, 'woongkir_courier_' ) === 0 ) {
+			require_once WOONGKIR_PATH . 'includes/couriers/class-' . str_replace( '_', '-', $class ) . '.php';
+		} else {
+			require_once WOONGKIR_PATH . 'includes/classes/class-' . str_replace( '_', '-', $class ) . '.php';
+		}
 	}
 endif;
 

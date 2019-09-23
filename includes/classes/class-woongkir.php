@@ -437,11 +437,6 @@ class Woongkir {
 	 * @return void
 	 */
 	public function after_shipping_calculator() {
-		$enable_address_2 = apply_filters( 'woocommerce_shipping_calculator_enable_address_2', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-
-		if ( ! $enable_address_2 ) {
-			return;
-		}
 		?>
 		<input type="hidden" id="calc_shipping_address_2_dummy" value="<?php echo esc_attr( WC()->cart->get_customer()->get_shipping_address_2() ); ?>" />
 		<?php

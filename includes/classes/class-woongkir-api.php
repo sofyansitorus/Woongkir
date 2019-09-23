@@ -70,7 +70,7 @@ class Woongkir_API {
 	/**
 	 * Populate accounts list
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return void
 	 */
@@ -97,7 +97,7 @@ class Woongkir_API {
 	/**
 	 * Populate couriers list
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return void
 	 */
@@ -169,7 +169,7 @@ class Woongkir_API {
 	/**
 	 * Get accounts object or data.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param bool $as_array Wethere to return data as array or not.
 	 *
@@ -216,7 +216,7 @@ class Woongkir_API {
 	/**
 	 * Get couriers object or data.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string  $zone Couriers zone: domestic, international, all.
 	 * @param string  $account_type Filters couriers allowed for specific account type: starter, basic, prop, all.
@@ -381,7 +381,7 @@ class Woongkir_API {
 	/**
 	 * Get API request full URL.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $endpoint API request endpoint.
 	 *
@@ -406,7 +406,7 @@ class Woongkir_API {
 	/**
 	 * Populate API request parameters.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $custom_params Custom API request parameters.
 	 *
@@ -426,7 +426,7 @@ class Woongkir_API {
 	/**
 	 * POST method API request
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $endpoint API request endpoint.
 	 * @param array  $body Body API request parameters.
@@ -435,6 +435,21 @@ class Woongkir_API {
 	 * @return (WP_Error|array) The response or WP_Error on failure.
 	 */
 	public function api_request_post( $endpoint = '', $body = array(), $custom_params = array() ) {
+		/**
+		 * Filter POST method API request.
+		 *
+		 * Allows modification of the POST method API request before the actual API request is made.
+		 *
+		 * @since 1.2.12
+		 *
+		 * @param bool         $response      API response data. Default is false.
+		 * @param string       $endpoint      API request endpoint.
+		 * @param array        $body Body     API request parameters.
+		 * @param array        $custom_params Custom API request parameters.
+		 * @param Woongkir_API $object        Current class object.
+		 *
+		 * @return bool
+		 */
 		$response = apply_filters( 'woongkir_api_request_post_pre', false, $endpoint, $body, $custom_params, $this );
 
 		if ( false === $response ) {
@@ -455,7 +470,7 @@ class Woongkir_API {
 	/**
 	 * GET method API request
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $endpoint API request endpoint.
 	 * @param array  $query_string API request Query string URL parameters.
@@ -464,6 +479,21 @@ class Woongkir_API {
 	 * @return (WP_Error|array) The response or WP_Error on failure.
 	 */
 	public function api_request_get( $endpoint = '', $query_string = array(), $custom_params = array() ) {
+		/**
+		 * Filter GET method API request.
+		 *
+		 * Allows modification of the GET method API request before the actual API request is made.
+		 *
+		 * @since 1.2.12
+		 *
+		 * @param bool         $response      API response data. Default is false.
+		 * @param string       $endpoint      API request endpoint.
+		 * @param array        $query_string  API request Query string URL parameters.
+		 * @param array        $custom_params Custom API request parameters.
+		 * @param Woongkir_API $object        Current class object.
+		 *
+		 * @return bool
+		 */
 		$response = apply_filters( 'woongkir_api_request_get_pre', false, $endpoint, $query_string, $custom_params, $this );
 
 		if ( false === $response ) {
@@ -476,7 +506,7 @@ class Woongkir_API {
 	/**
 	 * Calculate domestic shipping cost
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $params API request parameters.
 	 *
@@ -491,92 +521,115 @@ class Woongkir_API {
 			return $parsed_params;
 		}
 
-		$raw_response    = $this->api_request_post( $endpoint, $parsed_params );
-		$parsed_response = $this->api_response_parser( $raw_response );
+		$couriers = isset( $parsed_params['courier'] ) ? $parsed_params['courier'] : array();
 
-		if ( ! $parsed_response || is_wp_error( $parsed_response ) ) {
-			return $parsed_response;
+		if ( ! is_array( $couriers ) ) {
+			$couriers = explode( ':', $couriers );
+		}
+
+		$responses = array();
+
+		foreach ( array_chunk( $couriers, 7 ) as $couriers_chunk ) {
+			$raw_response = $this->api_request_post(
+				$endpoint,
+				array_merge(
+					$parsed_params,
+					array(
+						'courier' => implode( ':', $couriers_chunk ),
+					)
+				)
+			);
+
+			$parsed_response = $this->api_response_parser( $raw_response );
+
+			if ( is_wp_error( $parsed_response ) || ! $parsed_response || empty( $parsed_response['results'] ) ) {
+				continue;
+			}
+
+			$responses[] = $parsed_response;
 		}
 
 		$rates = array();
 
-		foreach ( $parsed_response['results'] as $result ) {
-			if ( empty( $result['code'] ) || empty( $result['costs'] ) ) {
-				continue;
-			}
-
-			$courier = $this->get_courier_by_response( $result['code'] );
-
-			if ( ! $courier ) {
-				// Add unregistered courier to log.
-				wc_get_logger()->log(
-					'info',
-					wp_strip_all_tags(
-						wp_json_encode(
-							array_merge(
-								$result,
-								array(
-									'query' => $parsed_response['query'],
-								)
-							)
-						),
-						true
-					),
-					array( 'source' => 'woongkir_api_unregistered_domestic_courier' )
-				);
-
-				continue;
-			}
-
-			$courier_services = $courier->get_services_domestic();
-
-			foreach ( $result['costs'] as $rate ) {
-				if ( empty( $rate['service'] ) || empty( $rate['cost'][0]['value'] ) ) {
+		foreach ( $responses as $parsed_response ) {
+			foreach ( $parsed_response['results'] as $result ) {
+				if ( empty( $result['code'] ) || empty( $result['costs'] ) ) {
 					continue;
 				}
 
-				if ( ! isset( $courier_services[ $rate['service'] ] ) ) {
-					// Add unregistered service to log.
+				$courier = $this->get_courier_by_response( $result['code'] );
+
+				if ( ! $courier ) {
+					// Add unregistered courier to log.
 					wc_get_logger()->log(
 						'info',
 						wp_strip_all_tags(
 							wp_json_encode(
 								array_merge(
-									$rate,
+									$result,
 									array(
-										'courier' => $courier->get_code(),
-										'query'   => $parsed_response['query'],
+										'query' => $parsed_response['query'],
 									)
 								)
-							)
+							),
+							true
 						),
-						array( 'source' => 'woongkir_api_unregistered_domestic_service' )
+						array( 'source' => 'woongkir_api_unregistered_domestic_courier' )
 					);
+
+					continue;
 				}
 
-				$etd  = isset( $rate['cost'][0]['etd'] ) ? $this->parse_etd( $rate['cost'][0]['etd'] ) : '';
-				$cost = $rate['cost'][0]['value'];
+				$courier_services = $courier->get_services_domestic();
 
-				$rates[] = array(
-					'courier'  => $courier->get_code(),
-					'service'  => $rate['service'],
-					'etd'      => $etd,
-					'cost'     => $cost,
-					'currency' => 'IDR',
-				);
+				foreach ( $result['costs'] as $rate ) {
+					if ( empty( $rate['service'] ) || empty( $rate['cost'][0]['value'] ) ) {
+						continue;
+					}
+
+					if ( ! isset( $courier_services[ $rate['service'] ] ) ) {
+						// Add unregistered service to log.
+						wc_get_logger()->log(
+							'info',
+							wp_strip_all_tags(
+								wp_json_encode(
+									array_merge(
+										$rate,
+										array(
+											'courier' => $courier->get_code(),
+											'query'   => $parsed_response['query'],
+										)
+									)
+								)
+							),
+							array( 'source' => 'woongkir_api_unregistered_domestic_service' )
+						);
+					}
+
+					$etd  = isset( $rate['cost'][0]['etd'] ) ? $this->parse_etd( $rate['cost'][0]['etd'] ) : '';
+					$cost = $rate['cost'][0]['value'];
+
+					$rates[] = array(
+						'courier'  => $courier->get_code(),
+						'service'  => $rate['service'],
+						'etd'      => $etd,
+						'cost'     => $cost,
+						'currency' => 'IDR',
+					);
+				}
 			}
 		}
 
 		return array(
-			'formatted' => $rates,
-			'raw'       => $parsed_response,
+			'parsed' => $rates,
+			'raw'    => $responses,
 		);
 	}
 
 	/**
 	 * Calculate international shipping cost
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $params API request parameters.
 	 *
@@ -592,98 +645,121 @@ class Woongkir_API {
 			return $parsed_params;
 		}
 
-		$raw_response    = $this->api_request_post( $endpoint, $parsed_params );
-		$parsed_response = $this->api_response_parser( $raw_response );
+		$couriers = isset( $parsed_params['courier'] ) ? $parsed_params['courier'] : array();
 
-		if ( ! $parsed_response || is_wp_error( $parsed_response ) ) {
-			return $parsed_response;
+		if ( ! is_array( $couriers ) ) {
+			$couriers = explode( ':', $couriers );
+		}
+
+		$responses = array();
+
+		foreach ( array_chunk( $couriers, 7 ) as $couriers_chunk ) {
+			$raw_response = $this->api_request_post(
+				$endpoint,
+				array_merge(
+					$parsed_params,
+					array(
+						'courier' => implode( ':', $couriers_chunk ),
+					)
+				)
+			);
+
+			$parsed_response = $this->api_response_parser( $raw_response );
+
+			if ( is_wp_error( $parsed_response ) || ! $parsed_response || empty( $parsed_response['results'] ) ) {
+				continue;
+			}
+
+			$responses[] = $parsed_response;
 		}
 
 		$rates = array();
 
-		foreach ( $parsed_response['results'] as $result ) {
-			if ( empty( $result['code'] ) || empty( $result['costs'] ) ) {
-				continue;
-			}
-
-			$courier = $this->get_courier_by_response( $result['code'] );
-
-			if ( ! $courier ) {
-				// Add unregistered courier to log.
-				wc_get_logger()->log(
-					'info',
-					wp_strip_all_tags(
-						wp_json_encode(
-							array_merge(
-								$result,
-								array(
-									'query' => $parsed_response['query'],
-								)
-							)
-						),
-						true
-					),
-					array( 'source' => 'woongkir_api_unregistered_international_courier' )
-				);
-
-				continue;
-			}
-
-			$courier_services = $courier->get_services_international();
-
-			foreach ( $result['costs'] as $rate ) {
-				if ( empty( $rate['service'] ) || empty( $rate['cost'] ) ) {
+		foreach ( $responses as $parsed_response ) {
+			foreach ( $parsed_response['results'] as $result ) {
+				if ( empty( $result['code'] ) || empty( $result['costs'] ) ) {
 					continue;
 				}
 
-				if ( ! isset( $courier_services[ $rate['service'] ] ) ) {
-					// Add unregistered service to log.
+				$courier = $this->get_courier_by_response( $result['code'] );
+
+				if ( ! $courier ) {
+					// Add unregistered courier to log.
 					wc_get_logger()->log(
 						'info',
 						wp_strip_all_tags(
 							wp_json_encode(
 								array_merge(
-									$rate,
+									$result,
 									array(
-										'courier' => $courier->get_code(),
-										'query'   => $parsed_response['query'],
+										'query' => $parsed_response['query'],
 									)
 								)
-							)
+							),
+							true
 						),
-						array( 'source' => 'woongkir_api_unregistered_international_service' )
+						array( 'source' => 'woongkir_api_unregistered_international_courier' )
+					);
+
+					continue;
+				}
+
+				$courier_services = $courier->get_services_international();
+
+				foreach ( $result['costs'] as $rate ) {
+					if ( empty( $rate['service'] ) || empty( $rate['cost'] ) ) {
+						continue;
+					}
+
+					if ( ! isset( $courier_services[ $rate['service'] ] ) ) {
+						// Add unregistered service to log.
+						wc_get_logger()->log(
+							'info',
+							wp_strip_all_tags(
+								wp_json_encode(
+									array_merge(
+										$rate,
+										array(
+											'courier' => $courier->get_code(),
+											'query'   => $parsed_response['query'],
+										)
+									)
+								)
+							),
+							array( 'source' => 'woongkir_api_unregistered_international_service' )
+						);
+					}
+
+					$etd      = isset( $rate['etd'] ) ? $this->parse_etd( $rate['etd'] ) : '';
+					$cost     = $rate['cost'];
+					$currency = isset( $rate['currency'] ) ? $rate['currency'] : 'IDR';
+
+					if ( 'IDR' !== $currency && ! empty( $parsed_response['currency']['value'] ) ) {
+						$cost     = $cost * $parsed_response['currency']['value'];
+						$currency = 'IDR';
+					}
+
+					$rates[] = array(
+						'courier'  => $courier->get_code(),
+						'service'  => $rate['service'],
+						'etd'      => $etd,
+						'cost'     => $cost,
+						'currency' => $currency,
 					);
 				}
-
-				$etd      = isset( $rate['etd'] ) ? $this->parse_etd( $rate['etd'] ) : '';
-				$cost     = $rate['cost'];
-				$currency = isset( $rate['currency'] ) ? $rate['currency'] : 'IDR';
-
-				if ( 'IDR' !== $currency && ! empty( $parsed_response['currency']['value'] ) ) {
-					$cost     = $cost * $parsed_response['currency']['value'];
-					$currency = 'IDR';
-				}
-
-				$rates[] = array(
-					'courier'  => $courier->get_code(),
-					'service'  => $rate['service'],
-					'etd'      => $etd,
-					'cost'     => $cost,
-					'currency' => $currency,
-				);
 			}
 		}
 
 		return array(
-			'formatted' => $rates,
-			'raw'       => $parsed_response,
+			'parsed' => $rates,
+			'raw'    => $responses,
 		);
 	}
 
 	/**
 	 * Parse API response ETD data.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $etd API response ETD data.
 	 *

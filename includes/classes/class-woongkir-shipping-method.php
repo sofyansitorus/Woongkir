@@ -50,14 +50,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	private $posted_field_values;
 
 	/**
-	 * Posted values of settings fields.
-	 *
-	 * @since 1.0.0
-	 * @var array
-	 */
-	private $currency_exchange = false;
-
-	/**
 	 * Constructor for your shipping class
 	 *
 	 * @since 1.0.0
@@ -77,9 +69,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			'instance-settings',
 			'instance-settings-modal',
 		);
-
-		// Set the base weight for cart contents.
-		add_filter( 'woocommerce_cart_contents_weight', array( $this, 'set_cart_contents_base_weight' ), 10 );
 
 		$this->init();
 	}
@@ -343,7 +332,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 							<tr>
 								<th></th>
 								<?php foreach ( array_keys( $feature['value'] ) as $account_type ) : ?>
-									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>">
+									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>" data-title="<?php echo esc_attr( $this->api->get_account( $account_type )->get_label() ); ?>">
 										<input type="checkbox" value="<?php echo esc_attr( $account_type ); ?>" id="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account_type ); ?>" class="woongkir-account-type" <?php checked( $account_type, $this->get_option( $key ) ); ?> <?php disabled( $account_type, $this->get_option( $key ) ); ?>>
 									</td>
 								<?php endforeach; ?>
@@ -377,9 +366,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 		$couriers = $this->api->get_couriers( $key, 'all', true );
 
-		if ( ! empty( $this->{$key} ) ) {
-			uasort( $couriers, array( $this, 'sort_couriers_list_' . $key ) );
-		}
+		uasort( $couriers, array( $this, 'sort_couriers_list_' . $key ) );
 
 		$selected = $this->{$key};
 
@@ -408,7 +395,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 										<?php echo wp_kses_post( $courier['label'] ); ?> (<span class="woongkir-couriers--selected"><?php echo esc_html( ( isset( $selected[ $courier_id ] ) ? count( $selected[ $courier_id ] ) : 0 ) ); ?></span> / <span class="woongkir-couriers--availabe"><?php echo esc_html( count( $courier['services'] ) ); ?></span>)
 									</label>
 									<div class="woongkir-couriers-item-info-toggle">
-										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-arrow-down"></span></a>
+										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-admin-generic"></span></a>
 									</div>
 									<?php
 									$courier_website = wp_parse_url( $courier['website'] );
@@ -590,16 +577,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				throw new Exception( $api_request_params->get_error_message() );
 			}
 
-			$cache_key = $this->id . '_' . $this->instance_id . '_' . md5(
-				wp_json_encode(
-					array_merge(
-						$api_request_params,
-						array(
-							'api_key' => $this->api_key,
-						)
-					)
-				)
-			);
+			$cache_key = $this->generate_cache_key( $api_request_params );
 
 			if ( $this->is_enable_cache() ) {
 				$this->show_debug(
@@ -614,17 +592,24 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$results = $this->is_enable_cache() ? get_transient( $cache_key ) : false;
 
 			if ( false === $results ) {
-				$results = apply_filters( 'woongkir_calculate_shipping_before', false, $package, $this );
-
-				if ( false === $results ) {
-					if ( 'domestic' === $api_request_params['zone'] ) {
-						$results = $this->api->calculate_shipping( $api_request_params );
-					} else {
-						$results = $this->api->calculate_shipping_international( $api_request_params );
-					}
+				if ( 'domestic' === $api_request_params['zone'] ) {
+					$results = $this->api->calculate_shipping( $api_request_params );
+				} else {
+					$results = $this->api->calculate_shipping_international( $api_request_params );
 				}
 
-				$results = apply_filters( 'woongkir_calculate_shipping_after', $results, $package, $this );
+				/**
+				 * Filter the shipping calculation results.
+				 *
+				 * @since 1.2.12
+				 *
+				 * @param bool                     $results API shipping calculation results.
+				 * @param array                    $package Current order package data.
+				 * @param Woongkir_Shipping_Method $object  Current class object.
+				 *
+				 * @return array
+				 */
+				$results = apply_filters( 'woongkir_shipping_results', $results, $package, $this );
 
 				if ( $results && ! is_wp_error( $results ) && $this->is_enable_cache() ) {
 					set_transient( $cache_key, $results, HOUR_IN_SECONDS ); // Store response data for 1 hour.
@@ -662,7 +647,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				)
 			);
 
-			foreach ( $results['formatted'] as $result_key => $result ) {
+			foreach ( $results['parsed'] as $result_key => $result ) {
 				if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {
 					continue;
 				}
@@ -671,20 +656,33 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					continue;
 				}
 
-				$rate_id    = $this->get_rate_id( $result_key );
 				$rate_label = wp_sprintf( '%s - %s', strtoupper( $result['courier'] ), $result['service'] );
 
 				if ( 'yes' === $this->show_eta && $result['etd'] ) {
 					$rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
 				}
 
+				/**
+				 * Filter the shipping rate label.
+				 *
+				 * @since 1.2.12
+				 *
+				 * @param string                   $rate_label The default shipping rate label.
+				 * @param bool                     $result     Shipping rate resuly data.
+				 * @param array                    $package    Current order package data.
+				 * @param Woongkir_Shipping_Method $object     Current class object.
+				 *
+				 * @return string
+				 */
+				$rate_label = apply_filters( 'woongkir_shipping_rate_label', $rate_label, $result, $package, $this );
+
 				$this->add_rate(
 					array(
-						'id'        => $rate_id,
+						'id'        => $this->get_rate_id( $result['courier'] . ':' . $result['service'] ),
 						'label'     => $rate_label,
 						'cost'      => $result['cost'],
 						'meta_data' => array(
-							'result' => $result,
+							'_woongkir_data' => $result,
 						),
 					)
 				);
@@ -726,7 +724,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	/**
 	 * Populate API request parameters.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $package Current order package data.
 	 *
@@ -741,13 +739,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			/**
 			 * Shipping origin info.
 			 *
+			 * @since 1.2.9
+			 *
 			 * @param array $origin_info Original origin info.
 			 * @param array $package Current order package data.
 			 *
 			 * @return array
-			 * @since 1.2.9
 			 */
-			$origin_info = apply_filters( 'woocommerce_' . $this->id . '_shipping_origin_info', $this->get_origin_info( $package['destination'] ), $package ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$origin_info = apply_filters( 'woongkir_shipping_origin_info', $this->get_origin_info( $package['destination'] ), $package );
 
 			$this->show_debug(
 				wp_json_encode(
@@ -764,13 +763,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			/**
 			 * Shipping destination info.
 			 *
+			 * @since 1.2.9
+			 *
 			 * @param array $destination_info Original destination info.
 			 * @param array $package Current order package data.
 			 *
 			 * @return array
-			 * @since 1.2.9
 			 */
-			$destination_info = apply_filters( 'woocommerce_' . $this->id . '_shipping_destination_info', $this->get_destination_info( $package['destination'] ), $package ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$destination_info = apply_filters( 'woongkir_shipping_destination_info', $this->get_destination_info( $package['destination'] ), $package );
 
 			$this->show_debug(
 				wp_json_encode(
@@ -787,13 +787,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			/**
 			 * Shipping dimension & weight info.
 			 *
+			 * @since 1.2.9
+			 *
 			 * @param array $dimension_weight Original dimension & weight info.
 			 * @param array $package Current order package data.
 			 *
 			 * @return array
-			 * @since 1.2.9
 			 */
-			$dimension_weight = apply_filters( 'woocommerce_' . $this->id . '_shipping_dimension_weight', $this->get_dimension_weight( $package['contents'] ), $package ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$dimension_weight = apply_filters( 'woongkir_shipping_dimension_weight', $this->get_dimension_weight( $package['contents'] ), $package );
 
 			$this->show_debug(
 				wp_json_encode(
@@ -1018,28 +1019,39 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
-	 * Set the base weight for cart contents.
-	 *
-	 * @since 1.1.4
-	 * @param int $weight Current cart contents weight.
-	 * @return int
-	 */
-	public function set_cart_contents_base_weight( $weight ) {
-		if ( absint( $this->base_weight ) && $weight < absint( $this->base_weight ) ) {
-			return wc_get_weight( absint( $this->base_weight ), get_option( 'woocommerce_weight_unit', 'kg' ), 'g' );
-		}
-
-		return $weight;
-	}
-
-	/**
 	 * Check wether api response to be cached
 	 *
 	 * @return boolean
-	 * @since ??
+	 * @since 1.2.12
 	 */
 	private function is_enable_cache() {
 		return defined( 'WOONGKIR_ENABLE_CACHE' ) ? WOONGKIR_ENABLE_CACHE : true;
+	}
+
+	/**
+	 * Generate cache key
+	 *
+	 * @since 1.2.12
+	 *
+	 * @param array $api_request_params API request parameters.
+	 *
+	 * @return boolean
+	 */
+	private function generate_cache_key( $api_request_params = array() ) {
+		$cache_keys = array();
+
+		foreach ( array_keys( $this->instance_form_fields ) as $cache_key ) {
+			$cache_keys[ $cache_key ] = $this->get_option( $cache_key );
+		}
+
+		return $this->id . '_' . $this->instance_id . '_' . WC()->cart->get_cart_hash() . '_' . md5(
+			wp_json_encode(
+				array_merge(
+					$api_request_params,
+					$cache_keys
+				)
+			)
+		);
 	}
 
 	/**
@@ -1052,17 +1064,21 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	protected function sort_couriers_list_domestic( $a, $b ) {
 		$priority = array();
 
+		$letter_index = range( 'a', 'z' );
+		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index, true ) + 10 );
+		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index, true ) + 10 );
+
 		if ( empty( $this->domestic ) ) {
-			return 0;
+			if ( $a_code_index === $b_code_index ) {
+				return 0;
+			}
+
+			return ( $a_code_index > $b_code_index ) ? 1 : -1;
 		}
 
 		foreach ( array_keys( $this->domestic ) as $index => $courier ) {
 			$priority[ $courier ] = $index;
 		}
-
-		$letter_index = range( 'a', 'z' );
-		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index, true ) + 10 );
-		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index, true ) + 10 );
 
 		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : ( count( $this->domestic ) + $a_code_index );
 		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : ( count( $this->domestic ) + $b_code_index );
@@ -1084,17 +1100,21 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	protected function sort_couriers_list_international( $a, $b ) {
 		$priority = array();
 
+		$letter_index = range( 'a', 'z' );
+		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index, true ) + 10 );
+		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index, true ) + 10 );
+
 		if ( empty( $this->international ) ) {
-			return 0;
+			if ( $a_code_index === $b_code_index ) {
+				return 0;
+			}
+
+			return ( $a_code_index > $b_code_index ) ? 1 : -1;
 		}
 
 		foreach ( array_keys( $this->international ) as $index => $courier ) {
 			$priority[ $courier ] = $index;
 		}
-
-		$letter_index = range( 'a', 'z' );
-		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index, true ) + 10 );
-		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index, true ) + 10 );
 
 		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : ( count( $this->international ) + $a_code_index );
 		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : ( count( $this->international ) + $b_code_index );

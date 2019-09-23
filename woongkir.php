@@ -15,7 +15,7 @@
  * Plugin Name:       Woongkir
  * Plugin URI:        https://github.com/sofyansitorus/Woongkir
  * Description:       WooCommerce shipping rates calculator for Indonesia domestic and international shipment: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Express, SiCepat Express, J&T Express, Pahala Express, SAP Express, JET Express, Solusi Ekspres, 21 Express, Nusantara Card Semesta, Star Cargo, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic, Expedito.
- * Version:           1.2.11
+ * Version:           1.2.12
  * Author:            Sofyan Sitorus
  * Author URI:        https://github.com/sofyansitorus
  * License:           GPL-2.0+
@@ -38,41 +38,18 @@ define( 'WOONGKIR_PATH', plugin_dir_path( WOONGKIR_FILE ) );
 define( 'WOONGKIR_URL', plugin_dir_url( WOONGKIR_FILE ) );
 define( 'WOONGKIR_METHOD_ID', 'woongkir' );
 define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
-define( 'WOONGKIR_VERSION', '1.2.11' );
+define( 'WOONGKIR_VERSION', '1.2.12' );
 
 // Load the helpers.
 require_once WOONGKIR_PATH . 'includes/helpers.php';
 
 /**
- * Class autoloader
- *
- * @since ??
- *
- * @param string $class Class name.
- *
- * @return void
- */
-function woongkir_autoloader( $class ) {
-	$class = strtolower( $class );
-
-	if ( strpos( $class, 'woongkir' ) !== 0 ) {
-		return;
-	}
-
-	if ( strpos( $class, 'woongkir_account_' ) === 0 ) {
-		require_once WOONGKIR_PATH . 'includes/accounts/class-' . str_replace( '_', '-', $class ) . '.php';
-	} elseif ( strpos( $class, 'woongkir_courier_' ) === 0 ) {
-		require_once WOONGKIR_PATH . 'includes/couriers/class-' . str_replace( '_', '-', $class ) . '.php';
-	} else {
-		require_once WOONGKIR_PATH . 'includes/classes/class-' . str_replace( '_', '-', $class ) . '.php';
-	}
-}
-
-spl_autoload_register( 'woongkir_autoloader' );
-
-/**
  * Boot the plugin
  */
 if ( woongkir_is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+	// Register the cklass auto loader.
+	spl_autoload_register( 'woongkir_autoloader' );
+
+	// Initialize the woongkir class.
 	Woongkir::get_instance();
 }

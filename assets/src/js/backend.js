@@ -201,6 +201,10 @@ var woongkirBackend = {
         _.each(couriers, function (zoneCouriers, zoneId) {
             var selected_couriers = 0;
 
+            var couriersAccount = _.find(couriers[zoneId], function (courier) {
+                return courier.account.indexOf(account) !== -1;
+            });
+
             _.each(zoneCouriers, function (courier, courierId) {
                 if (courier.account.indexOf(account) === -1) {
                     $('.woongkir-couriers-item--' + zoneId + '--' + courierId).hide();
@@ -221,7 +225,21 @@ var woongkirBackend = {
 
                 woongkirBackend.updateSelectedServicesCounter('.woongkir-couriers-item--' + zoneId + '--' + courierId);
             });
+
+            if (!couriersAccount) {
+                $('.woongkir-couriers-wrap--' + zoneId).addClass('no-items');
+            } else {
+                $('.woongkir-couriers-wrap--' + zoneId).removeClass('no-items');
+            }
         });
+
+        var $itemsWrapNoItems = $('.woongkir-couriers-wrap.no-items');
+
+        if ($itemsWrapNoItems.length === 1) {
+            $('.woongkir-couriers-wrap:not(.no-items)').addClass('full-width');
+        } else {
+            $('.woongkir-couriers-wrap').removeClass('full-width');
+        }
     },
     selectServicesBulk: function () {
         var courierId = $(this).closest('.woongkir-couriers-item').data('id');
@@ -282,10 +300,10 @@ var woongkirBackend = {
         });
 
         if (upArraw) {
-            $(e.currentTarget).find('.dashicons').removeClass('dashicons-arrow-down').addClass('dashicons-arrow-up');
+            $(e.currentTarget).find('.dashicons').toggleClass('dashicons-admin-generic dashicons-arrow-up-alt2');
             $(e.currentTarget).closest('.woongkir-couriers-item-info').find('.woongkir-couriers-item-info-link').show();
         } else {
-            $(e.currentTarget).find('.dashicons').removeClass('dashicons-arrow-up').addClass('dashicons-arrow-down');
+            $(e.currentTarget).find('.dashicons').toggleClass('dashicons-arrow-up-alt2 dashicons-admin-generic');
             $(e.currentTarget).closest('.woongkir-couriers-item-info').find('.woongkir-couriers-item-info-link').hide();
         }
     },
