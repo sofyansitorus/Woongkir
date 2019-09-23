@@ -378,8 +378,8 @@ gulp.task('bump', function () {
 
     const assets = [
         {
-            src: ['./**/*.php'],
-            dest: './',
+            src: ['./includes/**/*.php'],
+            dest: './includes/',
             search: ' ??\n',
             replaceWith: ' {versionBump}\n',
         },
