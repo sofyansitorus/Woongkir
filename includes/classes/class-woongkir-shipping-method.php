@@ -662,6 +662,20 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					$rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
 				}
 
+				/**
+				 * Filter the shipping rate label.
+				 *
+				 * @since ??
+				 *
+				 * @param string                   $rate_label The default shipping rate label.
+				 * @param bool                     $result     Shipping rate resuly data.
+				 * @param array                    $package    Current order package data.
+				 * @param Woongkir_Shipping_Method $object     Current class object.
+				 *
+				 * @return string
+				 */
+				$rate_label = apply_filters( 'woongkir_shipping_rate_label', $rate_label, $result, $package, $this );
+
 				$this->add_rate(
 					array(
 						'id'        => $this->get_rate_id( $result['courier'] . ':' . $result['service'] ),
