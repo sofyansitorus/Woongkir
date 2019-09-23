@@ -656,7 +656,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					continue;
 				}
 
-				$rate_id    = $this->get_rate_id( $result_key );
 				$rate_label = wp_sprintf( '%s - %s', strtoupper( $result['courier'] ), $result['service'] );
 
 				if ( 'yes' === $this->show_eta && $result['etd'] ) {
@@ -665,11 +664,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 				$this->add_rate(
 					array(
-						'id'        => $rate_id,
+						'id'        => $this->get_rate_id( $result['courier'] . ':' . $result['service'] ),
 						'label'     => $rate_label,
 						'cost'      => $result['cost'],
 						'meta_data' => array(
-							'result' => $result,
+							'_woongkir_data' => $result,
 						),
 					)
 				);
