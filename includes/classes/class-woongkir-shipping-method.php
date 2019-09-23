@@ -601,7 +601,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				/**
 				 * Filter the shipping calculation results.
 				 *
-				 * @since ??
+				 * @since 1.2.12
 				 *
 				 * @param bool                     $results API shipping calculation results.
 				 * @param array                    $package Current order package data.
@@ -665,7 +665,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				/**
 				 * Filter the shipping rate label.
 				 *
-				 * @since ??
+				 * @since 1.2.12
 				 *
 				 * @param string                   $rate_label The default shipping rate label.
 				 * @param bool                     $result     Shipping rate resuly data.
@@ -724,7 +724,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	/**
 	 * Populate API request parameters.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $package Current order package data.
 	 *
@@ -1022,7 +1022,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * Check wether api response to be cached
 	 *
 	 * @return boolean
-	 * @since ??
+	 * @since 1.2.12
 	 */
 	private function is_enable_cache() {
 		return defined( 'WOONGKIR_ENABLE_CACHE' ) ? WOONGKIR_ENABLE_CACHE : true;
@@ -1031,7 +1031,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	/**
 	 * Generate cache key
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $api_request_params API request parameters.
 	 *

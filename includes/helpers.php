@@ -31,7 +31,7 @@ if ( ! function_exists( 'woongkir_autoloader' ) ) :
 	/**
 	 * Class autoloader
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $class Class name.
 	 *

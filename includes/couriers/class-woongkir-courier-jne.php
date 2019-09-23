@@ -3,7 +3,7 @@
  * The file that defines the Woongkir_Courier_JNE class
  *
  * @link       https://github.com/sofyansitorus
- * @since      ??
+ * @since      1.2.12
  *
  * @package    Woongkir
  * @subpackage Woongkir/includes
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The Woongkir_Courier_JNE class.
  *
- * @since      ??
+ * @since      1.2.12
  * @package    Woongkir
  * @subpackage Woongkir/includes
  * @author     Sofyan Sitorus <sofyansitorus@gmail.com>
@@ -27,7 +27,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	/**
 	 * Courier Code
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -36,7 +36,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	/**
 	 * Courier Label
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -45,7 +45,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	/**
 	 * Courier Website
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -54,7 +54,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	/**
 	 * Get courier services for domestic shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -71,7 +71,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	/**
 	 * Get courier services for international shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -84,7 +84,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	/**
 	 * Get courier account for domestic shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -99,7 +99,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	/**
 	 * Get courier account for international shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */

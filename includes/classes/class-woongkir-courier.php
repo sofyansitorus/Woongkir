@@ -3,7 +3,7 @@
  * The file that defines the Woongkir_Courier class
  *
  * @link       https://github.com/sofyansitorus
- * @since      ??
+ * @since      1.2.12
  *
  * @package    Woongkir
  * @subpackage Woongkir/includes
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The Woongkir_Courier class.
  *
- * @since      ??
+ * @since      1.2.12
  * @package    Woongkir
  * @subpackage Woongkir/includes
  * @author     Sofyan Sitorus <sofyansitorus@gmail.com>
@@ -27,7 +27,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Courier priority
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var int
 	 */
@@ -36,7 +36,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Courier Code
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -45,7 +45,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * API Response ID
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -54,7 +54,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Courier Label
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -63,7 +63,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Courier Website
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @var string
 	 */
@@ -72,7 +72,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier priority
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return int
 	 */
@@ -83,7 +83,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier code
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return string
 	 */
@@ -94,7 +94,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier API response ID
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return string
 	 */
@@ -105,7 +105,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier label
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return string
 	 */
@@ -116,7 +116,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier website
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return string
 	 */
@@ -127,7 +127,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier services for domestic shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -138,7 +138,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier services for international shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -149,7 +149,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier account for domestic shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -160,7 +160,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Get courier account for international shipping
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return array
 	 */
@@ -171,7 +171,7 @@ abstract class Woongkir_Courier {
 	/**
 	 * Populate properties as array
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $zone Couriers zone: domestic, international, all.
 	 *

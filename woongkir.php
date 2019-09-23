@@ -15,7 +15,7 @@
  * Plugin Name:       Woongkir
  * Plugin URI:        https://github.com/sofyansitorus/Woongkir
  * Description:       WooCommerce shipping rates calculator for Indonesia domestic and international shipment: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Express, SiCepat Express, J&T Express, Pahala Express, SAP Express, JET Express, Solusi Ekspres, 21 Express, Nusantara Card Semesta, Star Cargo, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic, Expedito.
- * Version:           1.2.11
+ * Version:           1.2.12
  * Author:            Sofyan Sitorus
  * Author URI:        https://github.com/sofyansitorus
  * License:           GPL-2.0+
@@ -38,7 +38,7 @@ define( 'WOONGKIR_PATH', plugin_dir_path( WOONGKIR_FILE ) );
 define( 'WOONGKIR_URL', plugin_dir_url( WOONGKIR_FILE ) );
 define( 'WOONGKIR_METHOD_ID', 'woongkir' );
 define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
-define( 'WOONGKIR_VERSION', '1.2.11' );
+define( 'WOONGKIR_VERSION', '1.2.12' );
 
 // Load the helpers.
 require_once WOONGKIR_PATH . 'includes/helpers.php';

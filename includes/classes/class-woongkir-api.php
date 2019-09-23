@@ -70,7 +70,7 @@ class Woongkir_API {
 	/**
 	 * Populate accounts list
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return void
 	 */
@@ -97,7 +97,7 @@ class Woongkir_API {
 	/**
 	 * Populate couriers list
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @return void
 	 */
@@ -169,7 +169,7 @@ class Woongkir_API {
 	/**
 	 * Get accounts object or data.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param bool $as_array Wethere to return data as array or not.
 	 *
@@ -216,7 +216,7 @@ class Woongkir_API {
 	/**
 	 * Get couriers object or data.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string  $zone Couriers zone: domestic, international, all.
 	 * @param string  $account_type Filters couriers allowed for specific account type: starter, basic, prop, all.
@@ -381,7 +381,7 @@ class Woongkir_API {
 	/**
 	 * Get API request full URL.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $endpoint API request endpoint.
 	 *
@@ -406,7 +406,7 @@ class Woongkir_API {
 	/**
 	 * Populate API request parameters.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $custom_params Custom API request parameters.
 	 *
@@ -426,7 +426,7 @@ class Woongkir_API {
 	/**
 	 * POST method API request
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $endpoint API request endpoint.
 	 * @param array  $body Body API request parameters.
@@ -440,7 +440,7 @@ class Woongkir_API {
 		 *
 		 * Allows modification of the POST method API request before the actual API request is made.
 		 *
-		 * @since ??
+		 * @since 1.2.12
 		 *
 		 * @param bool         $response      API response data. Default is false.
 		 * @param string       $endpoint      API request endpoint.
@@ -470,7 +470,7 @@ class Woongkir_API {
 	/**
 	 * GET method API request
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $endpoint API request endpoint.
 	 * @param array  $query_string API request Query string URL parameters.
@@ -484,7 +484,7 @@ class Woongkir_API {
 		 *
 		 * Allows modification of the GET method API request before the actual API request is made.
 		 *
-		 * @since ??
+		 * @since 1.2.12
 		 *
 		 * @param bool         $response      API response data. Default is false.
 		 * @param string       $endpoint      API request endpoint.
@@ -506,7 +506,7 @@ class Woongkir_API {
 	/**
 	 * Calculate domestic shipping cost
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $params API request parameters.
 	 *
@@ -629,7 +629,7 @@ class Woongkir_API {
 	/**
 	 * Calculate international shipping cost
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param array $params API request parameters.
 	 *
@@ -759,7 +759,7 @@ class Woongkir_API {
 	/**
 	 * Parse API response ETD data.
 	 *
-	 * @since ??
+	 * @since 1.2.12
 	 *
 	 * @param string $etd API response ETD data.
 	 *
