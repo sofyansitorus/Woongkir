@@ -44,35 +44,12 @@ define( 'WOONGKIR_VERSION', '1.2.11' );
 require_once WOONGKIR_PATH . 'includes/helpers.php';
 
 /**
- * Class autoloader
- *
- * @since ??
- *
- * @param string $class Class name.
- *
- * @return void
- */
-function woongkir_autoloader( $class ) {
-	$class = strtolower( $class );
-
-	if ( strpos( $class, 'woongkir' ) !== 0 ) {
-		return;
-	}
-
-	if ( strpos( $class, 'woongkir_account_' ) === 0 ) {
-		require_once WOONGKIR_PATH . 'includes/accounts/class-' . str_replace( '_', '-', $class ) . '.php';
-	} elseif ( strpos( $class, 'woongkir_courier_' ) === 0 ) {
-		require_once WOONGKIR_PATH . 'includes/couriers/class-' . str_replace( '_', '-', $class ) . '.php';
-	} else {
-		require_once WOONGKIR_PATH . 'includes/classes/class-' . str_replace( '_', '-', $class ) . '.php';
-	}
-}
-
-spl_autoload_register( 'woongkir_autoloader' );
-
-/**
  * Boot the plugin
  */
 if ( woongkir_is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+	// Register the cklass auto loader.
+	spl_autoload_register( 'woongkir_autoloader' );
+
+	// Initialize the woongkir class.
 	Woongkir::get_instance();
 }

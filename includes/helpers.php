@@ -27,6 +27,33 @@ if ( ! function_exists( 'woongkir_is_plugin_active' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'woongkir_autoloader' ) ) :
+	/**
+	 * Class autoloader
+	 *
+	 * @since ??
+	 *
+	 * @param string $class Class name.
+	 *
+	 * @return void
+	 */
+	function woongkir_autoloader( $class ) {
+		$class = strtolower( $class );
+
+		if ( strpos( $class, 'woongkir' ) !== 0 ) {
+			return;
+		}
+
+		if ( strpos( $class, 'woongkir_account_' ) === 0 ) {
+			require_once WOONGKIR_PATH . 'includes/accounts/class-' . str_replace( '_', '-', $class ) . '.php';
+		} elseif ( strpos( $class, 'woongkir_courier_' ) === 0 ) {
+			require_once WOONGKIR_PATH . 'includes/couriers/class-' . str_replace( '_', '-', $class ) . '.php';
+		} else {
+			require_once WOONGKIR_PATH . 'includes/classes/class-' . str_replace( '_', '-', $class ) . '.php';
+		}
+	}
+endif;
+
 if ( ! function_exists( 'woongkir_get_json_data' ) ) :
 	/**
 	 * Get json file data.
