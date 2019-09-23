@@ -442,10 +442,11 @@ class Woongkir_API {
 		 *
 		 * @since ??
 		 *
-		 * @param bool   $response API response data. Default is false.
-		 * @param string $endpoint API request endpoint.
-		 * @param array  $body Body API request parameters.
-		 * @param array  $custom_params Custom API request parameters.
+		 * @param bool         $response      API response data. Default is false.
+		 * @param string       $endpoint      API request endpoint.
+		 * @param array        $body Body     API request parameters.
+		 * @param array        $custom_params Custom API request parameters.
+		 * @param Woongkir_API $object        Current class object.
 		 *
 		 * @return bool
 		 */
@@ -485,10 +486,11 @@ class Woongkir_API {
 		 *
 		 * @since ??
 		 *
-		 * @param bool   $response API response data. Default is false.
-		 * @param string $endpoint API request endpoint.
-		 * @param array  $query_string API request Query string URL parameters.
-		 * @param array  $custom_params Custom API request parameters.
+		 * @param bool         $response      API response data. Default is false.
+		 * @param string       $endpoint      API request endpoint.
+		 * @param array        $query_string  API request Query string URL parameters.
+		 * @param array        $custom_params Custom API request parameters.
+		 * @param Woongkir_API $object        Current class object.
 		 *
 		 * @return bool
 		 */

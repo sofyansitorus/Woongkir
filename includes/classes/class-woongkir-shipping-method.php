@@ -603,9 +603,9 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				 *
 				 * @since ??
 				 *
-				 * @param bool   $results API shipping calculation results.
-				 * @param string $package Current order package data.
-				 * @param Woongkir_Shipping_Method  $object Current class object.
+				 * @param bool                     $results API shipping calculation results.
+				 * @param array                    $package Current order package data.
+				 * @param Woongkir_Shipping_Method $object  Current class object.
 				 *
 				 * @return array
 				 */
