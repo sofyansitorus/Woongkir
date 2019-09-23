@@ -332,7 +332,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 							<tr>
 								<th></th>
 								<?php foreach ( array_keys( $feature['value'] ) as $account_type ) : ?>
-									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>">
+									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>" data-title="<?php echo esc_attr( $this->api->get_account( $account_type )->get_label() ); ?>">
 										<input type="checkbox" value="<?php echo esc_attr( $account_type ); ?>" id="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account_type ); ?>" class="woongkir-account-type" <?php checked( $account_type, $this->get_option( $key ) ); ?> <?php disabled( $account_type, $this->get_option( $key ) ); ?>>
 									</td>
 								<?php endforeach; ?>
@@ -395,7 +395,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 										<?php echo wp_kses_post( $courier['label'] ); ?> (<span class="woongkir-couriers--selected"><?php echo esc_html( ( isset( $selected[ $courier_id ] ) ? count( $selected[ $courier_id ] ) : 0 ) ); ?></span> / <span class="woongkir-couriers--availabe"><?php echo esc_html( count( $courier['services'] ) ); ?></span>)
 									</label>
 									<div class="woongkir-couriers-item-info-toggle">
-										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-arrow-down"></span></a>
+										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-admin-generic"></span></a>
 									</div>
 									<?php
 									$courier_website = wp_parse_url( $courier['website'] );
