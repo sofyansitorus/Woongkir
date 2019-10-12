@@ -43,13 +43,15 @@ define( 'WOONGKIR_VERSION', '1.2.12' );
 // Load the helpers.
 require_once WOONGKIR_PATH . 'includes/helpers.php';
 
+// Register the class auto loader.
+if ( function_exists( 'woongkir_autoloader' ) ) {
+	spl_autoload_register( 'woongkir_autoloader' );
+}
+
 /**
  * Boot the plugin
  */
 if ( woongkir_is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
-	// Register the class auto loader.
-	spl_autoload_register( 'woongkir_autoloader' );
-
 	// Initialize the woongkir class.
 	Woongkir::get_instance();
 }
