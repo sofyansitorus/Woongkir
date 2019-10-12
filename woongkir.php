@@ -47,7 +47,7 @@ require_once WOONGKIR_PATH . 'includes/helpers.php';
  * Boot the plugin
  */
 if ( woongkir_is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
-	// Register the cklass auto loader.
+	// Register the class auto loader.
 	spl_autoload_register( 'woongkir_autoloader' );
 
 	// Initialize the woongkir class.
