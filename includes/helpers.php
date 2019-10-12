@@ -195,13 +195,21 @@ endif;
 
 if ( ! function_exists( 'woongkir_is_dev' ) ) :
 	/**
-	 * Check is in development envirntment.
+	 * Check is in development environtment.
 	 *
 	 * @since 1.2.11
 	 *
 	 * @return bool
 	 */
 	function woongkir_is_dev() {
-		return defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV;
+		if ( defined( 'WOONGKIR_DEV' ) && WOONGKIR_DEV ) {
+			return true;
+		}
+
+		if ( function_exists( 'getenv' ) && getenv( 'WOONGKIR_DEV' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 endif;
