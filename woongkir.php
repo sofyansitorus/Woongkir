@@ -51,7 +51,7 @@ if ( function_exists( 'woongkir_autoloader' ) ) {
 /**
  * Boot the plugin
  */
-if ( woongkir_is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+if ( woongkir_is_plugin_active( 'woocommerce/woocommerce.php' ) && class_exists( 'Woongkir' ) ) {
 	// Initialize the woongkir class.
 	Woongkir::get_instance();
 }
