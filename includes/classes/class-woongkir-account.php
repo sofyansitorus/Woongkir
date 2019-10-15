@@ -132,7 +132,7 @@ abstract class Woongkir_Account {
 	 *
 	 * @var array
 	 */
-	protected $api_request_params_requireds = array();
+	protected $api_request_params_required = array();
 
 	/**
 	 * Optionals API Request parameters
@@ -141,7 +141,7 @@ abstract class Woongkir_Account {
 	 *
 	 * @var array
 	 */
-	protected $api_request_params_optionals = array();
+	protected $api_request_params_optional = array();
 
 	/**
 	 * Get account priority
@@ -227,14 +227,14 @@ abstract class Woongkir_Account {
 			$parsed = array();
 
 			foreach ( $this->api_request_params as $allowed_key => $allowed ) {
-				if ( ! in_array( $allowed_key, $this->api_request_params_requireds, true ) && ! in_array( $allowed_key, $this->api_request_params_optionals, true ) ) {
+				if ( ! in_array( $allowed_key, $this->api_request_params_required, true ) && ! in_array( $allowed_key, $this->api_request_params_optional, true ) ) {
 					continue;
 				}
 
 				$value     = isset( $params[ $allowed_key ] ) ? $params[ $allowed_key ] : null;
 				$has_value = is_numeric( $value ) || is_string( $value ) || is_integer( $value ) ? strlen( $value ) : $value;
 
-				if ( in_array( $allowed_key, $this->api_request_params_requireds, true ) && ! $has_value ) {
+				if ( in_array( $allowed_key, $this->api_request_params_required, true ) && ! $has_value ) {
 					// translators: %s API request parameter key.
 					throw new Exception( sprintf( __( 'Required API request parameter is empty: %s.', 'woongkir' ), $allowed_key ) );
 				}

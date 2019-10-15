@@ -57,13 +57,12 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return void
 	 */
 	public function __construct( $instance_id = 0 ) {
-		$this->api          = new Woongkir_API();
-		$this->instance_id  = absint( $instance_id );
-		$this->id           = WOONGKIR_METHOD_ID;
-		$this->method_title = WOONGKIR_METHOD_TITLE;
-		$this->title        = WOONGKIR_METHOD_TITLE;
-		// translators: %s = List of supported couriers.
-		$this->method_description = sprintf( __( 'WooCommerce shipping rates calculator for Indonesia domestic and international shipment: %s.', 'woongkir' ), implode( ', ', $this->api->get_couriers_names() ) );
+		$this->api                = new Woongkir_API();
+		$this->instance_id        = absint( $instance_id );
+		$this->id                 = WOONGKIR_METHOD_ID;
+		$this->method_title       = woongkir_get_plugin_data( 'Name' );
+		$this->title              = woongkir_get_plugin_data( 'Name' );
+		$this->method_description = woongkir_get_plugin_data( 'Description' );
 		$this->supports           = array(
 			'shipping-zones',
 			'instance-settings',
@@ -188,7 +187,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			'volumetric_divider'    => array(
 				'title'             => __( 'Volumetric Converter Divider', 'woongkir' ),
 				'type'              => 'number',
-				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimetres / Divider', 'woongkir' ),
+				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimeters / Divider', 'woongkir' ),
 				'custom_attributes' => array(
 					'min'  => '0',
 					'step' => '100',
@@ -205,7 +204,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			),
 		);
 
-		$fetaures = array(
+		$features = array(
 			'domestic'          => __( 'Domestic Couriers', 'woongkir' ),
 			'international'     => __( 'International Couriers', 'woongkir' ),
 			'multiple_couriers' => __( 'Multiple Couriers', 'woongkir' ),
@@ -217,14 +216,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 		$accounts = $this->api->get_accounts();
 
-		foreach ( $fetaures as $fetaure_key => $fetaure_label ) {
-			$settings['account_type']['features'][ $fetaure_key ]['label'] = $fetaure_label;
+		foreach ( $features as $feature_key => $feature_label ) {
+			$settings['account_type']['features'][ $feature_key ]['label'] = $feature_label;
 
 			foreach ( $accounts as $type => $account ) {
-				if ( in_array( $fetaure_key, array( 'domestic', 'international' ), true ) ) {
-					$settings['account_type']['features'][ $fetaure_key ]['value'][ $type ] = count( $this->api->get_couriers( $fetaure_key, $type ) );
+				if ( in_array( $feature_key, array( 'domestic', 'international' ), true ) ) {
+					$settings['account_type']['features'][ $feature_key ]['value'][ $type ] = count( $this->api->get_couriers( $feature_key, $type ) );
 				} else {
-					$settings['account_type']['features'][ $fetaure_key ]['value'][ $type ] = $account->feature_enable( $fetaure_key ) ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
+					$settings['account_type']['features'][ $feature_key ]['value'][ $type ] = $account->feature_enable( $feature_key ) ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
 				}
 			}
 		}
@@ -392,7 +391,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 								<div class="woongkir-couriers-item-info">
 									<label>
 										<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service woongkir-service--bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
-										<?php echo wp_kses_post( $courier['label'] ); ?> (<span class="woongkir-couriers--selected"><?php echo esc_html( ( isset( $selected[ $courier_id ] ) ? count( $selected[ $courier_id ] ) : 0 ) ); ?></span> / <span class="woongkir-couriers--availabe"><?php echo esc_html( count( $courier['services'] ) ); ?></span>)
+										<?php echo wp_kses_post( $courier['label'] ); ?> (<span class="woongkir-couriers--selected"><?php echo esc_html( ( isset( $selected[ $courier_id ] ) ? count( $selected[ $courier_id ] ) : 0 ) ); ?></span> / <span class="woongkir-couriers--available"><?php echo esc_html( count( $courier['services'] ) ); ?></span>)
 									</label>
 									<div class="woongkir-couriers-item-info-toggle">
 										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-admin-generic"></span></a>
@@ -443,7 +442,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 *
 	 * @since 1.0.0
 	 * @param string $key Input field key.
-	 * @param string $value Input field currenet value.
+	 * @param string $value Input field current value.
 	 * @throws Exception Error message.
 	 */
 	public function validate_api_key_field( $key, $value ) {
@@ -477,7 +476,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 *
 	 * @since 1.0.0
 	 * @param string $key Input field key.
-	 * @param string $value Input field currenet value.
+	 * @param string $value Input field current value.
 	 * @throws Exception If field value is not valid.
 	 */
 	public function validate_account_type_field( $key, $value ) {
@@ -497,7 +496,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 *
 	 * @since 1.0.0
 	 * @param string $key Input field key.
-	 * @param string $value Input field currenet value.
+	 * @param string $value Input field current value.
 	 * @throws Exception If field value is not valid.
 	 * @return string
 	 */
@@ -668,7 +667,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				 * @since 1.2.12
 				 *
 				 * @param string                   $rate_label The default shipping rate label.
-				 * @param bool                     $result     Shipping rate resuly data.
+				 * @param bool                     $result     Shipping rate result data.
 				 * @param array                    $package    Current order package data.
 				 * @param Woongkir_Shipping_Method $object     Current class object.
 				 *
@@ -1055,7 +1054,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
-	 * Sort domestic couriers lsit
+	 * Sort domestic couriers list
 	 *
 	 * @param array $a Value to compare.
 	 * @param array $b Value to compare.
@@ -1091,7 +1090,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
-	 * Sort international couriers lsit
+	 * Sort international couriers list
 	 *
 	 * @param array $a Value to compare.
 	 * @param array $b Value to compare.
@@ -1159,6 +1158,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			return;
 		}
 
-		wc_add_notice( ( WOONGKIR_METHOD_ID . ' : ' . $message ), $notice_type );
+		wc_add_notice( ( $this->id . ' : ' . $message ), $notice_type );
 	}
 }

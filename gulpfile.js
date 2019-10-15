@@ -30,6 +30,18 @@ const project = 'Woongkir';
 const assets = [
     {
         type: 'scripts',
+        target: 'backend-log',
+        sources: [
+            'backend-log.js',
+        ],
+        targetDir: 'assets/js/',
+        sourcesDir: 'assets/src/js/',
+        isPrefixed: true,
+        isIife: true,
+        isSourceMap: false,
+    },
+    {
+        type: 'scripts',
         target: 'backend',
         sources: [
             'shared.js',

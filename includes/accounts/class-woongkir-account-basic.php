@@ -87,14 +87,14 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	 */
 	public function api_request_parser( $params = array(), $endpoint = '' ) {
 		if ( '/cost' === $endpoint ) {
-			$this->api_request_params_requireds = array(
+			$this->api_request_params_required = array(
 				'origin',
 				'destination',
 				'weight',
 				'courier',
 			);
 		} elseif ( '/v2/internationalCost' === $endpoint ) {
-			$this->api_request_params_requireds = array(
+			$this->api_request_params_required = array(
 				'origin',
 				'destination',
 				'weight',

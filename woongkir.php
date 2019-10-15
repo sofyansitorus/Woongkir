@@ -33,19 +33,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
+define( 'WOONGKIR_METHOD_ID', 'woongkir' );
 define( 'WOONGKIR_FILE', __FILE__ );
 define( 'WOONGKIR_PATH', plugin_dir_path( WOONGKIR_FILE ) );
 define( 'WOONGKIR_URL', plugin_dir_url( WOONGKIR_FILE ) );
-define( 'WOONGKIR_METHOD_ID', 'woongkir' );
-define( 'WOONGKIR_METHOD_TITLE', 'Woongkir' );
-define( 'WOONGKIR_VERSION', '1.2.12' );
 
 // Load the helpers.
 require_once WOONGKIR_PATH . 'includes/helpers.php';
 
 // Register the class auto loader.
-if ( function_exists( 'woongkir_autoloader' ) ) {
-	spl_autoload_register( 'woongkir_autoloader' );
+if ( function_exists( 'woongkir_autoload' ) ) {
+	spl_autoload_register( 'woongkir_autoload' );
 }
 
 /**

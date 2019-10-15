@@ -27,9 +27,9 @@ if ( ! function_exists( 'woongkir_is_plugin_active' ) ) :
 	}
 endif;
 
-if ( ! function_exists( 'woongkir_autoloader' ) ) :
+if ( ! function_exists( 'woongkir_autoload' ) ) :
 	/**
-	 * Class autoloader
+	 * Class autoload
 	 *
 	 * @since 1.2.12
 	 *
@@ -37,7 +37,7 @@ if ( ! function_exists( 'woongkir_autoloader' ) ) :
 	 *
 	 * @return void
 	 */
-	function woongkir_autoloader( $class ) {
+	function woongkir_autoload( $class ) {
 		$class = strtolower( $class );
 
 		if ( strpos( $class, 'woongkir' ) !== 0 ) {
@@ -60,7 +60,7 @@ if ( ! function_exists( 'woongkir_get_json_data' ) ) :
 	 *
 	 * @since 1.0.0
 	 * @param array $file_name File name for the json data.
-	 * @param array $search Serach keyword data.
+	 * @param array $search Search keyword data.
 	 * @throws  Exception If WordPress Filesystem Abstraction classes is not available.
 	 * @return array
 	 */
@@ -157,7 +157,7 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
 				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'method_id'         => WOONGKIR_METHOD_ID,
-			'method_title'      => WOONGKIR_METHOD_TITLE,
+			'method_title'      => woongkir_get_plugin_data( 'Name' ),
 			)
 		);
 	}
@@ -195,7 +195,7 @@ endif;
 
 if ( ! function_exists( 'woongkir_is_dev' ) ) :
 	/**
-	 * Check is in development environtment.
+	 * Check is in development environment.
 	 *
 	 * @since 1.2.11
 	 *
@@ -211,5 +211,37 @@ if ( ! function_exists( 'woongkir_is_dev' ) ) :
 		}
 
 		return false;
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_get_plugin_data' ) ) :
+	/**
+	 * Get plugin data
+	 *
+	 * @since ??
+	 *
+	 * @param string $selected Selected data key.
+	 * @param string $selected_default Selected data key default value.
+	 * @param bool   $markup If the returned data should have HTML markup applied.
+	 * @param bool   $translate If the returned data should be translated.
+	 *
+	 * @return (string|array)
+	 */
+	function woongkir_get_plugin_data( $selected = null, $selected_default = '', $markup = false, $translate = true ) {
+		static $plugin_data;
+
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		if ( is_null( $plugin_data ) ) {
+			$plugin_data = get_plugin_data( WOONGKIR_FILE, $markup, $translate );
+		}
+
+		if ( ! is_null( $selected ) ) {
+			return isset( $plugin_data[ $selected ] ) ? $plugin_data[ $selected ] : $selected_default;
+		}
+
+		return $plugin_data;
 	}
 endif;

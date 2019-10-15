@@ -87,7 +87,7 @@ class Woongkir_Account_Pro extends Woongkir_Account {
 	 */
 	public function api_request_parser( $params = array(), $endpoint = '' ) {
 		if ( '/cost' === $endpoint ) {
-			$this->api_request_params_requireds = array(
+			$this->api_request_params_required = array(
 				'origin',
 				'originType',
 				'destination',
@@ -96,21 +96,21 @@ class Woongkir_Account_Pro extends Woongkir_Account {
 				'courier',
 			);
 
-			$this->api_request_params_optionals = array(
+			$this->api_request_params_optional = array(
 				'length',
 				'width',
 				'height',
 				'diameter',
 			);
 		} elseif ( '/v2/internationalCost' === $endpoint ) {
-			$this->api_request_params_requireds = array(
+			$this->api_request_params_required = array(
 				'origin',
 				'destination',
 				'weight',
 				'courier',
 			);
 
-			$this->api_request_params_optionals = array(
+			$this->api_request_params_optional = array(
 				'length',
 				'width',
 				'height',

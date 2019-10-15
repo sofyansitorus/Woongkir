@@ -171,7 +171,7 @@ class Woongkir_API {
 	 *
 	 * @since 1.2.12
 	 *
-	 * @param bool $as_array Wethere to return data as array or not.
+	 * @param bool $as_array Wether to return data as array or not.
 	 *
 	 * @return array
 	 */
@@ -195,7 +195,7 @@ class Woongkir_API {
 	 * @since 1.0.0
 	 *
 	 * @param string $account_type Account type key.
-	 * @param bool   $as_array Wethere to return data as array or not.
+	 * @param bool   $as_array Wether to return data as array or not.
 	 *
 	 * @return (Woongkir_Account|array|bool) Courier object or array data. False on failure.
 	 */
@@ -220,7 +220,7 @@ class Woongkir_API {
 	 *
 	 * @param string  $zone Couriers zone: domestic, international, all.
 	 * @param string  $account_type Filters couriers allowed for specific account type: starter, basic, prop, all.
-	 * @param boolean $as_array Wethere to return data as array or not.
+	 * @param boolean $as_array Wether to return data as array or not.
 	 *
 	 * @return array
 	 */
@@ -264,7 +264,7 @@ class Woongkir_API {
 	 * @since 1.0.0
 	 *
 	 * @param string $code Courier code.
-	 * @param bool   $as_array Wethere to return data as array or not.
+	 * @param bool   $as_array Wether to return data as array or not.
 	 *
 	 * @return (Woongkir_Courier|array|bool) Courier object or array data. False on failure.
 	 */
@@ -284,7 +284,7 @@ class Woongkir_API {
 	 * @since 1.0.0
 	 *
 	 * @param string $code Courier code.
-	 * @param bool   $as_array Wethere to return data as array or not.
+	 * @param bool   $as_array Wether to return data as array or not.
 	 *
 	 * @return (Woongkir_Courier|array|bool) Courier object or array data. False on failure.
 	 */
