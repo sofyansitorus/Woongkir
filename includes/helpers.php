@@ -218,7 +218,7 @@ if ( ! function_exists( 'woongkir_get_plugin_data' ) ) :
 	/**
 	 * Get plugin data
 	 *
-	 * @since ??
+	 * @since 1.2.13
 	 *
 	 * @param string $selected Selected data key.
 	 * @param string $selected_default Selected data key default value.

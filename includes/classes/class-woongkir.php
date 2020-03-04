@@ -491,7 +491,7 @@ class Woongkir {
 	/**
 	 * AJAX request handler to send log
 	 *
-	 * @since ??
+	 * @since 1.2.13
 	 *
 	 * @return void
 	 */

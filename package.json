@@ -1,13 +1,17 @@
 {
   "name": "woongkir",
   "title": "Woongkir",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "homepage": "https://github.com/sofyansitorus/",
   "repository": {
     "type": "git",
     "url": "https://github.com/sofyansitorus/Woongkir.git"
   },
   "author": "Sofyan Sitorus",
+  "engines": {
+    "node": ">=8.0.0 <10"
+  },
+  "engineStrict": true,
   "devDependencies": {
     "browser-sync": "^2.24.4",
     "gulp": "^3.9.1",
