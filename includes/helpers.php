@@ -133,13 +133,13 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 			array(
 				'ajax_url'      => admin_url( 'ajax.php' ),
 				'json'          => array(
-					'country_url'     => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/country.json' ),
+					'country_url'     => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/country.json' ),
 					'country_key'     => 'woongkir_country_data',
-					'province_url'    => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/province.json' ),
+					'province_url'    => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/province.json' ),
 					'province_key'    => 'woongkir_province_data',
-					'city_url'        => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/city.json' ),
+					'city_url'        => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/city.json' ),
 					'city_key'        => 'woongkir_city_data',
-					'subdistrict_url' => add_query_arg( array( 't' => current_time( 'timestamp' ) ), WOONGKIR_URL . 'data/subdistrict.json' ),
+					'subdistrict_url' => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/subdistrict.json' ),
 					'subdistrict_key' => 'woongkir_subdistrict_data',
 				),
 				'text'          => array(

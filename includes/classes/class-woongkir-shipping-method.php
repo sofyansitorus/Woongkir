@@ -457,7 +457,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 			$results = $this->api->validate_account();
 
-			if ( ! $results ) {
+			if ( is_wp_error( $results ) ) {
+				throw new Exception( $results->get_error_message(), 1 );
+			}
+
+			if ( ! isset( $results['parsed'], $results['raw'] ) || ! $results['raw'] || ! $results['raw'] ) {
 				throw new Exception( __( 'API Key or Account type is invalid.', 'woongkir' ), 1 );
 			}
 
@@ -602,7 +606,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				 *
 				 * @since 1.2.12
 				 *
-				 * @param bool                     $results API shipping calculation results.
+				 * @param array|WP_Error           $results API shipping calculation results.
 				 * @param array                    $package Current order package data.
 				 * @param Woongkir_Shipping_Method $object  Current class object.
 				 *
@@ -615,10 +619,22 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				}
 			}
 
+			if ( ! is_wp_error( $results ) ) {
+				$this->show_debug(
+					wp_json_encode(
+						array(
+							'calculate_shipping.$results' => $results,
+						)
+					)
+				);
+			}
+
+			$allowed_services = isset( $this->{$api_request_params['zone']} ) ? $this->{$api_request_params['zone']} : array();
+
 			$this->show_debug(
 				wp_json_encode(
 					array(
-						'calculate_shipping.$results' => $results,
+						'calculate_shipping.$allowed_services' => $allowed_services,
 					)
 				)
 			);
@@ -635,16 +651,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				// translators: %s Encoded data response.
 				throw new Exception( wp_sprintf( __( 'Couriers data is invalid: %s', 'woongkir' ), wp_json_encode( $results ) ) );
 			}
-
-			$allowed_services = isset( $this->{$api_request_params['zone']} ) ? $this->{$api_request_params['zone']} : array();
-
-			$this->show_debug(
-				wp_json_encode(
-					array(
-						'calculate_shipping.$allowed_services' => $allowed_services,
-					)
-				)
-			);
 
 			foreach ( $results['parsed'] as $result_key => $result ) {
 				if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {

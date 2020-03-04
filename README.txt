@@ -2,9 +2,9 @@
 Contributors: sofyansitorus
 Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Express, SiCepat Express, J&T Express, Pahala Express, SAP Express, JET Express, Solusi Ekspres, 21 Express, Nusantara Card Semesta, Star Cargo, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic, Expedito
 Requires at least: 4.8
-Tested up to: 5.2.2
+Tested up to: 5.3.2
 Requires PHP: 5.6
-Stable tag: 1.2.12
+Stable tag: 1.2.13
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -27,7 +27,7 @@ Please note that this plugin is using RajaOngkir.com API as the data source. You
 * Set shipping couriers priority.
 * Set base weight for cart content.
 * Show or hide estimated time of arrival.
-* Real time currency convertion to IDR for international shipping cost courier that use USD.
+* Real time currency conversion to IDR for international shipping cost courier that use USD.
 * Real time API Key validation on settings update.
 
 = Another WooCommerce Shipping Plugins =
@@ -86,11 +86,17 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Changelog ==
 
+= 1.2.13 =
+
+* Fixed real time API Key setting validation.
+* Added API response error to debug info.
+* Updated version compatibility.
+
 = 1.2.12 =
 
 * Improved UI/UX in admin area for mobile mobile devices.
 * Refactored code base to make it modular for easy to extend.
-* Introduced new filters: woongkir_api_request_post_pre, woongkir_api_request_get_pre, woongkir_shipping_results, woongkir_shipping_origin_info, woongkir_shipping_destination_info, woongkir_shipping_dimension_weight
+* Introduced new filters: woongkir_api_request_post_pre, woongkir_api_request_get_pre, woongkir_shipping_results, woongkir_shipping_origin_info, woongkir_shipping_destination_info, woongkir_shipping_dimension_weight.
 
 = 1.2.11 =
 
