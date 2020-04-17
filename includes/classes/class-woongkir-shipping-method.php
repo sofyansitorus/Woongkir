@@ -810,7 +810,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			);
 
 			if ( ! $dimension_weight || ! array_filter( $dimension_weight ) ) {
-				throw new Exception( __( 'Cart weight pr dimension is empty or invalid', 'woongkir' ) );
+				throw new Exception( __( 'Cart weight or dimension is empty or invalid', 'woongkir' ) );
 			}
 
 			$courier = $domestic ? array_keys( (array) $this->domestic ) : array_keys( (array) $this->international );
