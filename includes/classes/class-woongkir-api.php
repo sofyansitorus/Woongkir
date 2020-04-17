@@ -780,21 +780,21 @@ class Woongkir_API {
 			return '';
 		}
 
-		$etd = str_replace(
-			array( 'jam', 'hari' ),
-			array( __( 'hours', 'woongkir' ), __( 'days', 'woongkir' ) ),
-			strtolower( $etd )
-		);
+		$etd = strtolower( $etd );
+		$etd = preg_replace( '/([0-9]+) - ([0-9]+)/', '$1-$2', $etd );
+		$etd = str_replace( '1-1', '1', $etd );
 
-		if ( false === strpos( $etd, 'hours' ) && false === strpos( $etd, 'days' ) ) {
-			$etd = trim( $etd ) . ' ' . __( 'days', 'woongkir' );
+		if ( false !== strpos( $etd, 'jam' ) ) {
+			$etd = trim( str_replace( 'jam', '', $etd ) );
+
+			// translators: %s is number of hours.
+			$etd = intval( $etd ) === 1 ? __( '1 hour', 'woongkir' ) : sprintf( __( '%s hours', 'woongkir' ), $etd );
+		} else {
+			$etd = trim( str_replace( 'hari', '', $etd ) );
+
+			// translators: %s is number of days.
+			$etd = intval( $etd ) === 1 ? __( '1 day', 'woongkir' ) : sprintf( __( '%s days', 'woongkir' ), $etd );
 		}
-
-		// Trim the etd data.
-		$etd = array_map( 'trim', explode( '-', $etd ) );
-
-		// Join the etd data.
-		$etd = implode( ' - ', $etd );
 
 		return $etd;
 	}
