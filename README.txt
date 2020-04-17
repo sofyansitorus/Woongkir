@@ -2,9 +2,9 @@
 Contributors: sofyansitorus
 Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX, Pandu Logistics, Wahana Express, SiCepat Express, J&T Express, Pahala Express, SAP Express, JET Express, Solusi Ekspres, 21 Express, Nusantara Card Semesta, Star Cargo, Lion Parcel, Ninja Xpress, Indotama Domestik Lestari, Royal Express Indonesia, Indah Logistic, Expedito
 Requires at least: 4.8
-Tested up to: 5.3.2
+Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 1.2.13
+Stable tag: 1.2.14
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -85,6 +85,11 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.2.14 =
+
+* Added Sort Shipping settings.
+* Fixed internationalization text for ETA label.
 
 = 1.2.13 =
 
@@ -196,5 +201,5 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Upgrade Notice ==
 
-= 1.2.7 =
-This version include important bug fixes. Upgrade immediately is always recommended.
+= 1.2.14 =
+This version include bug fixes and improvements. Upgrade immediately is always recommended.
