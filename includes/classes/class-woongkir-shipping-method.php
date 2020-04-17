@@ -141,6 +141,16 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					'none'    => _x( 'None', 'Tax status', 'woongkir' ),
 				),
 			),
+			'sort_shipping'         => array(
+				'title'   => __( 'Sort Shipping', 'woongkir' ),
+				'type'    => 'select',
+				'default' => 'no',
+				'options' => array(
+					'cost' => __( 'By Cost Ascending', 'woongkir' ),
+					'name' => __( 'By Name Ascending', 'woongkir' ),
+					'no'   => __( 'No', 'woongkir' ),
+				),
+			),
 			'show_eta'              => array(
 				'title'       => __( 'Show ETA', 'woongkir' ),
 				'label'       => __( 'Yes', 'woongkir' ),
@@ -652,45 +662,71 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				throw new Exception( wp_sprintf( __( 'Couriers data is invalid: %s', 'woongkir' ), wp_json_encode( $results ) ) );
 			}
 
-			foreach ( $results['parsed'] as $result_key => $result ) {
-				if ( ! isset( $allowed_services[ $result['courier'] ] ) ) {
-					continue;
+			$couriers = array();
+
+			if ( 'cost' === $this->sort_shipping ) {
+				usort( $results['parsed'], array( $this, 'sort_results_by_cost' ) );
+			} elseif ( 'name' === $this->sort_shipping ) {
+				usort( $results['parsed'], array( $this, 'sort_results_by_name' ) );
+			}
+
+			foreach ( $results['parsed'] as $result ) {
+				if ( ! isset( $couriers[ $result['courier'] ] ) ) {
+					$couriers[ $result['courier'] ] = array();
 				}
 
-				if ( ! in_array( $result['service'], $allowed_services[ $result['courier'] ], true ) ) {
-					continue;
+				$couriers[ $result['courier'] ][] = $result;
+			}
+
+			if ( 'name' === $this->sort_shipping ) {
+				foreach ( $couriers as $courier => $services ) {
+					usort( $services, array( $this, 'sort_results_by_cost' ) );
+
+					$couriers[ $courier ] = $services;
 				}
+			}
 
-				$rate_label = wp_sprintf( '%s - %s', strtoupper( $result['courier'] ), $result['service'] );
+			foreach ( $couriers as $courier => $services ) {
+				foreach ( $services as $result ) {
+					if ( ! isset( $allowed_services[ $courier ] ) ) {
+						continue;
+					}
 
-				if ( 'yes' === $this->show_eta && $result['etd'] ) {
-					$rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
+					if ( ! in_array( $result['service'], $allowed_services[ $courier ], true ) ) {
+						continue;
+					}
+
+					$rate_label = wp_sprintf( '%s - %s', strtoupper( $courier ), $result['service'] );
+
+					if ( 'yes' === $this->show_eta && $result['etd'] ) {
+						$rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
+					}
+
+					/**
+					 * Filter the shipping rate label.
+					 *
+					 * @since 1.2.12
+					 *
+					 * @param string                   $rate_label The default shipping rate label.
+					 * @param bool                     $result     Shipping rate result data.
+					 * @param array                    $package    Current order package data.
+					 * @param Woongkir_Shipping_Method $object     Current class object.
+					 *
+					 * @return string
+					 */
+					$rate_label = apply_filters( 'woongkir_shipping_rate_label', $rate_label, $result, $package, $this );
+
+					$this->add_rate(
+						array(
+							'id'        => $this->get_rate_id( $courier . ':' . $result['service'] ),
+							'label'     => $rate_label,
+							'cost'      => $result['cost'],
+							'meta_data' => array(
+								'_woongkir_data' => $result,
+							),
+						)
+					);
 				}
-
-				/**
-				 * Filter the shipping rate label.
-				 *
-				 * @since 1.2.12
-				 *
-				 * @param string                   $rate_label The default shipping rate label.
-				 * @param bool                     $result     Shipping rate result data.
-				 * @param array                    $package    Current order package data.
-				 * @param Woongkir_Shipping_Method $object     Current class object.
-				 *
-				 * @return string
-				 */
-				$rate_label = apply_filters( 'woongkir_shipping_rate_label', $rate_label, $result, $package, $this );
-
-				$this->add_rate(
-					array(
-						'id'        => $this->get_rate_id( $result['courier'] . ':' . $result['service'] ),
-						'label'     => $rate_label,
-						'cost'      => $result['cost'],
-						'meta_data' => array(
-							'_woongkir_data' => $result,
-						),
-					)
-				);
 			}
 		} catch ( Exception $e ) {
 			$this->show_debug( $e->getMessage() );
@@ -810,7 +846,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			);
 
 			if ( ! $dimension_weight || ! array_filter( $dimension_weight ) ) {
-				throw new Exception( __( 'Cart weight pr dimension is empty or invalid', 'woongkir' ) );
+				throw new Exception( __( 'Cart weight or dimension is empty or invalid', 'woongkir' ) );
 			}
 
 			$courier = $domestic ? array_keys( (array) $this->domestic ) : array_keys( (array) $this->international );
@@ -958,6 +994,10 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		$weight = array();
 
 		foreach ( $contents as $item ) {
+			if ( ! $item['data']->needs_shipping() ) {
+				continue;
+			}
+
 			// Validate cart item quantity value.
 			$item_quantity = absint( $item['quantity'] );
 			if ( ! $item_quantity ) {
@@ -1129,6 +1169,42 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		}
 
 		return ( $al > $bl ) ? 1 : -1;
+	}
+
+	/**
+	 * Sort couriers services by cost ascending
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return bool
+	 */
+	protected function sort_results_by_cost( $a, $b ) {
+		$a_cost = isset( $a['cost'] ) ? $a['cost'] : 0;
+		$b_cost = isset( $b['cost'] ) ? $b['cost'] : 0;
+
+		if ( $a_cost === $b_cost ) {
+			return 0;
+		}
+
+		return ( $a_cost > $b_cost ) ? 1 : -1;
+	}
+
+	/**
+	 * Sort couriers services by name ascending
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return bool
+	 */
+	protected function sort_results_by_name( $a, $b ) {
+		$a_name = isset( $a['courier'] ) ? strtolower( $a['courier'] ) : '';
+		$b_name = isset( $b['courier'] ) ? strtolower( $b['courier'] ) : '';
+
+		if ( $a_name === $b_name ) {
+			return 0;
+		}
+
+		return ( $a_name > $b_name ) ? 1 : -1;
 	}
 
 	/**
