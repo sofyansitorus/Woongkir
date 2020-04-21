@@ -280,7 +280,7 @@ class Woongkir {
 	 * @since 1.0.0
 	 */
 	public function enqueue_frontend_assets() {
-		if ( is_admin() ) {
+		if ( is_admin() || ! woongkir_instances() ) {
 			return;
 		}
 
@@ -468,8 +468,20 @@ class Woongkir {
 	 * @since 1.2.4
 	 * @return void
 	 */
-	public function after_shipping_calculator() {       ?>
-		<input type="hidden" id="calc_shipping_address_2_dummy" value="<?php echo esc_attr( WC()->cart->get_customer()->get_shipping_address_2() ); ?>" />
+	public function after_shipping_calculator() {
+		if ( ! woongkir_instances() ) {
+			return;
+		}
+
+		$enable_address_2 = apply_filters( 'woocommerce_shipping_calculator_enable_address_2', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+
+		if ( ! $enable_address_2 ) {
+			return;
+		}
+
+		$address_2 = WC()->cart->get_customer()->get_shipping_address_2();
+		?>
+		<input type="hidden" id="woongkir_calc_shipping_address_2" value="<?php echo esc_attr( $address_2 ); ?>" />
 		<?php
 	}
 

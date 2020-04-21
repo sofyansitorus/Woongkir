@@ -245,3 +245,58 @@ if ( ! function_exists( 'woongkir_get_plugin_data' ) ) :
 		return $plugin_data;
 	}
 endif;
+
+if ( ! function_exists( 'woongkir_instances' ) ) :
+	/**
+	 * Get shipping method instances
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param bool $enabled_only Filter to includes only enabled instances.
+	 * @return array
+	 */
+	function woongkir_instances( $enabled_only = true ) {
+		$instances = array();
+
+		$zone_data_store = new WC_Shipping_Zone_Data_Store();
+
+		$shipping_methods = $zone_data_store->get_methods( '0', $enabled_only );
+
+		if ( $shipping_methods ) {
+			foreach ( $shipping_methods as $shipping_method ) {
+				if ( WOONGKIR_METHOD_ID !== $shipping_method->method_id ) {
+					continue;
+				}
+
+				$instances[] = array(
+					'zone_id'     => 0,
+					'method_id'   => $shipping_method->method_id,
+					'instance_id' => $shipping_method->instance_id,
+				);
+			}
+		}
+
+		$zones = WC_Shipping_Zones::get_zones();
+
+		if ( ! empty( $zones ) ) {
+			foreach ( $zones as $zone ) {
+				$shipping_methods = $zone_data_store->get_methods( $zone['id'], $enabled_only );
+				if ( $shipping_methods ) {
+					foreach ( $shipping_methods as $shipping_method ) {
+						if ( WOONGKIR_METHOD_ID !== $shipping_method->method_id ) {
+							continue;
+						}
+
+						$instances[] = array(
+							'zone_id'     => 0,
+							'method_id'   => $shipping_method->method_id,
+							'instance_id' => $shipping_method->instance_id,
+						);
+					}
+				}
+			}
+		}
+
+		return apply_filters( 'woongkir_instances', $instances );
+	}
+endif;

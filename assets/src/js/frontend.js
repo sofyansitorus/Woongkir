@@ -58,7 +58,7 @@ var woongkirFrontend = {
 
 		var citySelected = $('#' + fieldPrefix + '_city').val();
 
-		$('#' + fieldPrefix + '_city').empty().select2({
+		$('#' + fieldPrefix + '_city').empty().selectWoo({
 			width: '100%',
 			data: cityOptions,
 			placeholder: woongkirFrontend.getFields({ suffix: 'city' }).placeholder,
@@ -103,7 +103,7 @@ var woongkirFrontend = {
 
 		var subdistrictSelected = $('#' + fieldPrefix + '_address_2').val();
 
-		$('#' + fieldPrefix + '_address_2').empty().select2({
+		$('#' + fieldPrefix + '_address_2').empty().selectWoo({
 			width: '100%',
 			data: subdistrictOptions,
 			placeholder: woongkirFrontend.getFields({ suffix: 'address_2' }).placeholder,
@@ -145,7 +145,7 @@ var woongkirFrontend = {
 						$fieldWrap.find('input').attr({
 							'id': fieldPrefix + '_' + field.suffix,
 							'name': fieldPrefix + '_' + field.suffix,
-							'value': $('#' + fieldPrefix + '_' + field.suffix + '_dummy').val(),
+							'value': $('#woongkir_' + fieldPrefix + '_' + field.suffix).val(),
 							'placeholder': field.placeholder || '',
 							'data-placeholder': field.placeholder || '',
 						});
@@ -167,7 +167,7 @@ var woongkirFrontend = {
 					$field = $('#' + fieldPrefix + '_' + field.suffix);
 					$field.removeClass('input-text');
 
-					$field.select2({
+					$field.selectWoo({
 						width: '100%',
 					});
 				}
@@ -180,7 +180,7 @@ var woongkirFrontend = {
 				var $field = $('#' + fieldPrefix + '_' + field.suffix);
 
 				if ($field.is('select')) {
-					$field.select2('destroy');
+					$field.selectWoo('destroy');
 
 					var fieldAttrs = _.extend(woongkirFrontend.getFieldAttributes($field), { type: 'text' });
 
@@ -223,7 +223,8 @@ var woongkirFrontend = {
 	},
 	getFieldAttributes: function ($node) {
 		var attrs = {};
-		$.each($node[0].attributes, function (index, attribute) {
+
+		_.each($node[0].attributes, function (attribute) {
 			attrs[attribute.name] = attribute.value;
 		});
 
