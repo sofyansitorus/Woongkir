@@ -58,7 +58,7 @@ class Woongkir_Courier_EXPEDITO extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_international() {
+	public function get_services_international_default() {
 		return array(
 			'CityLink'         => 'CityLink',
 			'DPEX'             => 'DPEX',

@@ -611,6 +611,9 @@ class Woongkir_API {
 								),
 								array( 'source' => 'woongkir_api_unregistered_domestic_service' )
 							);
+
+							$label = isset( $rate['description'] ) ? $rate['description'] : $rate['service'];
+							$courier->add_service( $rate['service'], $label, 'domestic' );
 						}
 
 						$etd  = isset( $rate['cost'][0]['etd'] ) ? $this->parse_etd( $rate['cost'][0]['etd'] ) : '';
@@ -738,6 +741,9 @@ class Woongkir_API {
 							),
 							array( 'source' => 'woongkir_api_unregistered_international_service' )
 						);
+
+						$label = isset( $rate['description'] ) ? $rate['description'] : $rate['service'];
+						$courier->add_service( $rate['service'], $label, 'international' );
 					}
 
 					$etd      = isset( $rate['etd'] ) ? $this->parse_etd( $rate['etd'] ) : '';

@@ -125,6 +125,48 @@ abstract class Woongkir_Courier {
 	}
 
 	/**
+	 * Get courier services
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $zone Shipping zone.
+	 *
+	 * @return array
+	 */
+	public function get_services( $zone ) {
+		if ( 'domestic' === $zone ) {
+			return $this->get_services_domestic();
+		}
+
+		if ( 'international' === $zone ) {
+			return $this->get_services_international();
+		}
+
+		return array();
+	}
+
+	/**
+	 * Get default courier services
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $zone Shipping zone.
+	 *
+	 * @return array
+	 */
+	public function get_services_defaul( $zone ) {
+		if ( 'domestic' === $zone ) {
+			return $this->get_services_domestic_default();
+		}
+
+		if ( 'international' === $zone ) {
+			return $this->get_services_international_default();
+		}
+
+		return array();
+	}
+
+	/**
 	 * Get courier services for domestic shipping
 	 *
 	 * @since 1.2.12
@@ -132,6 +174,32 @@ abstract class Woongkir_Courier {
 	 * @return array
 	 */
 	public function get_services_domestic() {
+		$default_data = $this->get_services_domestic_default();
+
+		if ( ! $default_data ) {
+			return array();
+		}
+
+		$data_key   = $this->get_services_data_key( 'domestic' );
+		$saved_data = get_option( $data_key );
+
+		if ( false === $saved_data ) {
+			update_option( $data_key, $default_data, true );
+		} else {
+			return $saved_data;
+		}
+
+		return $default_data;
+	}
+
+	/**
+	 * Get default courier services for domestic shipping
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return array
+	 */
+	public function get_services_domestic_default() {
 		return array();
 	}
 
@@ -143,7 +211,114 @@ abstract class Woongkir_Courier {
 	 * @return array
 	 */
 	public function get_services_international() {
+		$default_data = $this->get_services_international_default();
+
+		if ( ! $default_data ) {
+			return array();
+		}
+
+		$data_key   = $this->get_services_data_key( 'international' );
+		$saved_data = get_option( $data_key );
+
+		if ( false === $saved_data ) {
+			update_option( $data_key, $default_data, true );
+		} else {
+			return $saved_data;
+		}
+
+		return $default_data;
+	}
+
+	/**
+	 * Get default courier services for international shipping
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return array
+	 */
+	public function get_services_international_default() {
 		return array();
+	}
+
+	/**
+	 * Add new service
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $id Service ID.
+	 * @param string $label Service label.
+	 * @param string $zone Shipping zone.
+	 *
+	 * @return bool
+	 */
+	public function add_service( $id, $label, $zone ) {
+		$services = $this->get_services( $zone );
+
+		if ( isset( $services[ $id ] ) ) {
+			return;
+		}
+
+		$services[ $id ] = $label;
+
+		return update_option( $this->get_services_data_key( $zone ), $services, true );
+	}
+
+	/**
+	 * Update service
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $id Service ID.
+	 * @param string $label Service label.
+	 * @param string $zone Shipping zone.
+	 *
+	 * @return bool
+	 */
+	public function update_service( $id, $label, $zone ) {
+		$services = $this->get_services( $zone );
+
+		if ( ! isset( $services[ $id ] ) ) {
+			return;
+		}
+
+		$services[ $id ] = $label;
+
+		return update_option( $this->get_services_data_key( $zone ), $services, true );
+	}
+
+	/**
+	 * Delete service
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $id Service ID.
+	 * @param string $zone Shipping zone.
+	 *
+	 * @return bool
+	 */
+	public function delete_service( $id, $zone ) {
+		$services = $this->get_services( $zone );
+
+		if ( ! isset( $services[ $id ] ) ) {
+			return;
+		}
+
+		unset( $services[ $id ] );
+
+		return update_option( $this->get_services_data_key( $zone ), $services, true );
+	}
+
+	/**
+	 * Get courier services data option name
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $zone Shipping zone.
+	 *
+	 * @return string
+	 */
+	public function get_services_data_key( $zone ) {
+		return sprintf( 'woongkir_couriers_data_%s_%s', $zone, $this->get_code() );
 	}
 
 	/**

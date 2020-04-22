@@ -58,7 +58,7 @@ class Woongkir_Courier_POS extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_domestic() {
+	public function get_services_domestic_default() {
 		return array(
 			'Surat Kilat Khusus'       => 'Surat Kilat Khusus',
 			'Paketpos Biasa'           => 'Paketpos Biasa',
@@ -82,7 +82,7 @@ class Woongkir_Courier_POS extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_international() {
+	public function get_services_international_default() {
 		return array(
 			'R LN'              => 'R LN',
 			'EMS BARANG'        => 'EMS BARANG',
