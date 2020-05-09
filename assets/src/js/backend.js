@@ -223,7 +223,7 @@ var woongkirBackend = {
 					}
 				}
 
-				woongkirBackend.updateSelectedServicesCounter('.woongkir-couriers-item--' + zoneId + '--' + courierId);
+				woongkirBackend.updateSelectedServicesCounter($('.woongkir-couriers-item--' + zoneId + '--' + courierId));
 			});
 
 			if (!couriersAccount) {
@@ -244,13 +244,16 @@ var woongkirBackend = {
 			$(this).closest('.woongkir-couriers-item').find('.woongkir-service--single').prop('checked', true);
 
 			if (!accounts[account].multiple_couriers) {
-				$('.woongkir-couriers-item').not('.woongkir-couriers-item--' + zoneId + '--' + courierId).find('.woongkir-service').prop('checked', false);
+				$('.woongkir-couriers-item').not('.woongkir-couriers-item--' + zoneId + '--' + courierId).each(function () {
+					$(this).find('.woongkir-service').prop('checked', false);
+					woongkirBackend.updateSelectedServicesCounter($(this));
+				});
 			}
 		} else {
 			$(this).closest('.woongkir-couriers-item-inner').find('.woongkir-service--single').prop('checked', false);
 		}
 
-		woongkirBackend.updateSelectedServicesCounter('.woongkir-couriers-item--' + zoneId + '--' + courierId);
+		woongkirBackend.updateSelectedServicesCounter($('.woongkir-couriers-item--' + zoneId + '--' + courierId));
 	},
 	selectServices: function () {
 		var courierId = $(this).closest('.woongkir-couriers-item').data('id');
@@ -263,8 +266,9 @@ var woongkirBackend = {
 			$(this).closest('.woongkir-couriers-item').find('.woongkir-service--bulk').prop('checked', true);
 
 			if (!accounts[account].multiple_couriers) {
-				$('.woongkir-couriers-item').not('.woongkir-couriers-item--' + zoneId + '--' + courierId).each(function (index, item) {
-					$(item).find('.woongkir-service').prop('checked', false);
+				$('.woongkir-couriers-item').not('.woongkir-couriers-item--' + zoneId + '--' + courierId).each(function () {
+					$(this).find('.woongkir-service').prop('checked', false);
+					woongkirBackend.updateSelectedServicesCounter($(this));
 				})
 			}
 		} else {
@@ -273,11 +277,10 @@ var woongkirBackend = {
 			}
 		}
 
-		woongkirBackend.updateSelectedServicesCounter('.woongkir-couriers-item--' + zoneId + '--' + courierId);
+		woongkirBackend.updateSelectedServicesCounter($('.woongkir-couriers-item--' + zoneId + '--' + courierId));
 	},
-	updateSelectedServicesCounter: function (itemClass) {
-		var selectedServices = $(itemClass).find('.woongkir-service--single:checked').length;
-		$(itemClass).find('.woongkir-couriers--selected').text(selectedServices);
+	updateSelectedServicesCounter: function ($selector) {
+		$selector.find('.woongkir-couriers--selected').text($selector.find('.woongkir-service--single:checked').length);
 	},
 	toggleServicesItems: function (event) {
 		event.preventDefault();
