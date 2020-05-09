@@ -146,9 +146,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				'type'    => 'select',
 				'default' => 'no',
 				'options' => array(
-					'cost' => __( 'By Cost Ascending', 'woongkir' ),
-					'name' => __( 'By Name Ascending', 'woongkir' ),
-					'no'   => __( 'No', 'woongkir' ),
+					'cost'      => __( 'By Cost - Ascending', 'woongkir' ),
+					'cost_desc' => __( 'By Cost - Descending', 'woongkir' ),
+					'name'      => __( 'By Name - A to Z', 'woongkir' ),
+					'name_desc' => __( 'By Name - Z to A', 'woongkir' ),
+					'no'        => __( 'No', 'woongkir' ),
 				),
 			),
 			'show_eta'              => array(
@@ -664,10 +666,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 			$couriers = array();
 
-			if ( 'cost' === $this->sort_shipping ) {
-				usort( $results['parsed'], array( $this, 'sort_results_by_cost' ) );
-			} elseif ( 'name' === $this->sort_shipping ) {
-				usort( $results['parsed'], array( $this, 'sort_results_by_name' ) );
+			if ( 'no' !== $this->sort_shipping && is_callable( array( $this, 'sort_results_by_' . $this->sort_shipping ) ) ) {
+				usort( $results['parsed'], array( $this, 'sort_results_by_' . $this->sort_shipping ) );
 			}
 
 			foreach ( $results['parsed'] as $result ) {
@@ -678,7 +678,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				$couriers[ $result['courier'] ][] = $result;
 			}
 
-			if ( 'name' === $this->sort_shipping ) {
+			if ( in_array( $this->sort_shipping, array( 'name', 'name_desc' ), true ) ) {
 				foreach ( $couriers as $courier => $services ) {
 					usort( $services, array( $this, 'sort_results_by_cost' ) );
 
@@ -1176,7 +1176,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 *
 	 * @param array $a Value to compare.
 	 * @param array $b Value to compare.
-	 * @return bool
+	 * @return int
 	 */
 	protected function sort_results_by_cost( $a, $b ) {
 		$a_cost = isset( $a['cost'] ) ? $a['cost'] : 0;
@@ -1190,11 +1190,29 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
+	 * Sort couriers services by cost descending
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return int
+	 */
+	protected function sort_results_by_cost_desc( $a, $b ) {
+		$a_cost = isset( $a['cost'] ) ? $a['cost'] : 0;
+		$b_cost = isset( $b['cost'] ) ? $b['cost'] : 0;
+
+		if ( $a_cost === $b_cost ) {
+			return 0;
+		}
+
+		return ( $a_cost < $b_cost ) ? 1 : -1;
+	}
+
+	/**
 	 * Sort couriers services by name ascending
 	 *
 	 * @param array $a Value to compare.
 	 * @param array $b Value to compare.
-	 * @return bool
+	 * @return int
 	 */
 	protected function sort_results_by_name( $a, $b ) {
 		$a_name = isset( $a['courier'] ) ? strtolower( $a['courier'] ) : '';
@@ -1205,6 +1223,24 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		}
 
 		return ( $a_name > $b_name ) ? 1 : -1;
+	}
+
+	/**
+	 * Sort couriers services by name descending
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return int
+	 */
+	protected function sort_results_by_name_desc( $a, $b ) {
+		$a_name = isset( $a['courier'] ) ? strtolower( $a['courier'] ) : '';
+		$b_name = isset( $b['courier'] ) ? strtolower( $b['courier'] ) : '';
+
+		if ( $a_name === $b_name ) {
+			return 0;
+		}
+
+		return ( $a_name < $b_name ) ? 1 : -1;
 	}
 
 	/**
