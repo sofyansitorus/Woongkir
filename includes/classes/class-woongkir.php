@@ -236,7 +236,7 @@ class Woongkir {
 			wp_enqueue_script(
 				'woongkir-backend', // Give the script a unique ID.
 				$js_url, // Define the path to the JS file.
-				array( 'jquery', 'wp-util', 'selectWoo', 'lockr.js' ), // Define dependencies.
+				array( 'jquery', 'accordion', 'wp-util', 'selectWoo', 'lockr.js' ), // Define dependencies.
 				woongkir_get_plugin_data( 'Version' ), // Define a version (optional).
 				true // Specify whether to put in footer (leave this true).
 			);
