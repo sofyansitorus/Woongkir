@@ -58,7 +58,7 @@ class Woongkir_Courier_SLIS extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_domestic() {
+	public function get_services_domestic_default() {
 		return array(
 			'REGULAR' => 'Regular Service',
 			'EXPRESS' => 'Express Service',
@@ -72,7 +72,7 @@ class Woongkir_Courier_SLIS extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_international() {
+	public function get_services_international_default() {
 		return array(
 			'PACKAGE'       => 'PACKAGE',
 			'COSMETIC/FOOD' => 'COSMETIC/FOOD',

@@ -58,7 +58,7 @@ class Woongkir_Courier_TIKI extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_domestic() {
+	public function get_services_domestic_default() {
 		return array(
 			'REG' => 'Regular Service',
 			'ECO' => 'Economy Service',

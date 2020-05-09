@@ -58,7 +58,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_domestic() {
+	public function get_services_domestic_default() {
 		return array(
 			'CTC'    => 'City Courier',
 			'CTCYES' => 'City Courier YES',
@@ -75,7 +75,7 @@ class Woongkir_Courier_JNE extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_international() {
+	public function get_services_international_default() {
 		return array(
 			'INTL' => 'INTL',
 		);

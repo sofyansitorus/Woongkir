@@ -58,7 +58,7 @@ class Woongkir_Courier_PAHALA extends Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_domestic() {
+	public function get_services_domestic_default() {
 		return array(
 			'EXPRESS'     => 'Express Service',
 			'ONS'         => 'One Night Service',

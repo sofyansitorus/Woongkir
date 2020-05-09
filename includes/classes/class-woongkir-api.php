@@ -611,6 +611,9 @@ class Woongkir_API {
 								),
 								array( 'source' => 'woongkir_api_unregistered_domestic_service' )
 							);
+
+							$label = isset( $rate['description'] ) ? $rate['description'] : $rate['service'];
+							$courier->add_service( $rate['service'], $label, 'domestic' );
 						}
 
 						$etd  = isset( $rate['cost'][0]['etd'] ) ? $this->parse_etd( $rate['cost'][0]['etd'] ) : '';
@@ -738,6 +741,9 @@ class Woongkir_API {
 							),
 							array( 'source' => 'woongkir_api_unregistered_international_service' )
 						);
+
+						$label = isset( $rate['description'] ) ? $rate['description'] : $rate['service'];
+						$courier->add_service( $rate['service'], $label, 'international' );
 					}
 
 					$etd      = isset( $rate['etd'] ) ? $this->parse_etd( $rate['etd'] ) : '';
@@ -783,6 +789,7 @@ class Woongkir_API {
 		$etd = strtolower( $etd );
 		$etd = preg_replace( '/([0-9]+) - ([0-9]+)/', '$1-$2', $etd );
 		$etd = str_replace( '1-1', '1', $etd );
+		$etd = str_replace( '0-0', '0', $etd );
 
 		if ( false !== strpos( $etd, 'jam' ) ) {
 			$etd = trim( str_replace( 'jam', '', $etd ) );

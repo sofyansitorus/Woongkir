@@ -99,9 +99,6 @@ class Woongkir {
 
 		// Hook to register the shipping method.
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'register_shipping_method' ) );
-
-		// Hook to AJAX actions.
-		add_action( 'wp_ajax_woongkir_send_log', array( $this, 'send_log' ) );
 	}
 
 	/**
@@ -200,32 +197,6 @@ class Woongkir {
 
 		$is_dev_env = woongkir_is_dev();
 
-		if ( 'woocommerce_page_wc-status' === $hook ) {
-			// Define the scripts URL.
-			$js_url = WOONGKIR_URL . 'assets/js/woongkir-backend-log.min.js';
-			if ( $is_dev_env ) {
-				$js_url = add_query_arg( array( 't' => time() ), str_replace( '.min', '', $js_url ) );
-			}
-
-			wp_enqueue_script(
-				'woongkir-backend-log', // Give the script a unique ID.
-				$js_url, // Define the path to the JS file.
-				array( 'jquery', 'wp-util' ), // Define dependencies.
-				woongkir_get_plugin_data( 'Version' ), // Define a version (optional).
-				true // Specify whether to put in footer (leave this true).
-			);
-
-			wp_localize_script(
-				'woongkir-backend-log',
-				'woongkir_log_params',
-				array(
-					'ajax_url'     => admin_url( 'admin-ajax.php' ),
-					'button_text'  => __( 'Send Log to Developer', 'woongkir' ),
-					'confirm_text' => __( 'Are your sure want to send this log data to the plugin\'s developer?', 'woongkir' ),
-				)
-			);
-		}
-
 		if ( 'woocommerce_page_wc-settings' === $hook ) {
 			// Define the styles URL.
 			$css_url = WOONGKIR_URL . 'assets/css/woongkir-backend.min.css';
@@ -265,7 +236,7 @@ class Woongkir {
 			wp_enqueue_script(
 				'woongkir-backend', // Give the script a unique ID.
 				$js_url, // Define the path to the JS file.
-				array( 'jquery', 'wp-util', 'selectWoo', 'lockr.js' ), // Define dependencies.
+				array( 'jquery', 'accordion', 'wp-util', 'selectWoo', 'lockr.js' ), // Define dependencies.
 				woongkir_get_plugin_data( 'Version' ), // Define a version (optional).
 				true // Specify whether to put in footer (leave this true).
 			);
@@ -280,7 +251,7 @@ class Woongkir {
 	 * @since 1.0.0
 	 */
 	public function enqueue_frontend_assets() {
-		if ( is_admin() ) {
+		if ( is_admin() || ! woongkir_instances() ) {
 			return;
 		}
 
@@ -468,8 +439,20 @@ class Woongkir {
 	 * @since 1.2.4
 	 * @return void
 	 */
-	public function after_shipping_calculator() {       ?>
-		<input type="hidden" id="calc_shipping_address_2_dummy" value="<?php echo esc_attr( WC()->cart->get_customer()->get_shipping_address_2() ); ?>" />
+	public function after_shipping_calculator() {
+		if ( ! woongkir_instances() ) {
+			return;
+		}
+
+		$enable_address_2 = apply_filters( 'woocommerce_shipping_calculator_enable_address_2', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+
+		if ( ! $enable_address_2 ) {
+			return;
+		}
+
+		$address_2 = WC()->cart->get_customer()->get_shipping_address_2();
+		?>
+		<input type="hidden" id="woongkir_calc_shipping_address_2" value="<?php echo esc_attr( $address_2 ); ?>" />
 		<?php
 	}
 
@@ -486,82 +469,5 @@ class Woongkir {
 		}
 
 		return $methods;
-	}
-
-	/**
-	 * AJAX request handler to send log
-	 *
-	 * @since 1.2.13
-	 *
-	 * @return void
-	 */
-	public function send_log() {
-		if ( empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'remove_log' ) ) {
-			wp_send_json_error( esc_html__( 'Action failed. Please refresh the page and retry.', 'woongkir' ) );
-		}
-
-		$viewed_log = isset( $_POST['send_log'] ) ? sanitize_text_field( wp_unslash( $_POST['send_log'] ) ) : false;
-
-		if ( ! $viewed_log ) {
-			wp_send_json_error( esc_html__( 'Action failed. No log file selected.', 'woongkir' ) );
-		}
-
-		$viewed_log_file_handle = WC_Admin_Status::get_log_file_handle( $viewed_log );
-
-		if ( ! $viewed_log_file_handle ) {
-			wp_send_json_error( esc_html__( 'Action failed. Log file selected is invalid.', 'woongkir' ) );
-		}
-
-		$viewed_log_path = WC_Log_Handler_File::get_log_file_path( $viewed_log_file_handle );
-
-		if ( ! $viewed_log_path || ! file_exists( $viewed_log_path ) ) {
-			wp_send_json_error( esc_html__( 'Action failed. Log file selected is not exists.', 'woongkir' ) );
-		}
-
-		$viewed_log_content = file_get_contents( $viewed_log_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-
-		if ( ! $viewed_log_content ) {
-			wp_send_json_error( esc_html__( 'Action failed. Log file selected is empty.', 'woongkir' ) );
-		}
-
-		$report        = '';
-		$exclude_items = array( 'log_directory', 'log_directory_writable', 'database_prefix', 'database_tables' );
-		$boolean_items = array( 'maxmind_geoip_database' );
-
-		foreach ( wc()->api->get_endpoint_data( '/wc/v3/system_status' ) as $report_group_key => $report_group ) {
-			$report .= '### ' . $report_group_key . ' ###' . "\n\n";
-
-			foreach ( $report_group as $report_item_key => $report_item_value ) {
-				if ( in_array( $report_item_key, $exclude_items, true ) ) {
-					continue;
-				}
-
-				if ( in_array( $report_item_key, $boolean_items, true ) ) {
-					$report_item_value = empty( $report_item_value ) ? 'false' : 'true';
-				}
-
-				if ( in_array( $report_group_key, array( 'active_plugins', 'inactive_plugins' ), true ) ) {
-					$plugin_name       = isset( $report_item_value['name'] ) ? $report_item_value['name'] : '';
-					$plugin_author     = isset( $report_item_value['author_name'] ) ? $report_item_value['author_name'] : '';
-					$plugin_version    = isset( $report_item_value['version'] ) ? $report_item_value['version'] : '';
-					$plugin_url        = isset( $report_item_value['url'] ) ? $report_item_value['url'] : '';
-					$report_item_value = sprintf( '%1$s: by %2$s - %3$s - %4$s', $plugin_name, $plugin_author, $plugin_version, $plugin_url );
-				}
-
-				if ( is_array( $report_item_value ) || is_object( $report_item_value ) ) {
-					$report_item_value = wp_json_encode( $report_item_value );
-				}
-
-				$report .= $report_item_key . ': ' . $report_item_value . "\n";
-			}
-
-			$report .= "\n\n\n";
-		}
-
-		if ( wp_mail( 'woongkirdev@gmail.com', $viewed_log, $report, array(), array( $viewed_log_path ) ) ) {
-			wp_send_json_success( esc_html__( 'Action success. Log file data has been sent to the developer.', 'woongkir' ) );
-		}
-
-		wp_send_json_error( esc_html__( 'Unable to send the email. Please try again or contact your hosting provider', 'woongkir' ) );
 	}
 }

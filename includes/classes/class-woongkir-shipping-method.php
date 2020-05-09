@@ -146,9 +146,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				'type'    => 'select',
 				'default' => 'no',
 				'options' => array(
-					'cost' => __( 'By Cost Ascending', 'woongkir' ),
-					'name' => __( 'By Name Ascending', 'woongkir' ),
-					'no'   => __( 'No', 'woongkir' ),
+					'cost'      => __( 'By Cost - Ascending', 'woongkir' ),
+					'cost_desc' => __( 'By Cost - Descending', 'woongkir' ),
+					'name'      => __( 'By Name - A to Z', 'woongkir' ),
+					'name_desc' => __( 'By Name - Z to A', 'woongkir' ),
+					'no'        => __( 'No', 'woongkir' ),
 				),
 			),
 			'show_eta'              => array(
@@ -188,6 +190,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					),
 				),
 			),
+			'domestic'              => array(
+				'title' => __( 'Domestic Shipping', 'woongkir' ),
+				'type'  => 'couriers_list',
+			),
+			'international'         => array(
+				'title' => __( 'International Shipping', 'woongkir' ),
+				'type'  => 'couriers_list',
+			),
 			'volumetric_calculator' => array(
 				'title'       => __( 'Volumetric Converter', 'woongkir' ),
 				'label'       => __( 'Enable', 'woongkir' ),
@@ -197,20 +207,12 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			'volumetric_divider'    => array(
 				'title'             => __( 'Volumetric Converter Divider', 'woongkir' ),
 				'type'              => 'number',
-				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimeters / Divider', 'woongkir' ),
+				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimeters / Divider.', 'woongkir' ),
 				'custom_attributes' => array(
 					'min'  => '0',
 					'step' => '100',
 				),
 				'default'           => '6000',
-			),
-			'domestic'              => array(
-				'title' => __( 'Domestic Shipping', 'woongkir' ),
-				'type'  => 'couriers_list',
-			),
-			'international'         => array(
-				'title' => __( 'International Shipping', 'woongkir' ),
-				'type'  => 'couriers_list',
 			),
 		);
 
@@ -367,8 +369,16 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	public function generate_couriers_list_html( $key, $data ) {
 		$field_key = $this->get_field_key( $key );
 		$defaults  = array(
-			'title' => '',
-			'class' => '',
+			'title'             => '',
+			'class'             => '',
+			'disabled'          => false,
+			'class'             => '',
+			'css'               => '',
+			'placeholder'       => '',
+			'type'              => 'text',
+			'desc_tip'          => false,
+			'description'       => '',
+			'custom_attributes' => array(),
 		);
 
 		$data = wp_parse_args( $data, $defaults );
@@ -381,13 +391,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 		ob_start();
 		?>
-		<?php if ( 'domestic' === $key ) : ?>
-		</table>
-		<table class="form-table">
-			</tr>
-			<?php endif; ?>
-			<td class="woongkir-couriers-wrap woongkir-couriers-wrap--<?php echo esc_attr( $key ); ?>">
-				<h2 class="wc-settings-sub-title <?php echo esc_attr( $data['class'] ); ?>" id="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></h2>
+		<tr valign="top" class="woongkir-couriers-wrap woongkir-couriers-wrap--<?php echo esc_attr( $key ); ?>">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
+			</th>
+			<td class="forminp">
 				<ul class="woongkir-couriers">
 					<?php
 					$i = 0;
@@ -399,22 +407,20 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 						<li class="woongkir-couriers-item woongkir-couriers-item--<?php echo esc_attr( $key ); ?>--<?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>" data-zone="<?php echo esc_attr( $key ); ?>">
 							<div class="woongkir-couriers-item-inner">
 								<div class="woongkir-couriers-item-info">
-									<label>
+									<label class="woongkir-couriers-item-info-title">
 										<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service woongkir-service--bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
 										<?php echo wp_kses_post( $courier['label'] ); ?> (<span class="woongkir-couriers--selected"><?php echo esc_html( ( isset( $selected[ $courier_id ] ) ? count( $selected[ $courier_id ] ) : 0 ) ); ?></span> / <span class="woongkir-couriers--available"><?php echo esc_html( count( $courier['services'] ) ); ?></span>)
 									</label>
-									<div class="woongkir-couriers-item-info-toggle">
-										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-admin-generic"></span></a>
-									</div>
 									<?php
-									$courier_website = wp_parse_url( $courier['website'] );
-
-									if ( isset( $courier_website['host'] ) ) {
+									if ( isset( $courier['website'] ) ) {
 										?>
-									<div class="woongkir-couriers-item-info-link"><a href="<?php echo esc_attr( $courier['website'] ); ?>?utm_source=woongkir.com" target="blank"><?php echo esc_html( $courier_website['host'] ); ?></a></div>
+									<div class="woongkir-couriers-item-info-link"><a href="<?php echo esc_attr( $courier['website'] ); ?>?utm_source=woongkir.com" target="blank" title="<?php esc_attr_e( 'Visit courier\'s website', 'woongkir' ); ?>"><span class="dashicons dashicons-admin-links"></span></a></div>
 										<?php
 									}
 									?>
+									<div class="woongkir-couriers-item-info-toggle">
+										<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>"><span class="dashicons dashicons-admin-generic"></span></a>
+									</div>
 								</div>
 								<ul class="woongkir-services">
 									<?php
@@ -438,11 +444,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					?>
 				</ul>
 			</td>
-			<?php if ( 'international' === $key ) : ?>
-			</tr>
-		</table>
-		<table class="form-table">
-		<?php endif; ?>
+		</tr>
 		<?php
 		return ob_get_clean();
 	}
@@ -664,10 +666,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 			$couriers = array();
 
-			if ( 'cost' === $this->sort_shipping ) {
-				usort( $results['parsed'], array( $this, 'sort_results_by_cost' ) );
-			} elseif ( 'name' === $this->sort_shipping ) {
-				usort( $results['parsed'], array( $this, 'sort_results_by_name' ) );
+			if ( 'no' !== $this->sort_shipping && is_callable( array( $this, 'sort_results_by_' . $this->sort_shipping ) ) ) {
+				usort( $results['parsed'], array( $this, 'sort_results_by_' . $this->sort_shipping ) );
 			}
 
 			foreach ( $results['parsed'] as $result ) {
@@ -678,7 +678,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				$couriers[ $result['courier'] ][] = $result;
 			}
 
-			if ( 'name' === $this->sort_shipping ) {
+			if ( in_array( $this->sort_shipping, array( 'name', 'name_desc' ), true ) ) {
 				foreach ( $couriers as $courier => $services ) {
 					usort( $services, array( $this, 'sort_results_by_cost' ) );
 
@@ -1176,7 +1176,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 *
 	 * @param array $a Value to compare.
 	 * @param array $b Value to compare.
-	 * @return bool
+	 * @return int
 	 */
 	protected function sort_results_by_cost( $a, $b ) {
 		$a_cost = isset( $a['cost'] ) ? $a['cost'] : 0;
@@ -1190,11 +1190,29 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
+	 * Sort couriers services by cost descending
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return int
+	 */
+	protected function sort_results_by_cost_desc( $a, $b ) {
+		$a_cost = isset( $a['cost'] ) ? $a['cost'] : 0;
+		$b_cost = isset( $b['cost'] ) ? $b['cost'] : 0;
+
+		if ( $a_cost === $b_cost ) {
+			return 0;
+		}
+
+		return ( $a_cost < $b_cost ) ? 1 : -1;
+	}
+
+	/**
 	 * Sort couriers services by name ascending
 	 *
 	 * @param array $a Value to compare.
 	 * @param array $b Value to compare.
-	 * @return bool
+	 * @return int
 	 */
 	protected function sort_results_by_name( $a, $b ) {
 		$a_name = isset( $a['courier'] ) ? strtolower( $a['courier'] ) : '';
@@ -1205,6 +1223,24 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		}
 
 		return ( $a_name > $b_name ) ? 1 : -1;
+	}
+
+	/**
+	 * Sort couriers services by name descending
+	 *
+	 * @param array $a Value to compare.
+	 * @param array $b Value to compare.
+	 * @return int
+	 */
+	protected function sort_results_by_name_desc( $a, $b ) {
+		$a_name = isset( $a['courier'] ) ? strtolower( $a['courier'] ) : '';
+		$b_name = isset( $b['courier'] ) ? strtolower( $b['courier'] ) : '';
+
+		if ( $a_name === $b_name ) {
+			return 0;
+		}
+
+		return ( $a_name < $b_name ) ? 1 : -1;
 	}
 
 	/**
