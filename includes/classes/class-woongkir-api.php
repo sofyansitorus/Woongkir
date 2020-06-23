@@ -795,12 +795,12 @@ class Woongkir_API {
 			$etd = trim( str_replace( 'jam', '', $etd ) );
 
 			// translators: %s is number of hours.
-			$etd = intval( $etd ) === 1 ? __( '1 hour', 'woongkir' ) : sprintf( __( '%s hours', 'woongkir' ), $etd );
+			$etd = is_numeric( $etd ) && intval( $etd ) === 1 ? __( '1 hour', 'woongkir' ) : sprintf( __( '%s hours', 'woongkir' ), $etd );
 		} else {
 			$etd = trim( str_replace( 'hari', '', $etd ) );
 
 			// translators: %s is number of days.
-			$etd = intval( $etd ) === 1 ? __( '1 day', 'woongkir' ) : sprintf( __( '%s days', 'woongkir' ), $etd );
+			$etd = is_numeric( $etd ) && intval( $etd ) === 1 ? __( '1 day', 'woongkir' ) : sprintf( __( '%s days', 'woongkir' ), $etd );
 		}
 
 		return $etd;

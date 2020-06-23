@@ -330,7 +330,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( (array) $data['features'] as $feature_key => $feature ) : ?>
+							<?php foreach ( (array) $data['features'] as $feature ) : ?>
 							<tr>
 								<th><?php echo esc_html( $feature['label'] ); ?></th>
 								<?php foreach ( $feature['value'] as $account_type => $feature_value ) : ?>
