@@ -3,9 +3,9 @@ Contributors: sofyansitorus
 Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX
 Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plugin_page&utm_medium=referral
 Requires at least: 4.8
-Tested up to: 5.4.1
+Tested up to: 5.4.2
 Requires PHP: 5.6
-Stable tag: 1.2.15
+Stable tag: 1.2.16
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -82,6 +82,10 @@ I have no clue what is happening on your server during the WooCommerce doing the
 
 [Click here](https://fast.wistia.net/embed/iframe/9c9008dxnr) for how to switch WooCommerce Shipping Debug Mode.
 
+= How to switch WooCommerce Shipping Debug Mode setting? =
+
+[Click here](https://fast.wistia.net/embed/iframe/9c9008dxnr) for how to switch WooCommerce Shipping Debug Mode setting.
+
 = I see there is no city or subdistrict dropdown field in the checkout form or shipping calculator form, what should I do? =
 
 The main cause of this issue is because you are using a theme or plugin that modifying the standard WooCommerce form structure. There is no way to fix this at the moment except you deactivate the theme or plugin that modifying the standard WooCommerce form structure. You may also need to check out the Browser's developer tools console to check if there is a JavaScript error/conflict. You must include this debug info in case you are going to create a support ticket related to this issue.
@@ -114,6 +118,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.2.16 =
+
+* Fixed incorrect ETA value parsing when started with 1.
 
 = 1.2.15 =
 
@@ -239,5 +247,5 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 == Upgrade Notice ==
 
-= 1.2.15 =
-This version includes bug fixes and improvements. Upgrade immediately is always recommended.
+= 1.2.16 =
+This version includes bug fixes. Upgrade immediately is always recommended.
