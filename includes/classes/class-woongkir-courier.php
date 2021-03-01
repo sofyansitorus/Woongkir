@@ -154,7 +154,7 @@ abstract class Woongkir_Courier {
 	 *
 	 * @return array
 	 */
-	public function get_services_defaul( $zone ) {
+	public function get_services_default( $zone ) {
 		if ( 'domestic' === $zone ) {
 			return $this->get_services_domestic_default();
 		}
@@ -340,6 +340,27 @@ abstract class Woongkir_Courier {
 	 * @return array
 	 */
 	public function get_account_international() {
+		return array();
+	}
+
+	/**
+	 * Get courier account for international shipping
+	 *
+	 * @since 1.2.12
+	 *
+	 * @param {string} $zone Zone ID.
+	 *
+	 * @return array
+	 */
+	public function get_account_by_zone( $zone ) {
+		if ( 'domestic' === $zone ) {
+			return $this->get_account_domestic();
+		}
+
+		if ( 'international' === $zone ) {
+			return $this->get_account_international();
+		}
+
 		return array();
 	}
 

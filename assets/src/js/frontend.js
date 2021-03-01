@@ -1,242 +1,268 @@
-var woongkirFrontend = {
-	init: function () {
-		$(document.body).on('country_to_state_changed', function () {
-			var fields = woongkirFrontend.getFields();
+function maybeCloneInputNotExist(fieldPrefix, fieldSuffix, fieldData) {
+	var fieldId = fieldPrefix + '_' + fieldSuffix;
+	var $field = $('#' + fieldId);
 
-			$('select.country_to_state, input.country_to_state').each(function () {
-				var $countryField = $(this);
-				var fieldPrefix = $countryField.attr('id').replace('_country', '');
-				var selectedCountry = $countryField.val();
+	if ($field && $field.length) {
+		return;
+	}
 
-				_.each(fields, function (field) {
-					if (field.callback) {
-						$('#' + fieldPrefix + '_' + field.suffix).off('change', field.callback);
-					}
-				});
+	var cloneIfNotExist = $.extend({}, {
+		fieldPrefix: [],
+		fieldFrom: false,
+	}, fieldData.cloneIfNotExist);
 
-				if (selectedCountry === 'ID') {
-					woongkirFrontend.modifyForm(fieldPrefix);
+	var cloneIfNotExistPrefixMatch = true === cloneIfNotExist.fieldPrefix || -1 !== cloneIfNotExist.fieldPrefix.indexOf(fieldPrefix);
 
-					_.each(fields, function (field) {
-						if (field.callback) {
-							$('#' + fieldPrefix + '_' + field.suffix).on('change', field.callback);
-						}
-					});
+	if (!cloneIfNotExistPrefixMatch) {
+		return;
+	}
 
-					_.each(fields, function (field) {
-						if (field.triggerEvent) {
-							$('#' + fieldPrefix + '_' + field.suffix).trigger(field.triggerEvent);
-						}
-					});
-				} else {
-					woongkirFrontend.restoreForm(fieldPrefix);
-				}
-			});
-		});
-	},
-	onChangeStateField: function (e) {
-		var $provinceField = $(e.currentTarget);
-		var fieldPrefix = $provinceField.attr('id').replace('_state', '');
-		var provinceSelected = $provinceField.val();
-		var cityOptions = [];
+	var cloneFromId = fieldPrefix + '_' + cloneIfNotExist.fieldFrom;
+	var $cloneFromWrap = $('#' + cloneFromId + '_field');
 
-		var provinceData = woongkirLocation.getProvince({ code: provinceSelected });
+	if (!$cloneFromWrap || !$cloneFromWrap.length) {
+		return;
+	}
 
-		if (provinceData) {
-			var cityData = woongkirLocation.getCity({ province_id: provinceData.province_id }, 'filter');
-			if (cityData) {
-				for (var i = 0; i < cityData.length; i++) {
-					var cityName = cityData[i].type + ' ' + cityData[i].city_name;
+	var $cloneFromField = $('#' + cloneFromId);
 
-					cityOptions.push({
-						id: cityName,
-						text: cityName,
-					});
-				}
-			}
-		}
+	if (!$cloneFromField || !$cloneFromField.length) {
+		return;
+	}
 
-		var citySelected = $('#' + fieldPrefix + '_city').val();
+	var $clonedField = $cloneFromField.clone().attr({
+		id: fieldId,
+		name: fieldId,
+		value: $('#woongkir_' + fieldId).val(),
+		placeholder: fieldData.placeholder || '',
+	});
 
-		$('#' + fieldPrefix + '_city').empty().selectWoo({
-			width: '100%',
-			data: cityOptions,
-			placeholder: woongkirFrontend.getFields({ suffix: 'city' }).placeholder,
-		}).val(citySelected).trigger('change');
-	},
-	onChangeCityField: function (e) {
-		var $cityField = $(e.currentTarget);
-		var fieldPrefix = $cityField.attr('id').replace('_city', '');
-		var $provinceField = $('#' + fieldPrefix + '_state');
-		var provinceSelected = $provinceField.val();
-		var citySelected = $cityField.val();
-		var subdistrictOptions = [];
+	var $clonedWrap = $cloneFromWrap.clone().prop({
+		id: fieldId + '_field',
+	}).empty().append($clonedField);
 
-		var provinceData = woongkirLocation.getProvince({ code: provinceSelected });
-
-		if (provinceData && citySelected) {
-			var cityType = citySelected.split(' ')[0];
-			var cityName = citySelected.split(' ').splice(1).join(' ');
-
-			var cityData = woongkirLocation.getCity({
-				type: cityType,
-				city_name: cityName,
-				province_id: provinceData.province_id,
-			});
-
-			if (cityData) {
-				var subdistrictData = woongkirLocation.getSubdistrict({
-					province_id: provinceData.province_id,
-					city_id: cityData.city_id
-				}, 'filter');
-
-				if (subdistrictData) {
-					for (var i = 0; i < subdistrictData.length; i++) {
-						subdistrictOptions.push({
-							id: subdistrictData[i].subdistrict_name,
-							text: subdistrictData[i].subdistrict_name,
-						});
-					}
-				}
-			}
-		}
-
-		var subdistrictSelected = $('#' + fieldPrefix + '_address_2').val();
-
-		$('#' + fieldPrefix + '_address_2').empty().selectWoo({
-			width: '100%',
-			data: subdistrictOptions,
-			placeholder: woongkirFrontend.getFields({ suffix: 'address_2' }).placeholder,
-		}).val(subdistrictSelected).trigger('change');
-	},
-	onChangeSubdistrictField: function (e) {
-		var isUpdateCheckout = function () {
-			var shipToDifferentAddress = $('#ship-to-different-address-checkbox').is(':checked');
-			var fieldPrefix = $(e.currentTarget).attr('id').replace('_address_2', '');
-
-			if (fieldPrefix === 'billing' && !shipToDifferentAddress) {
-				return true;
-			}
-
-			if (fieldPrefix === 'shipping' && shipToDifferentAddress) {
-				return true;
-			}
-
-			return false;
-
-		};
-
-		if (isUpdateCheckout()) {
-			$(document.body).trigger('update_checkout');
-		}
-	},
-	modifyForm: function (fieldPrefix) {
-		_.each(woongkirFrontend.getFields(), function (field) {
-			if (field.modifyForm) {
-				var $field = $('#' + fieldPrefix + '_' + field.suffix);
-				if (!$field || !$field.length) {
-					var $cloneFieldWrap = $('#' + fieldPrefix + '_postcode_field');
-
-					if ($cloneFieldWrap && $cloneFieldWrap.length) {
-						var $fieldWrap = $cloneFieldWrap.clone().attr({
-							id: fieldPrefix + '_' + field.suffix + '_field'
-						});
-
-						$fieldWrap.find('input').attr({
-							'id': fieldPrefix + '_' + field.suffix,
-							'name': fieldPrefix + '_' + field.suffix,
-							'value': $('#woongkir_' + fieldPrefix + '_' + field.suffix).val(),
-							'placeholder': field.placeholder || '',
-							'data-placeholder': field.placeholder || '',
-						});
-
-						$cloneFieldWrap.before($fieldWrap);
-
-						$field = $fieldWrap.find('input');
-					}
-				}
-
-				if ($field && $field.length) {
-					if (!$field.is('select')) {
-						var fieldValue = $field.val();
-						var fieldAttrs = _.omit(woongkirFrontend.getFieldAttributes($field), ['type']);
-
-						$field.replaceWith($('<select></select>').attr(fieldAttrs).append($('<option value="' + fieldValue + '">' + fieldValue + '</option>')));
-					}
-
-					$field = $('#' + fieldPrefix + '_' + field.suffix);
-					$field.removeClass('input-text');
-
-					$field.selectWoo({
-						width: '100%',
-					});
-				}
-			}
-		});
-	},
-	restoreForm: function (fieldPrefix) {
-		_.each(woongkirFrontend.getFields(), function (field) {
-			if (field.modifyForm) {
-				var $field = $('#' + fieldPrefix + '_' + field.suffix);
-
-				if ($field.is('select')) {
-					$field.selectWoo('destroy');
-
-					var fieldAttrs = _.extend(woongkirFrontend.getFieldAttributes($field), { type: 'text' });
-
-					$field.replaceWith($('<input>').attr(fieldAttrs));
-
-					$field = $('#' + fieldPrefix + '_' + field.suffix);
-					$field.addClass('input-text');
-
-					if (fieldPrefix === 'calc_shipping' && field.suffix === 'address_2') {
-						$field.closest('.form-row').remove();
-					}
-				}
-			}
-		});
-	},
-	getFields: function (search) {
-		var fields = [{
-			suffix: 'state',
-			callback: woongkirFrontend.onChangeStateField,
-			triggerEvent: 'change',
-		},
-		{
-			suffix: 'city',
-			callback: woongkirFrontend.onChangeCityField,
-			modifyForm: true,
-			placeholder: woongkir_params.text.placeholder.city,
-		},
-		{
-			suffix: 'address_2',
-			callback: woongkirFrontend.onChangeSubdistrictField,
-			modifyForm: true,
-			placeholder: woongkir_params.text.placeholder.address_2,
-		}];
-
-		if (search) {
-			return _.find(fields, search);
-		}
-
-		return fields;
-	},
-	getFieldAttributes: function ($node) {
-		var attrs = {};
-
-		_.each($node[0].attributes, function (attribute) {
-			attrs[attribute.name] = attribute.value;
-		});
-
-		return attrs;
-	},
+	$cloneFromWrap.before($clonedWrap);
 }
 
-$(document.body).on('wc_address_i18n_ready', function () {
-	woongkirFrontend.init();
+function maybeConvertInputToSelect(fieldPrefix, fieldSuffix, fieldData, onChangeListener) {
+	var $field = $('#' + fieldPrefix + '_' + fieldSuffix);
 
-	setTimeout(function () {
-		$(document.body).trigger('country_to_state_changed');
-	}, 100);
+	if (!$field || !$field.length) {
+		return;
+	}
+
+	if (onChangeListener) {
+		$field.off('change', fieldData.onChange);
+	}
+
+	var convertInputToSelect = $.extend({}, {
+		fieldPrefix: [],
+		fieldFilters: [],
+	}, fieldData.convertInputToSelect);
+
+	var convertInputToSelectPrefixMatch = true === convertInputToSelect.fieldPrefix || -1 !== convertInputToSelect.fieldPrefix.indexOf(fieldPrefix);
+
+	if (convertInputToSelectPrefixMatch) {
+		var getLocationDataFilter = [];
+
+		$.each(convertInputToSelect.fieldFilters, function (index, fieldFilter) {
+			getLocationDataFilter.push({
+				index: index,
+				key: fieldFilter,
+				value: $('#' + fieldPrefix + '_' + fieldFilter).val(),
+			});
+		});
+
+		woongkirLocation.getLocationData(fieldSuffix).then(function (results) {
+			var options = results.filter(function (result) {
+				return getLocationDataFilter.every(function (locationFilter) {
+					return result[locationFilter.key] === locationFilter.value;
+				});
+			}).map(function (item) {
+				return {
+					id: item.value,
+					text: item.label || item.value,
+					selected: $field.val() === item.value,
+				};
+			});
+
+			console.log('options', {
+				options,
+				fieldPrefix,
+				fieldSuffix,
+				$field: $field.val(),
+			});
+
+			var optionMatch = options.find(function (item) {
+				return item.selected;
+			});
+
+			var fieldValue = optionMatch ? optionMatch.id : '';
+			var fieldPlaceholder = fieldData.placeholder || '';
+
+			$field.attr({
+				placeholder: fieldPlaceholder,
+			}).data('placeholder', fieldPlaceholder).val(fieldValue);
+
+			$field.selectWoo({
+				width: '100%',
+				data: options,
+			});
+		});
+	}
+
+	if (onChangeListener) {
+		$field.on('change', fieldData.onChange);
+	}
+}
+
+function onChangeFieldState(event) {
+	var fieldPrefix = $(event.target).attr('ID').replace('_state', '');
+
+	if ('ID' !== $('#' + fieldPrefix + '_country').val()) {
+		return;
+	}
+
+	$.each(getFields(['state'], 'omit'), function (fieldSuffix, fieldData) {
+		maybeConvertInputToSelect(fieldPrefix, fieldSuffix, fieldData);
+	});
+}
+
+function onChangeFieldCity(event) {
+	var fieldPrefix = $(event.target).attr('ID').replace('_city', '');
+
+	if ('ID' !== $('#' + fieldPrefix + '_country').val()) {
+		return;
+	}
+
+	$.each(getFields(['state', 'city'], 'omit'), function (fieldSuffix, fieldData) {
+		maybeConvertInputToSelect(fieldPrefix, fieldSuffix, fieldData);
+	});
+}
+
+function onChangeFieldAddress2(event) {
+	var fieldPrefix = $(event.target).attr('ID').replace('_city', '');
+
+	if ('ID' !== $('#' + fieldPrefix + '_country').val()) {
+		return;
+	}
+
+	console.log('onChangeFieldAddress2', event);
+}
+
+function getFields(filterBy, filterType) {
+	var fields = {
+		state: {
+			onChange: onChangeFieldState,
+		},
+		city: {
+			onChange: onChangeFieldCity,
+			placeholder: woongkir_params.text.placeholder.city,
+			convertInputToSelect: {
+				fieldPrefix: true,
+				fieldFilters: ['state'],
+			},
+		},
+		address_2: {
+			onChange: onChangeFieldAddress2,
+			placeholder: woongkir_params.text.placeholder.address_2,
+			convertInputToSelect: {
+				fieldPrefix: true,
+				fieldFilters: ['state', 'city'],
+			},
+			cloneIfNotExist: {
+				fieldPrefix: 'calc_shipping',
+				fieldFrom: 'postcode',
+			},
+		},
+	};
+
+	if (filterBy) {
+		var filtered = {};
+
+		$.each(fields, function (key, fieldData) {
+			if ('omit' === filterType && -1 !== filterBy.indexOf(key)) {
+				return;
+			}
+
+			if ('includes' === filterType && -1 === filterBy.indexOf(key)) {
+				return;
+			}
+
+			filtered[key] = fieldData;
+		});
+
+		return filtered;
+	}
+
+	return fields;
+}
+
+function modifyForm($selectorCountry) {
+	var fieldPrefix = $selectorCountry.attr('id').replace('_country', '');
+
+	$.each(getFields(), function (fieldSuffix, fieldData) {
+		maybeCloneInputNotExist(fieldPrefix, fieldSuffix, fieldData);
+		maybeConvertInputToSelect(fieldPrefix, fieldSuffix, fieldData, true);
+	})
+}
+
+function restoreForm($selectorCountry) {
+	// var fieldPrefix = $selectorCountry.attr('ID').replace('_country', '');
+
+	// $.each(getFields(), function (fieldSuffix, fieldData) {
+	// 	var fieldId = fieldPrefix + '_' + fieldSuffix;
+	// 	var $field = $('#' + fieldId);
+
+	// 	if (!$field || !$field.length) {
+	// 		return;
+	// 	}
+
+	// 	$field.off('change', fieldData.onChange);
+
+	// 	var convertInputToSelect = $.extend({}, {
+	// 		fieldPrefix: [],
+	// 	}, fieldData.convertInputToSelect);
+
+	// 	var convertInputToSelectPrefixMatch = true === convertInputToSelect.fieldPrefix || -1 !== convertInputToSelect.fieldPrefix.indexOf(fieldPrefix);
+
+	// 	if (convertInputToSelectPrefixMatch && $field.hasClass('select2-hidden-accessible')) {
+	// 		$field.selectWoo('destroy');
+	// 	}
+
+	// 	var cloneIfNotExist = $.extend({}, {
+	// 		fieldPrefix: [],
+	// 		fieldFrom: false,
+	// 	}, fieldData.cloneIfNotExist);
+
+	// 	var cloneIfNotExistPrefixMatch = true === cloneIfNotExist.fieldPrefix || -1 !== cloneIfNotExist.fieldPrefix.indexOf(fieldPrefix);
+
+	// 	if (cloneIfNotExistPrefixMatch) {
+	// 		$('#' + fieldId + '_field').remove();
+	// 	}
+	// });
+}
+
+$(document.body).on('country_to_state_changed', function (event, country, dropdownCountry) {
+	if ('country_to_state_changed' !== event.type) {
+		return;
+	}
+
+	var selectedCountry = country || $('#calc_shipping_country').val();
+	var $selectorCountry = dropdownCountry ? dropdownCountry.prevObject : $('#calc_shipping_country');
+
+	if (!$selectorCountry || !$selectorCountry.length) {
+		return;
+	}
+
+	if ('ID' === selectedCountry) {
+		modifyForm($selectorCountry);
+	} else {
+		restoreForm($selectorCountry);
+	}
+});
+
+$(document.body).on('update_checkout', function () {
+	console.log('update_checkout');
 });
 

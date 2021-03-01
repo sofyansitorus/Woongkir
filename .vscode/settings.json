@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "Lockr",
+        "dashicons",
+        "woocommerce",
+        "woongkir"
+    ],
+    "intelephense.environment.includePaths": [
+        "/Users/sofyan/Sandbox/www/woongkir/app/public/wp-content/plugins/woocommerce",
+        "/Users/sofyan/Sandbox/www/woongkir/app/public/wp-includes",
+        "/Users/sofyan/Sandbox/www/woongkir/app/public/wp-admin"
+    ]
+}

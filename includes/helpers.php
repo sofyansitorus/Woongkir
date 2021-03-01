@@ -54,6 +54,18 @@ if ( ! function_exists( 'woongkir_autoload' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'woongkir_get_json_path' ) ) :
+	/**
+	 * Generate relative path to JSON file.
+	 *
+	 * @param string $file_name JSON file name.
+	 * @return void
+	 */
+	function woongkir_get_json_path( $file_name ) {
+		return apply_filters( 'woongkir_get_json_path', 'data/woongkir-' . sanitize_file_name( $file_name ) . '.json', $file_name );
+	}
+endif;
+
 if ( ! function_exists( 'woongkir_get_json_data' ) ) :
 	/**
 	 * Get json file data.
@@ -67,8 +79,8 @@ if ( ! function_exists( 'woongkir_get_json_data' ) ) :
 	function woongkir_get_json_data( $file_name, $search = array() ) {
 		global $wp_filesystem;
 
-		$file_url  = WOONGKIR_URL . 'data/' . $file_name . '.json';
-		$file_path = WOONGKIR_PATH . 'data/' . $file_name . '.json';
+		$file_url  = WOONGKIR_URL . woongkir_get_json_path( $file_name );
+		$file_path = WOONGKIR_PATH . woongkir_get_json_path( $file_name );
 
 		try {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -128,20 +140,21 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 	 * @return array
 	 */
 	function woongkir_scripts_params( $params = array() ) {
+		$json_keys = array( 'country', 'state', 'city', 'address_2' );
+		$json_data = array();
+
+		foreach ( $json_keys as $json_key ) {
+			$json_data[ $json_key ] = array(
+				'url' => WOONGKIR_URL . woongkir_get_json_path( $json_key ),
+				'key' => 'woongkir_data_' . $json_key,
+			);
+		}
+
 		return wp_parse_args(
 			$params,
 			array(
 				'ajax_url'      => admin_url( 'ajax.php' ),
-				'json'          => array(
-					'country_url'     => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/country.json' ),
-					'country_key'     => 'woongkir_country_data',
-					'province_url'    => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/province.json' ),
-					'province_key'    => 'woongkir_province_data',
-					'city_url'        => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/city.json' ),
-					'city_key'        => 'woongkir_city_data',
-					'subdistrict_url' => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/subdistrict.json' ),
-					'subdistrict_key' => 'woongkir_subdistrict_data',
-				),
+				'json'          => $json_data,
 				'text'          => array(
 					'placeholder' => array(
 						'state'     => __( 'Province', 'woongkir' ),

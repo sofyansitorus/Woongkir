@@ -37,7 +37,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * Woongkir_API API Class Object
 	 *
 	 * @since 1.0.0
-	 * @var object
+	 * @var Woongkir_API
 	 */
 	private $api;
 
@@ -48,6 +48,18 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @var array
 	 */
 	private $posted_field_values;
+
+	/**
+	 * Supported features.
+	 *
+	 * @since 1.0.0
+	 * @var string[]
+	 */
+	public $supports = array(
+		'shipping-zones',
+		'instance-settings',
+		'instance-settings-modal',
+	);
 
 	/**
 	 * Constructor for your shipping class
@@ -63,11 +75,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		$this->method_title       = woongkir_get_plugin_data( 'Name' );
 		$this->title              = woongkir_get_plugin_data( 'Name' );
 		$this->method_description = woongkir_get_plugin_data( 'Description' );
-		$this->supports           = array(
-			'shipping-zones',
-			'instance-settings',
-			'instance-settings-modal',
-		);
 
 		$this->init();
 	}
@@ -83,22 +90,21 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 		// Define user set variables.
 		foreach ( $this->instance_form_fields as $field_id => $field ) {
-			$type = array_key_exists( 'type', $field ) ? $field['type'] : false;
+			$default = isset( $field['default'] ) ? $field['default'] : null;
+			$type    = isset( $field['type'] ) ? $field['type'] : false;
+
 			if ( ! $type || in_array( $type, array( 'title' ), true ) ) {
 				continue;
 			}
 
-			$default = array_key_exists( 'default', $field ) ? $field['default'] : null;
-			$option  = $this->get_option( $field_id, $default );
+			$option = $this->get_option( $field_id, $default );
+
+			if ( $option && in_array( $field_id, array( 'api_key', 'account_type' ), true ) ) {
+				$this->api->set_option( $field_id, $option );
+			}
 
 			$this->{$field_id} = $option;
 		}
-
-		$api_key = isset( $this->api_key ) ? $this->api_key : '';
-		$this->api->set_option( 'api_key', $api_key );
-
-		$account_type = isset( $this->account_type ) ? $this->account_type : '';
-		$this->api->set_option( 'account_type', $account_type );
 	}
 
 	/**
@@ -120,19 +126,31 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		}
 
 		$settings = array(
-			'origin_province'       => array(
+			'origin_province'           => array(
 				'title' => __( 'Shipping Origin Province', 'woongkir' ),
 				'type'  => 'origin',
 			),
-			'origin_city'           => array(
+			'origin_city'               => array(
 				'title' => __( 'Shipping Origin City', 'woongkir' ),
 				'type'  => 'origin',
 			),
-			'origin_subdistrict'    => array(
+			'origin_subdistrict'        => array(
 				'title' => __( 'Shipping Origin Subdistrict', 'woongkir' ),
 				'type'  => 'origin',
 			),
-			'tax_status'            => array(
+			'origin_location_state'     => array(
+				'title' => __( 'Shipping Origin Province', 'woongkir' ),
+				'type'  => 'text',
+			),
+			'origin_location_city'      => array(
+				'title' => __( 'Shipping Origin City', 'woongkir' ),
+				'type'  => 'text',
+			),
+			'origin_location_address_2' => array(
+				'title' => __( 'Shipping Origin Subdistrict', 'woongkir' ),
+				'type'  => 'text',
+			),
+			'tax_status'                => array(
 				'title'   => __( 'Tax Status', 'woongkir' ),
 				'type'    => 'select',
 				'default' => 'none',
@@ -141,25 +159,26 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					'none'    => _x( 'None', 'Tax status', 'woongkir' ),
 				),
 			),
-			'sort_shipping'         => array(
-				'title'   => __( 'Sort Shipping', 'woongkir' ),
-				'type'    => 'select',
-				'default' => 'no',
-				'options' => array(
+			'sort_shipping'             => array(
+				'title'       => __( 'Sort Shipping', 'woongkir' ),
+				'type'        => 'select',
+				'default'     => 'no',
+				'options'     => array(
 					'cost'      => __( 'By Cost - Ascending', 'woongkir' ),
 					'cost_desc' => __( 'By Cost - Descending', 'woongkir' ),
 					'name'      => __( 'By Name - A to Z', 'woongkir' ),
 					'name_desc' => __( 'By Name - Z to A', 'woongkir' ),
 					'no'        => __( 'No', 'woongkir' ),
 				),
+				'description' => __( 'Sort the shipping couriers list in the cart and checkout page.', 'woongkir' ),
 			),
-			'show_eta'              => array(
+			'show_eta'                  => array(
 				'title'       => __( 'Show ETA', 'woongkir' ),
 				'label'       => __( 'Yes', 'woongkir' ),
 				'type'        => 'checkbox',
 				'description' => __( 'Show estimated time of arrival during checkout.', 'woongkir' ),
 			),
-			'base_weight'           => array(
+			'base_weight'               => array(
 				'title'             => __( 'Base Cart Contents Weight (gram)', 'woongkir' ),
 				'type'              => 'number',
 				'description'       => __( 'The base cart contents weight will be calculated. If the value is blank or zero, the couriers list will not displayed when the actual cart contents weight is empty.', 'woongkir' ),
@@ -168,14 +187,14 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					'step' => '100',
 				),
 			),
-			'api_key'               => array(
+			'api_key'                   => array(
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
 				'type'        => 'text',
 				'placeholder' => '',
 				'description' => __( '<a href="http://www.rajaongkir.com?utm_source=woongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
 				'default'     => '',
 			),
-			'account_type'          => array(
+			'account_type'              => array(
 				'title'             => __( 'RajaOngkir Account Type', 'woongkir' ),
 				'type'              => 'account_type',
 				'default'           => 'starter',
@@ -190,24 +209,20 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					),
 				),
 			),
-			'domestic'              => array(
-				'title' => __( 'Domestic Shipping', 'woongkir' ),
-				'type'  => 'couriers_list',
+			'couriers'                  => array(
+				'title' => __( 'Couriers', 'woongkir' ),
+				'type'  => 'select_couriers',
 			),
-			'international'         => array(
-				'title' => __( 'International Shipping', 'woongkir' ),
-				'type'  => 'couriers_list',
-			),
-			'volumetric_calculator' => array(
+			'volumetric_calculator'     => array(
 				'title'       => __( 'Volumetric Converter', 'woongkir' ),
 				'label'       => __( 'Enable', 'woongkir' ),
 				'type'        => 'checkbox',
 				'description' => __( 'Convert volumetric to weight before send request to API server.', 'woongkir' ),
 			),
-			'volumetric_divider'    => array(
+			'volumetric_divider'        => array(
 				'title'             => __( 'Volumetric Converter Divider', 'woongkir' ),
 				'type'              => 'number',
-				'description'       => __( 'The formula to convert volumetric to weight: Width x Length x Height in centimeters / Divider.', 'woongkir' ),
+				'description'       => __( 'The formula to convert volumetric to weight: <code>Width(cm) &#215; Length(cm) &#215; Height(cm) &#247; Divider</code>.', 'woongkir' ),
 				'custom_attributes' => array(
 					'min'  => '0',
 					'step' => '100',
@@ -216,28 +231,31 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			),
 		);
 
-		$features = array(
-			'domestic'          => __( 'Domestic Couriers', 'woongkir' ),
-			'international'     => __( 'International Couriers', 'woongkir' ),
-			'multiple_couriers' => __( 'Multiple Couriers', 'woongkir' ),
-			'subdistrict'       => __( 'Calculate Subdistrict', 'woongkir' ),
-			'volumetric'        => __( 'Calculate Volumetric', 'woongkir' ),
-			'weight_over_30kg'  => __( 'Weight Over 30kg', 'woongkir' ),
-			'dedicated_server'  => __( 'Dedicated Server', 'woongkir' ),
+		$features = array_merge(
+			array(
+				'domestic'      => __( 'Domestic Shipping Couriers', 'woongkir' ),
+				'international' => __( 'International Shipping Couriers', 'woongkir' ),
+			),
+			Woongkir_Account::get_features_label()
 		);
 
 		$accounts = $this->api->get_accounts();
 
 		foreach ( $features as $feature_key => $feature_label ) {
-			$settings['account_type']['features'][ $feature_key ]['label'] = $feature_label;
+			$account_features = array(
+				'label' => $feature_label,
+				'value' => array(),
+			);
 
 			foreach ( $accounts as $type => $account ) {
 				if ( in_array( $feature_key, array( 'domestic', 'international' ), true ) ) {
-					$settings['account_type']['features'][ $feature_key ]['value'][ $type ] = count( $this->api->get_couriers( $feature_key, $type ) );
+					$account_features['value'][ $type ] = count( $this->api->get_couriers( $feature_key, $type ) );
 				} else {
-					$settings['account_type']['features'][ $feature_key ]['value'][ $type ] = $account->feature_enable( $feature_key ) ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
+					$account_features['value'][ $type ] = $account->feature_enable( $feature_key ) ? __( 'Yes', 'woongkir' ) : __( 'No', 'woongkir' );
 				}
 			}
+
+			$settings['account_type']['features'][ $feature_key ] = $account_features;
 		}
 
 		$this->instance_form_fields = $settings;
@@ -318,12 +336,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
 			</th>
 			<td class="forminp">
-				<input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $this->get_option( $key ) ); ?>" <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
 				<div class="woongkir-account-features-wrap">
 					<table id="woongkir-account-features" class="woongkir-account-features form-table">
 						<thead>
 							<tr>
-								<th>&nbsp;</th>
+								<th><?php esc_html_e( 'Features', 'woongkir' ); ?></th>
 								<?php foreach ( $this->api->get_accounts() as $account ) { ?>
 									<th class="woongkir-account-features-col-<?php echo esc_attr( $account->get_type() ); ?>"><a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank"><?php echo esc_html( $account->get_label() ); ?></a></th>
 								<?php } ?>
@@ -334,7 +351,21 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 							<tr>
 								<th><?php echo esc_html( $feature['label'] ); ?></th>
 								<?php foreach ( $feature['value'] as $account_type => $feature_value ) : ?>
-									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>"><?php echo esc_html( $feature_value ); ?></td>
+									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>">
+									<?php
+									if ( 'yes' === strtolower( $feature_value ) ) {
+										?>
+									<span class="dashicons dashicons-yes"></span>
+										<?php
+									} elseif ( 'no' === strtolower( $feature_value ) ) {
+										?>
+									<span class="dashicons dashicons-no-alt"></span>
+										<?php
+									} else {
+										echo esc_html( $feature_value );
+									}
+									?>
+								</td>
 								<?php endforeach; ?>
 							</tr>
 							<?php endforeach; ?>
@@ -344,12 +375,140 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 								<th></th>
 								<?php foreach ( array_keys( $feature['value'] ) as $account_type ) : ?>
 									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>" data-title="<?php echo esc_attr( $this->api->get_account( $account_type )->get_label() ); ?>">
-										<input type="checkbox" value="<?php echo esc_attr( $account_type ); ?>" id="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account_type ); ?>" class="woongkir-account-type" <?php checked( $account_type, $this->get_option( $key ) ); ?> <?php disabled( $account_type, $this->get_option( $key ) ); ?>>
+										<input type="radio" name="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $account_type ); ?>" id="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account_type ); ?>" class="woongkir-account-type" <?php checked( $account_type, $this->get_option( $key ) ); ?> <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 									</td>
 								<?php endforeach; ?>
 							</tr>
 						</tfoot>
 					</table>
+				</div>
+			</td>
+		</tr>
+		<?php
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * Generate couriers list table.
+	 *
+	 * @since  1.0.0
+	 * @param  mixed $key Field key.
+	 * @param  mixed $data Field data.
+	 * @return string
+	 */
+	public function generate_select_couriers_html( $key, $data ) {
+		$field_key = $this->get_field_key( $key );
+
+		$defaults = array(
+			'title'             => '',
+			'class'             => '',
+			'disabled'          => false,
+			'class'             => '',
+			'css'               => '',
+			'placeholder'       => '',
+			'type'              => 'text',
+			'desc_tip'          => false,
+			'description'       => '',
+			'custom_attributes' => array(),
+			'zones'             => array(
+				'domestic'      => __( 'Domestic Shipping', 'woongkir' ),
+				'international' => __( 'International Shipping', 'woongkir' ),
+			),
+		);
+
+		$data            = wp_parse_args( $data, $defaults );
+		$couriers_stored = $this->get_option( $key );
+
+		ob_start();
+
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field_key ); ?>">
+					<?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</label>
+			</th>
+			<td class="forminp">
+				<div class="woongkir-tab-container">
+				<ul class="woongkir-tab-nav">
+					<?php foreach ( $data['zones'] as $zone => $zone_label ) : ?>
+					<li>
+						<a href="#woongkir-tab-content-<?php echo esc_attr( $zone ); ?>" class="woongkir-tab-nav-item woongkir-tab-nav-item--<?php echo esc_attr( $zone ); ?>">
+							<?php echo esc_html( $zone_label ); ?>
+						</a>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+				<?php
+				foreach ( $data['zones'] as $zone => $zone_label ) :
+					$couriers = $this->api->get_couriers( $zone, 'all', true );
+					?>
+					<div id="woongkir-tab-content-<?php echo esc_attr( $zone ); ?>" class="woongkir-tab-content woongkir-tab-content--<?php echo esc_attr( $zone ); ?>">
+						<ul class="woongkir-couriers" id="woongkir-couriers-<?php echo esc_attr( $zone ); ?>">
+						<?php
+						$i = 0;
+						foreach ( $couriers as $courier_id => $courier ) :
+							if ( empty( $courier['services'] ) ) :
+								continue;
+							endif;
+
+							$service_stored               = isset( $couriers_stored[ $zone ][ $courier_id ] ) ? $couriers_stored[ $zone ][ $courier_id ] : array();
+							$service_bulk_count_available = isset( $courier['services'] ) ? count( $courier['services'] ) : 0;
+							$service_bulk_count_selected  = count( $service_stored );
+							$service_bulk_checked         = $service_bulk_count_selected && $service_bulk_count_selected === $service_bulk_count_available;
+							$courier_website              = ! empty( $courier['website'] ) ? add_query_arg( 'utm_source', 'woongkir.com', $courier['website'] ) : '';
+							?>
+							<li class="woongkir-couriers-item" data-id="<?php echo esc_attr( $courier_id ); ?>" data-zone="<?php echo esc_attr( $zone ); ?>">
+								<div class="woongkir-couriers-item-inner">
+									<div class="woongkir-couriers-item-info">
+										<label class="woongkir-couriers-item-info-title">
+											<input type="checkbox" class="woongkir-service woongkir-service--bulk" <?php checked( $service_bulk_checked, true ); ?> />
+											<span class="woongkir-couriers--label"><?php echo wp_kses_post( $courier['label'] ); ?></span>
+											<span class="woongkir-couriers--selected"><?php echo esc_html( $service_bulk_count_selected ); ?></span>
+											<span class="woongkir-couriers--available"><?php echo esc_html( $service_bulk_count_available ); ?></span>
+										</label>
+										<?php if ( $courier_website ) : ?>
+										<div class="woongkir-couriers-item-info-link">
+											<a href="<?php echo esc_url( $courier_website ); ?>" target="blank" title="<?php esc_attr_e( 'Visit courier\'s website', 'woongkir' ); ?>">
+												<span class="dashicons dashicons-admin-links"></span>
+											</a>
+										</div>
+										<?php endif; ?>
+										<div class="woongkir-couriers-item-info-toggle">
+											<a href="#" class="woongkir-couriers-toggle" title="<?php esc_attr_e( 'Toggle', 'woongkir' ); ?>">
+												<span class="dashicons dashicons-admin-generic"></span>
+											</a>
+										</div>
+									</div>
+									<ul class="woongkir-services">
+										<?php
+										foreach ( $courier['services'] as $index => $service ) :
+											$service_label   = $index !== $service ? $index . ' - ' . $service : $service;
+											$service_value   = $zone . '_' . $courier_id . '_' . $index;
+											$service_checked = $service_stored && in_array( $index, $service_stored, true ) ? $index : false;
+											?>
+										<li class="woongkir-services-item">
+											<label>
+												<input type="checkbox" class="woongkir-service woongkir-service--single" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $service_value ); ?>" <?php checked( $service_checked, $index ); ?>>
+												<span><?php echo wp_kses_post( $service_label ); ?></span>
+											</label>
+										</li>
+											<?php
+										endforeach;
+										?>
+									</ul>
+								</div>
+							</li>
+							<?php
+							$i++;
+						endforeach;
+						?>
+						</ul>
+					</div>
+					<?php
+				endforeach;
+				?>
 				</div>
 			</td>
 		</tr>
@@ -407,7 +566,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 						<li class="woongkir-couriers-item woongkir-couriers-item--<?php echo esc_attr( $key ); ?>--<?php echo esc_attr( $courier_id ); ?>" data-id="<?php echo esc_attr( $courier_id ); ?>" data-zone="<?php echo esc_attr( $key ); ?>">
 							<div class="woongkir-couriers-item-inner">
 								<div class="woongkir-couriers-item-info">
-									<label class="woongkir-couriers-item-info-title">
+									<label class="woongkir-couriers-item-info-title" for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle">
 										<input type="checkbox" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_toggle" class="woongkir-service woongkir-service--bulk" <?php checked( ( isset( $selected[ $courier_id ] ) && count( $selected[ $courier_id ] ) ? 1 : 0 ), 1 ); ?>>
 										<?php echo wp_kses_post( $courier['label'] ); ?> (<span class="woongkir-couriers--selected"><?php echo esc_html( ( isset( $selected[ $courier_id ] ) ? count( $selected[ $courier_id ] ) : 0 ) ); ?></span> / <span class="woongkir-couriers--available"><?php echo esc_html( count( $courier['services'] ) ); ?></span>)
 									</label>
@@ -428,7 +587,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 										$service_label = $index !== $service ? wp_sprintf( '%1$s - %2$s', $index, $service ) : $service;
 										?>
 									<li class="woongkir-services-item">
-										<label>
+										<label for="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>">
 											<input type="checkbox" class="woongkir-service woongkir-service--single" id="<?php echo esc_attr( $field_key ); ?>_<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $courier_id ); ?>_<?php echo esc_attr( $index ); ?>" <?php checked( ( isset( $selected[ $courier_id ] ) && in_array( $index, $selected[ $courier_id ], true ) ? $index : false ), $index ); ?>><?php echo wp_kses_post( $service_label ); ?>
 										</label>
 									</li>
@@ -521,6 +680,67 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			// Translators: Shipping origin location type.
 			throw new Exception( wp_sprintf( __( 'Shipping origin %s field is required.', 'woongkir' ), str_replace( 'origin_', '', $key ) ) );
 		}
+		return $value;
+	}
+
+	/**
+	 * Validate settings field type couriers_list.
+	 *
+	 * @since 1.0.0
+	 * @param  string $key Settings field key.
+	 * @param  string $value Posted field value.
+	 * @throws Exception If the field value is invalid.
+	 * @return array
+	 */
+	public function validate_select_couriers_field( $key, $value ) {
+		if ( is_string( $value ) ) {
+			$value = array_map( 'trim', explode( ',', $value ) );
+		}
+
+		// Format the value as associative array courier => services.
+		if ( $value && is_array( $value ) ) {
+			$format_value = array();
+
+			foreach ( $value as $val ) {
+				$parts = explode( '_', $val );
+
+				if ( count( $parts ) === 3 ) {
+					$format_value[ $parts[0] ][ $parts[1] ][] = $parts[2];
+				}
+			}
+
+			$value = $format_value;
+		}
+
+		$field = $this->instance_form_fields[ $key ];
+
+		if ( ! $value ) {
+			// Translators: %1$s Setting field label.
+			throw new Exception( wp_sprintf( __( '%1$s cannot be empty.', 'woongkir' ), $field['title'] ) );
+		}
+
+		$account = $this->api->get_account( $this->posted_field_value( 'account_type' ) );
+
+		if ( ! $account ) {
+			throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
+		}
+
+		foreach ( $value as $zone => $couriers ) {
+			if ( ! $couriers ) {
+				continue;
+			}
+
+			if ( count( $couriers ) > 1 && ! $account->feature_enable( 'multiple_couriers' ) ) {
+				// Translators: %1$s Setting field label, %2$s Account label.
+				throw new Exception( wp_sprintf( __( '%1$s: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account->get_label( 'label' ) ) );
+			}
+
+			if ( array_diff_key( $couriers, $this->api->get_couriers( $zone, $account->get_type() ) ) ) {
+				// Translators: %1$s Setting field label, %2$s Account label, %3$s Couriers name.
+				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier %3$s.', 'woongkir' ), $field['title'], $account->get_label( 'label' ), strtoupper( implode( ', ', array_keys( $not_allowed ) ) ) ) );
+			}
+		}
+
 		return $value;
 	}
 
@@ -771,7 +991,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 *
 	 * @throws Exception If the request parameters is incomplete.
 	 *
-	 * @return array
+	 * @return array|WP_Error
 	 */
 	private function calculate_shipping_api_request_params( $package = array() ) {
 		try {

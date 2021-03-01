@@ -9,7 +9,7 @@
 	},
 	"author": "Sofyan Sitorus",
 	"engines": {
-		"node": ">=8.0.0 <10"
+		"node": ">=8.0.0 =<10"
 	},
 	"engineStrict": true,
 	"devDependencies": {

@@ -67,7 +67,7 @@ class Woongkir_Account_Basic extends Woongkir_Account {
 	 *
 	 * @var array
 	 */
-	public $features = array(
+	protected $features = array(
 		'subdistrict'       => false,
 		'multiple_couriers' => true,
 		'volumetric'        => false,

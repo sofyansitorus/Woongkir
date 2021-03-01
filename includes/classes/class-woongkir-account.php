@@ -67,9 +67,9 @@ abstract class Woongkir_Account {
 	 *
 	 * @var array
 	 */
-	public $features = array(
-		'subdistrict'       => false,
+	protected $features = array(
 		'multiple_couriers' => false,
+		'subdistrict'       => false,
 		'volumetric'        => false,
 		'weight_over_30kg'  => false,
 		'dedicated_server'  => false,
@@ -196,6 +196,23 @@ abstract class Woongkir_Account {
 	 */
 	public function get_features() {
 		return $this->features;
+	}
+
+	/**
+	 * Get account features label.
+	 *
+	 * @since 1.3
+	 *
+	 * @return array
+	 */
+	public static function get_features_label() {
+		return array(
+			'multiple_couriers' => __( 'Multiple Shipping Couriers', 'woongkir' ),
+			'subdistrict'       => __( 'Calculate Subdistrict Level', 'woongkir' ),
+			'volumetric'        => __( 'Calculate Volumetric', 'woongkir' ),
+			'weight_over_30kg'  => __( 'Calculate Weight Over 30kg', 'woongkir' ),
+			'dedicated_server'  => __( 'Dedicated API Server', 'woongkir' ),
+		);
 	}
 
 	/**

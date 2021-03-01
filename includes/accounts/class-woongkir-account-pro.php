@@ -67,7 +67,7 @@ class Woongkir_Account_Pro extends Woongkir_Account {
 	 *
 	 * @var array
 	 */
-	public $features = array(
+	protected $features = array(
 		'subdistrict'       => true,
 		'multiple_couriers' => true,
 		'volumetric'        => true,
