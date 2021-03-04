@@ -92,9 +92,9 @@ function woongkirBackendHandleChangeAccountType(event) {
 
 		$('#woongkir-couriers-' + zoneId).find('.woongkir-couriers-item').each(function () {
 			if (zoneCouriers.length && zoneCouriers.indexOf($(this).data('id')) !== -1) {
-				$(this).slideDown();
+				$(this).show();
 			} else {
-				$(this).slideUp().find('.woongkir-service--bulk').prop('checked', false).trigger('change');
+				$(this).hide().find('.woongkir-service--bulk').prop('checked', false).trigger('change');
 			}
 		});
 	});
@@ -241,5 +241,5 @@ function woongkirBackendHandleWcBackboneModalLoaded(event, target) {
 	$(document.body).find('.woongkir-tab-nav-item').first().trigger('click');
 }
 
-$(document).ready(woongkirBackendOpenSettingsModal);
 $(document.body).on('wc_backbone_modal_loaded', woongkirBackendHandleWcBackboneModalLoaded);
+$(document).ready(woongkirBackendOpenSettingsModal);

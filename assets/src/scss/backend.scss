@@ -1,298 +1,307 @@
+$border-color: #ccd0d4;
+$bg-color: #f8f8f8;
+$bg-color-hover: lighten($bg-color, 1%);
+
 .wc-modal-shipping-method-settings.wc-modal-shipping-method-settings--woongkir {
-    th.titledesc {
-        vertical-align: top;
-		background-color: darken(#f8f8f8, 1%);
-    }
+	th.titledesc {
+		vertical-align: top;
+		background-color: $bg-color;
+	}
 
-    .woongkir {
-        &-account-features {
-            table-layout: fixed;
+	.woongkir {
+		&-account-features {
+			table-layout: fixed;
 
-            &-wrap {
-                margin-top: 10px;
-                box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
-            }
+			&-wrap {
+				margin-top: 10px;
+				box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+			}
 
-            th,
-            td {
-                white-space: nowrap;
+			th,
+			td {
+				white-space: nowrap;
 
-                &:first-child {
-                    border-left: 1px solid #ccd0d4;
-                }
+				&:first-child {
+					border-left: 1px solid $border-color;
+				}
 
-                &:last-child {
-                    border-right: 1px solid #ccd0d4;
-                }
-            }
+				&:last-child {
+					border-right: 1px solid $border-color;
+				}
+			}
 
-            th+th,
-            th+td,
-            td+th,
-            td+td {
-                border-left: 1px solid #ccd0d4;
-            }
+			th + th,
+			th + td,
+			td + th,
+			td + td {
+				border-left: 1px solid $border-color;
+			}
 
-            thead {
+			thead {
+				td,
+				th {
+					border-top: 1px solid $border-color;
+					background-color: $bg-color;
+				}
 
-                td,
-                th {
-                    border-top: 1px solid #ccd0d4;
-                    background-color: darken(#f8f8f8, 1%);
-                }
+				th {
+					border-bottom: 1px solid $border-color;
 
-                th {
-                    border-bottom: 1px solid #ccd0d4;
+					&:first-child {
+						width: auto !important;
+					}
 
-                    &:first-child {
-                        width: auto !important;
-                    }
+					&:not(:first-child) {
+						text-align: center;
+						width: 90px;
+					}
+				}
+			}
 
-                    &:not(:first-child) {
-                        text-align: center;
-                        width: 90px;
-                    }
-                }
-            }
+			tbody {
+				tr {
+					&:nth-child(even) {
+						td,
+						th {
+							background-color: $bg-color;
+						}
+					}
 
-            tbody {
-                tr:nth-child(even) {
+					&:hover {
+						td,
+						th {
+							background-color: $bg-color-hover;
+						}
+					}
+				}
 
-                    td,
-                    th {
-                        background-color: #f2f2f2;
-                    }
-                }
+				tr:last-child {
+					td,
+					th {
+						border-bottom: 1px solid $border-color;
+					}
+				}
 
-                tr:last-child {
+				td {
+					text-align: center;
+				}
 
-                    td,
-                    th {
-                        border-bottom: 1px solid #ccd0d4;
-                    }
+				th,
+				td {
+					padding: 0.6em 1em;
+				}
+			}
 
-                }
+			tfoot {
+				td,
+				th {
+					border-bottom: 1px solid $border-color;
+					background-color: $bg-color;
+				}
 
-                td {
-                    text-align: center;
-                }
+				td {
+					text-align: center;
 
-                th,
-                td {
-                    padding: 0.6em 1em;
-                }
-            }
+					input.woongkir-account-type {
+						min-width: unset;
+						width: 16px;
+						height: 16px;
+					}
+				}
+			}
+		}
 
-            tfoot {
+		&-couriers {
+			margin: 0;
 
-                td,
-                th {
-                    border-bottom: 1px solid #ccd0d4;
-                    background-color: darken(#f8f8f8, 1%);
-                }
+			&-item {
+				border: 1px solid $border-color;
+				margin: 0 0 3px 0;
+				background-color: $bg-color;
 
-                td {
-                    text-align: center;
+				&-info {
+					position: relative;
+					height: 40px;
+					cursor: move;
 
-                    input.woongkir-account-type {
-                        min-width: unset;
-                        width: 16px;
-                        height: 16px;
-                    }
-                }
-            }
-        }
+					&-title {
+						display: inline-block;
+						line-height: 40px;
+						height: 40px;
+						font-weight: bold;
+						padding-left: 12px;
+					}
 
-        &-couriers {
-            &-item {
-                border: 1px solid #ccd0d4;
-                margin: 0 0 3px 0;
+					&-toggle,
+					&-link {
+						position: absolute;
+						top: 0;
+						width: 40px;
+						height: 40px;
+						border-left: 1px solid $border-color;
+						text-align: center;
 
-                &-inner {
-                    background-color: #fff;
-                }
+						a {
+							text-decoration: none;
+							display: block;
+							height: 40px;
+							line-height: 40px;
+							padding-top: 10px;
 
-                &-info {
-                    position: relative;
-                    height: 40px;
-                    cursor: move;
+							&:hover {
+								background-color: $bg-color-hover;
+							}
+						}
+					}
 
-                    &-title {
-                        display: inline-block;
-                        line-height: 40px;
-                        height: 40px;
-                        font-weight: bold;
-                        padding-left: 12px;
-                    }
+					&-toggle {
+						right: 0;
+					}
 
-                    &-toggle,
-                    &-link {
-                        position: absolute;
-                        top: 0;
-                        width: 40px;
-                        height: 40px;
-                        border-left: 1px solid #ccd0d4;
-                        text-align: center;
+					&-link {
+						right: 40px;
+						transition: all 0.2s ease-in-out;
+					}
+				}
 
-                        a {
-                            text-decoration: none;
-                            display: block;
-                            height: 40px;
-                            line-height: 40px;
-                            padding-top: 10px;
+				&:not(.expanded) {
+					background-color: #fff;
 
-                            &:hover {
-                                background-color: darken(#f8f8f8, 3%);
-                            }
-                        }
-                    }
+					&:hover {
+						background-color: $bg-color-hover;
+					}
 
-                    &-toggle {
-                        right: 0;
-                    }
+					.woongkir-couriers-item-info-link,
+					.woongkir-services {
+						transform: scale(0);
+						height: 0;
+					}
+				}
+			}
 
-                    &-link {
-                        right: 40px;
-                        transition: all .2s ease-in-out;
-                    }
-                }
+			&--selected {
+				&:before {
+					content: " (";
+				}
 
-                &:not(.expanded) {
+				&::after {
+					content: " / ";
+				}
+			}
 
-                    .woongkir-couriers-item-info-link,
-                    .woongkir-services {
-                        transform: scale(0);
-                        height: 0;
-                    }
-                }
-            }
+			&--available {
+				&:after {
+					content: ")";
+				}
+			}
+		}
 
-            &--selected {
-                &:before {
-                    content: " (";
-                }
+		&-services {
+			transform: scale(1);
+			background-color: #fff;
+			transition: all 0.2s ease-in-out;
 
-                &::after {
-                    content: " / ";
-                }
-            }
+			&-item {
+				margin: 0;
+				padding: 7px 0 7px 36px;
+				border-top: 1px solid $border-color;
 
-            &--available {
-                &:after {
-                    content: ")";
-                }
-            }
-        }
+				&:first-child {
+					border-top: 1px solid $border-color;
+				}
 
-        &-services {
-            transform: scale(1);
-            background-color: #fff;
-            transition: all .2s ease-in-out;
+				&:nth-child(even) {
+					background-color: $bg-color;
+				}
 
-            &-item {
-                margin: 0;
-                padding: 7px 0 7px 36px;
-                border-top: 1px solid lighten(#ccd0d4, 10%);
+				&:hover {
+					background-color: $bg-color-hover;
+				}
+			}
+		}
 
-                &:first-child {
-                    border-top: 1px solid #ccd0d4;
-                }
+		&-tab {
+			&-container {
+				border-radius: 0;
+			}
 
-                &:nth-child(odd) {
-                    background-color: #fff;
-                }
+			&-nav {
+				display: block;
+				padding: 0;
+				margin: 0;
 
-                &:nth-child(even) {
-                    background-color: lighten(#f8f8f8, 1%);
-                }
+				&:after {
+					display: block;
+					clear: both;
+					content: "";
+				}
 
-                &:hover {
-                    background-color: darken(#f8f8f8, 1%);
-                }
-            }
-        }
+				li {
+					float: left;
+					list-style: none;
+					text-align: center;
+					padding: 0;
+					margin: 0;
+					display: block;
+					box-sizing: border-box;
+					width: 50%;
 
-        &-tab {
-            &-container {
-                border-radius: 0;
-            }
+					border-top: 1px solid $border-color;
+					border-right: 1px solid $border-color;
+					border-left: 1px solid $border-color;
 
-            &-nav {
-                display: block;
-                padding: 0;
-                margin: 0;
+					& + li {
+						border-left: none;
+					}
 
-                &:after {
-                    display: block;
-                    clear: both;
-                    content: '';
-                }
+					a {
+						padding: 1em 2em;
+						display: block;
+						text-decoration: none;
+						outline: none;
+						box-shadow: none;
+						color: unset;
+						position: relative;
+						font-weight: 700;
+						border-bottom: 1px solid $border-color;
 
-                li {
-                    float: left;
-                    list-style: none;
-                    text-align: center;
-                    padding: 0;
-                    margin: 0;
-                    display: block;
-                    box-sizing: border-box;
-                    width: 50%;
+						&.active {
+							background-color: $bg-color;
+							border-bottom: 1px solid $bg-color;
+						}
 
-                    border-top: 1px solid #ddd;
-                    border-right: 1px solid #ddd;
-                    border-left: 1px solid #ddd;
+						&:not(.active) {
+							opacity: 0.7;
 
-                    &+li {
-                        border-left: none;
-                    }
+							&:hover {
+								background-color: $bg-color-hover;
+								opacity: 1;
+							}
+						}
 
-                    a {
-                        padding: 1em 2em;
-                        display: block;
-                        text-decoration: none;
-                        outline: none;
-                        box-shadow: none;
-                        color: unset;
-                        position: relative;
-                        font-weight: 700;
+						&:active,
+						&:focus {
+							outline: none;
+							box-shadow: none;
+						}
+					}
+				}
+			}
 
-                        &.active {
-                            background-color: darken(#f8f8f8, 1%);
-                            border-bottom: 1px solid darken(#f8f8f8, 1%);
-                        }
+			&-content {
+				display: block;
+				padding: 1em;
+				min-height: 100px;
+				box-sizing: border-box;
+				border-right: 1px solid $border-color;
+				border-bottom: 1px solid $border-color;
+				border-left: 1px solid $border-color;
+				background-color: $bg-color;
 
-                        &:not(.active) {
-                            border-bottom: 1px solid #ddd;
-                        }
-
-                        &:hover:not(.active) {
-                            background-color: lighten(#f8f8f8, 1%);
-                        }
-
-                        &:active,
-                        &:focus {
-                            outline: none;
-                            box-shadow: none;
-                        }
-                    }
-                }
-            }
-
-            &-content {
-                display: block;
-                padding: 1em;
-                min-height: 100px;
-                box-sizing: border-box;
-                border-right: 1px solid #ddd;
-                border-bottom: 1px solid #ddd;
-                border-left: 1px solid #ddd;
-                background-color: darken(#f8f8f8, 1%);
-
-                &:not(.active) {
-                    display: none;
-                }
-            }
-        }
-    }
-
+				&:not(.active) {
+					display: none;
+				}
+			}
+		}
+	}
 }

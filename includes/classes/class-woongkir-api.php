@@ -321,6 +321,18 @@ class Woongkir_API {
 	}
 
 	/**
+	 * Get shipping zones.
+	 *
+	 * @return string[]
+	 */
+	public function get_zones() {
+		return array(
+			'domestic'      => __( 'Domestic Shipping Couriers', 'woongkir' ),
+			'international' => __( 'International Shipping Couriers', 'woongkir' ),
+		);
+	}
+
+	/**
 	 * Validate API request response.
 	 *
 	 * @since 1.0.0
