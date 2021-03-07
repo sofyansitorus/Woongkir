@@ -1,9 +1,6 @@
 <?php
 /**
- * The file that defines the core plugin class
- *
- * A class definition that includes attributes and functions used across both the
- * public-facing side of the site and the admin area.
+ * Woongkir Shipping Method Class.
  *
  * @link       https://github.com/sofyansitorus
  * @since      1.0.0
@@ -18,13 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * The core plugin class.
- *
- * This is used to define internationalization, admin-specific hooks, and
- * public-facing site hooks.
- *
- * Also maintains the unique identifier of this plugin as well as the current
- * version of the plugin.
+ * Woongkir Shipping Method Class.
  *
  * @since      1.0.0
  * @package    Woongkir
@@ -62,6 +53,15 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	);
 
 	/**
+	 * Options restore on setting update failure.
+	 *
+	 * @since 1.3
+	 *
+	 * @var array
+	 */
+	private $restore_instance_settings = array();
+
+	/**
 	 * Constructor for your shipping class
 	 *
 	 * @since 1.0.0
@@ -87,6 +87,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	public function init() {
 		$this->init_form_fields(); // This is part of the settings API. Loads instance form fields .
 		$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
+		$this->register_hooks(); // Register actions and filters hooks.		// Define user set variables.
 
 		// Define user set variables.
 		foreach ( $this->instance_form_fields as $field_id => $field ) {
@@ -103,9 +104,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				$this->api->set_option( $field_id, $option );
 			}
 
-			$this->default_options[ $field_id ] = $default;
-
-			$this->{$field_id} = $option;
+			$this->restore_instance_settings[ $field_id ] = $option;
 		}
 	}
 
@@ -128,29 +127,17 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		}
 
 		$settings = array(
-			'origin_province'           => array(
-				'title' => __( 'Shipping Origin Province', 'woongkir' ),
-				'type'  => 'origin',
-			),
-			'origin_city'               => array(
-				'title' => __( 'Shipping Origin City', 'woongkir' ),
-				'type'  => 'origin',
-			),
-			'origin_subdistrict'        => array(
-				'title' => __( 'Shipping Origin Subdistrict', 'woongkir' ),
-				'type'  => 'origin',
-			),
 			'origin_location_state'     => array(
 				'title' => __( 'Shipping Origin Province', 'woongkir' ),
-				'type'  => 'text',
+				'type'  => 'origin',
 			),
 			'origin_location_city'      => array(
 				'title' => __( 'Shipping Origin City', 'woongkir' ),
-				'type'  => 'text',
+				'type'  => 'origin',
 			),
 			'origin_location_address_2' => array(
 				'title' => __( 'Shipping Origin Subdistrict', 'woongkir' ),
-				'type'  => 'text',
+				'type'  => 'origin',
 			),
 			'tax_status'                => array(
 				'title'   => __( 'Tax Status', 'woongkir' ),
@@ -261,6 +248,131 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
+	 * Register hooks.
+	 *
+	 * @return void
+	 */
+	public function register_hooks() {
+		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_option', array( $this, 'instance_option_mapping' ), 10, 3 );
+		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( $this, 'restore_instance_settings_values' ), 10, 2 );
+	}
+
+	/**
+	 * Filter option value to mapping new setting value.
+	 *
+	 * @param mixed                    $option Original setting value.
+	 * @param string                   $key Setting key.
+	 * @param Woongkir_Shipping_Method $instance Instance class object.
+	 *
+	 * @return mixed
+	 */
+	public function instance_option_mapping( $option, $key, $instance ) {
+		if ( $option || $instance->instance_id !== $this->instance_id ) {
+			return $option;
+		}
+
+		switch ( $key ) {
+			case 'origin_location_state':
+				$state_id = $this->get_instance_option( 'origin_province' );
+
+				if ( $state_id ) {
+					$state = woongkir_get_json_data( 'state', array( 'id' => (int) $state_id ) );
+
+					if ( $state ) {
+						return $state['value'];
+					}
+				}
+				break;
+			case 'origin_location_city':
+				$city_id = $this->get_instance_option( 'origin_city' );
+
+				if ( $city_id ) {
+					$city = woongkir_get_json_data( 'city', array( 'id' => (int) $city_id ) );
+
+					if ( $city ) {
+						return $city['value'];
+					}
+				}
+				break;
+
+			case 'origin_location_address_2':
+				$address_2_id = $this->get_instance_option( 'origin_subdistrict' );
+
+				if ( $address_2_id ) {
+					$address_2 = woongkir_get_json_data( 'address_2', array( 'id' => (int) $address_2_id ) );
+
+					if ( $address_2 ) {
+						return $address_2['value'];
+					}
+				}
+				break;
+
+			case 'selected_couriers':
+				$selected_couriers = array();
+
+				foreach ( array_keys( $this->api->get_zones() ) as $zone_id ) {
+					$couriers = $this->get_instance_option( $zone_id );
+
+					if ( $couriers ) {
+						$selected_couriers[ $zone_id ] = $couriers;
+					}
+				}
+
+				if ( $selected_couriers ) {
+					return $selected_couriers;
+				}
+				break;
+		}
+
+		return $option;
+	}
+
+	/**
+	 * Restore instance settings value to previous state on settings update error.
+	 *
+	 * @param array                    $instance_settings New instance settings values.
+	 * @param Woongkir_Shipping_Method $instance Instance class object.
+	 *
+	 * @return array
+	 */
+	public function restore_instance_settings_values( $instance_settings, $instance ) {
+		if ( ! $this->get_errors() || $instance->instance_id !== $this->instance_id ) {
+			return $instance_settings;
+		}
+
+		return $this->restore_instance_settings;
+	}
+
+	/**
+	 * Get instance for field data.
+	 *
+	 * @since 1.3
+	 *
+	 * @param string      $key Field key.
+	 * @param string|null $property Selected field data property.
+	 * @param string|null $default_value Default value.
+	 *
+	 * @return mixed
+	 */
+	protected function get_instance_form_field_data( $key, $property = null, $default_value = null ) {
+		static $form_fields = null;
+
+		if ( is_null( $form_fields ) ) {
+			$form_fields = $this->get_instance_form_fields();
+		}
+
+		if ( isset( $form_fields[ $key ] ) ) {
+			if ( $property ) {
+				return isset( $form_fields[ $key ][ $property ] ) ? $form_fields[ $key ][ $property ] : $default_value;
+			}
+
+			return $form_fields[ $key ];
+		}
+
+		return null;
+	}
+
+	/**
 	 * Generate origin settings field.
 	 *
 	 * @since 1.0.0
@@ -332,7 +444,9 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
-				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
+				<label for="<?php echo esc_attr( $field_key ); ?>">
+					<?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</label>
 			</th>
 			<td class="forminp">
 				<div class="woongkir-account-features-wrap">
@@ -341,7 +455,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 							<tr>
 								<th><?php esc_html_e( 'Features', 'woongkir' ); ?></th>
 								<?php foreach ( $this->api->get_accounts() as $account ) { ?>
-									<th class="woongkir-account-features-col-<?php echo esc_attr( $account->get_type() ); ?>"><a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank"><?php echo esc_html( $account->get_label() ); ?></a></th>
+									<th class="woongkir-account-features-col-<?php echo esc_attr( $account->get_type() ); ?>">
+										<a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank">
+											<?php echo esc_html( $account->get_label() ); ?>
+										</a>
+									</th>
 								<?php } ?>
 							</tr>
 						</thead>
@@ -573,11 +691,15 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @throws Exception Error message.
 	 */
 	public function validate_api_key_field( $key, $value ) {
+		$field_label = $this->get_instance_form_field_data( $key, 'title', $key );
+
 		if ( empty( $value ) ) {
-			throw new Exception( __( 'API Key is required.', 'woongkir' ) );
+			// translators: %s is setting field label.
+			throw new Exception( wp_sprintf( __( '%s is required.', 'woongkir' ), $field_label ) );
 		}
 
 		$account_type = $this->validate_account_type_field( 'account_type', $this->posted_field_value( 'account_type' ) );
+
 		if ( $account_type ) {
 			$this->api->set_option( 'api_key', $value );
 			$this->api->set_option( 'account_type', $account_type );
@@ -585,17 +707,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$results = $this->api->validate_account();
 
 			if ( is_wp_error( $results ) ) {
-				throw new Exception( $results->get_error_message(), 1 );
-			}
-
-			if ( ! isset( $results['parsed'], $results['raw'] ) || ! $results['raw'] || ! $results['raw'] ) {
-				throw new Exception( __( 'API Key or Account type is invalid.', 'woongkir' ), 1 );
-			}
-
-			foreach ( $results as $result ) {
-				if ( is_wp_error( $result ) ) {
-					throw new Exception( $result->get_error_message(), 1 );
-				}
+				throw new Exception( $results->get_error_message() );
 			}
 		}
 
@@ -611,12 +723,16 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @throws Exception If field value is not valid.
 	 */
 	public function validate_account_type_field( $key, $value ) {
+		$field_label = $this->get_instance_form_field_data( $key, 'title', $key );
+
 		if ( empty( $value ) ) {
-			throw new Exception( __( 'Account type field is required.', 'woongkir' ) );
+			// translators: %s is setting field label.
+			throw new Exception( wp_sprintf( __( '%s is required.', 'woongkir' ), $field_label ) );
 		}
 
 		if ( ! $this->api->get_account( $value ) ) {
-			throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
+			// translators: %s is setting field label.
+			throw new Exception( wp_sprintf( __( '%s is invalid.', 'woongkir' ), $field_label ) );
 		}
 
 		return $value;
@@ -632,15 +748,18 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return string
 	 */
 	public function validate_origin_field( $key, $value ) {
+		$field_label = $this->get_instance_form_field_data( $key, 'title', $key );
+
 		if ( empty( $value ) ) {
-			// Translators: Shipping origin location type.
-			throw new Exception( wp_sprintf( __( 'Shipping origin %s field is required.', 'woongkir' ), str_replace( 'origin_', '', $key ) ) );
+			// translators: %s is setting field label.
+			throw new Exception( wp_sprintf( __( '%s is required.', 'woongkir' ), $field_label ) );
 		}
+
 		return $value;
 	}
 
 	/**
-	 * Validate settings field type couriers_list.
+	 * Validate settings field type selected couriers.
 	 *
 	 * @since 1.0.0
 	 * @param  string $key Settings field key.
@@ -668,87 +787,32 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$value = $format_value;
 		}
 
-		$field = $this->instance_form_fields[ $key ];
+		$field_label = $this->get_instance_form_field_data( $key, 'title', $key );
 
 		if ( ! $value ) {
 			// Translators: %1$s Setting field label.
-			throw new Exception( wp_sprintf( __( '%1$s cannot be empty.', 'woongkir' ), $field['title'] ) );
+			throw new Exception( wp_sprintf( __( '%1$s is required.', 'woongkir' ), $field_label ) );
 		}
 
 		$account = $this->api->get_account( $this->posted_field_value( 'account_type' ) );
 
-		if ( ! $account ) {
-			throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
-		}
-
-		foreach ( $value as $zone => $couriers ) {
-			if ( ! $couriers ) {
-				continue;
-			}
-
-			if ( count( $couriers ) > 1 && ! $account->feature_enable( 'multiple_couriers' ) ) {
-				// Translators: %1$s Setting field label, %2$s Account label.
-				throw new Exception( wp_sprintf( __( '%1$s: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account->get_label( 'label' ) ) );
-			}
-
-			$not_allowed = array_diff_key( $couriers, $this->api->get_couriers( $zone, $account->get_type() ) );
-
-			if ( $not_allowed ) {
-				// Translators: %1$s Setting field label, %2$s Account label, %3$s Couriers name.
-				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier_data %3$s.', 'woongkir' ), $field['title'], $account->get_label( 'label' ), strtoupper( implode( ', ', array_keys( $not_allowed ) ) ) ) );
-			}
-		}
-
-		return $value;
-	}
-
-	/**
-	 * Validate settings field type couriers_list.
-	 *
-	 * @since 1.0.0
-	 * @param  string $key Settings field key.
-	 * @param  string $value Posted field value.
-	 * @throws Exception If the field value is invalid.
-	 * @return array
-	 */
-	public function validate_couriers_list_field( $key, $value ) {
-		if ( is_string( $value ) ) {
-			$value = array_map( 'trim', explode( ',', $value ) );
-		}
-
-		// Format the value as associative array courier_data => services.
-		if ( $value && is_array( $value ) ) {
-			$format_value = array();
-
-			foreach ( $value as $val ) {
-				$parts = explode( '_', $val );
-
-				if ( count( $parts ) === 2 ) {
-					$format_value[ $parts[0] ][] = $parts[1];
+		if ( $account ) {
+			foreach ( $value as $zone => $couriers ) {
+				if ( ! $couriers ) {
+					continue;
 				}
-			}
 
-			$value = $format_value;
-		}
+				if ( count( $couriers ) > 1 && ! $account->feature_enable( 'multiple_couriers' ) ) {
+					// Translators: %1$s Setting field label, %2$s Account label.
+					throw new Exception( wp_sprintf( __( '%1$s: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field_label, $account->get_label( 'label' ) ) );
+				}
 
-		if ( $value ) {
-			$field   = $this->instance_form_fields[ $key ];
-			$account = $this->api->get_account( $this->posted_field_value( 'account_type' ) );
+				$not_allowed = array_diff_key( $couriers, $this->api->get_couriers( $zone, $account->get_type() ) );
 
-			if ( ! $account ) {
-				throw new Exception( __( 'Account type field is invalid.', 'woongkir' ) );
-			}
-
-			if ( ! $account->feature_enable( 'multiple_couriers' ) && count( $value ) > 1 ) {
-				// Translators: %1$s Shipping zone name, %2$s Account label.
-				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select multiple couriers.', 'woongkir' ), $field['title'], $account->get_label( 'label' ) ) );
-			}
-
-			$not_allowed = array_diff_key( $value, $this->api->get_couriers( $key, $account->get_type() ) );
-
-			if ( ! empty( $not_allowed ) ) {
-				// Translators: %1$s Shipping zone name, %2$s Account label, %3$s Couriers name.
-				throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier_data %3$s.', 'woongkir' ), $field['title'], $account->get_label( 'label' ), strtoupper( implode( ', ', array_keys( $not_allowed ) ) ) ) );
+				if ( $not_allowed ) {
+					// Translators: %1$s Setting field label, %2$s Account label, %3$s Couriers name.
+					throw new Exception( wp_sprintf( __( '%1$s Shipping: Account type %2$s is not allowed to select courier_data %3$s.', 'woongkir' ), $field_label, $account->get_label( 'label' ), strtoupper( implode( ', ', array_keys( $not_allowed ) ) ) ) );
+				}
 			}
 		}
 
@@ -764,70 +828,68 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 */
 	public function calculate_shipping( $package = array() ) {
 		try {
-			$api_request_params = $this->calculate_shipping_api_request_params( $package );
-
-			if ( is_wp_error( $api_request_params ) ) {
-				throw new Exception( $api_request_params->get_error_message() );
-			}
-
-			$cache_key = $this->generate_cache_key( $api_request_params );
-
-			if ( $this->is_enable_cache() ) {
-				$this->show_debug(
-					wp_json_encode(
-						array(
-							'calculate_shipping.$cache_key' => $cache_key,
-						)
-					)
-				);
-			}
-
-			$results = $this->is_enable_cache() ? get_transient( $cache_key ) : false;
-
-			if ( false === $results ) {
-				if ( 'domestic' === $api_request_params['zone'] ) {
-					$results = $this->api->calculate_shipping( $api_request_params );
-				} else {
-					$results = $this->api->calculate_shipping_international( $api_request_params );
-				}
-
-				/**
-				 * Filter the shipping calculation results.
-				 *
-				 * @since 1.2.12
-				 *
-				 * @param array|WP_Error           $results API shipping calculation results.
-				 * @param array                    $package Current order package data.
-				 * @param Woongkir_Shipping_Method $object  Current class object.
-				 *
-				 * @return array
-				 */
-				$results = apply_filters( 'woongkir_shipping_results', $results, $package, $this );
-
-				if ( $results && ! is_wp_error( $results ) && $this->is_enable_cache() ) {
-					set_transient( $cache_key, $results, HOUR_IN_SECONDS ); // Store response data for 1 hour.
-				}
-			}
-
-			if ( ! is_wp_error( $results ) ) {
-				$this->show_debug(
-					wp_json_encode(
-						array(
-							'calculate_shipping.$results' => $results,
-						)
-					)
-				);
-			}
-
-			$allowed_services = isset( $this->{$api_request_params['zone']} ) ? $this->{$api_request_params['zone']} : array();
+			$api_request_data = $this->calculate_shipping_api_request_data( $package );
 
 			$this->show_debug(
 				wp_json_encode(
 					array(
-						'calculate_shipping.$allowed_services' => $allowed_services,
+						'calculate_shipping.$api_request_data' => $api_request_data,
 					)
 				)
 			);
+
+			if ( is_wp_error( $api_request_data ) ) {
+				throw new Exception( $api_request_data->get_error_message() );
+			}
+
+			$cache_key    = $this->generate_cache_key( $api_request_data );
+			$cache_enable = woongkir_is_enable_cache();
+
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$cache' => array(
+							'enable' => $cache_enable,
+							'key'    => $cache_key,
+						),
+					)
+				)
+			);
+
+			$results = false;
+
+			if ( woongkir_is_enable_cache() ) {
+				$results = get_transient( $cache_key );
+
+				$this->show_debug(
+					wp_json_encode(
+						array(
+							'calculate_shipping.$results.cached' => $results,
+						)
+					)
+				);
+			}
+
+			if ( false === $results ) {
+				$results = $this->api->calculate_shipping_by_zone( $api_request_data['zone'], $api_request_data['params'] );
+
+				if ( $cache_enable && $results && ! is_wp_error( $results ) ) {
+					set_transient( $cache_key, $results, HOUR_IN_SECONDS ); // Store response data for 1 hour.
+				}
+			}
+
+			/**
+			 * Filter the shipping calculation results.
+			 *
+			 * @since 1.2.12
+			 *
+			 * @param array|WP_Error           $results API shipping calculation results.
+			 * @param array                    $package Current order package data.
+			 * @param Woongkir_Shipping_Method $object  Current class object.
+			 *
+			 * @return array
+			 */
+			$results = apply_filters( 'woongkir_shipping_results', $results, $package, $this );
 
 			if ( is_wp_error( $results ) ) {
 				throw new Exception( $results->get_error_message() );
@@ -838,77 +900,93 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			}
 
 			if ( ! is_array( $results ) ) {
-				// translators: %s Encoded data response.
+				// translators: % s Encoded data response .
 				throw new Exception( wp_sprintf( __( 'Couriers data is invalid: %s', 'woongkir' ), wp_json_encode( $results ) ) );
 			}
 
-			$couriers = array();
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$results' => $results,
+					)
+				)
+			);
 
-			if ( 'no' !== $this->sort_shipping && is_callable( array( $this, 'sort_results_by_' . $this->sort_shipping ) ) ) {
-				usort( $results['parsed'], array( $this, 'sort_results_by_' . $this->sort_shipping ) );
+			$selected_couriers = $this->get_selected_couriers( $api_request_data['zone'] );
+
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$selected_couriers' => $selected_couriers,
+					)
+				)
+			);
+
+			$sort_shipping = $this->get_option( 'sort_shipping' );
+			$show_eta      = $this->get_option( 'show_eta' );
+
+			if ( 'no' !== $sort_shipping && is_callable( array( $this, 'sort_results_by_' . $sort_shipping ) ) ) {
+				usort( $results['parsed'], array( $this, 'sort_results_by_' . $sort_shipping ) );
 			}
 
 			foreach ( $results['parsed'] as $result ) {
-				if ( ! isset( $couriers[ $result['courier_data'] ] ) ) {
-					$couriers[ $result['courier_data'] ] = array();
+				$selected_services = isset( $selected_couriers[ $result['courier'] ] ) ? $selected_couriers[ $result['courier'] ] : array();
+
+				if ( ! $selected_services || ! in_array( $result['service'], $selected_services, true ) ) {
+					continue;
 				}
 
-				$couriers[ $result['courier_data'] ][] = $result;
-			}
+				$label = strtoupper( $result['courier'] ) . ' - ' . $result['service'];
 
-			if ( in_array( $this->sort_shipping, array( 'name', 'name_desc' ), true ) ) {
-				foreach ( $couriers as $courier_data => $services ) {
-					usort( $services, array( $this, 'sort_results_by_cost' ) );
-
-					$couriers[ $courier_data ] = $services;
+				if ( 'yes' === $show_eta && $result['etd'] ) {
+					$label = wp_sprintf( '%1$s (%2$s)', $label, $result['etd'] );
 				}
-			}
 
-			foreach ( $couriers as $courier_data => $services ) {
-				foreach ( $services as $result ) {
-					if ( ! isset( $allowed_services[ $courier_data ] ) ) {
-						continue;
-					}
+				/**
+				 * Filter the shipping rate label.
+				 *
+				 * @since 1.2.12
+				 *
+				 * @param string                   $label The default shipping rate label.
+				 * @param bool                     $result     Shipping rate result data.
+				 * @param array                    $package    Current order package data.
+				 * @param Woongkir_Shipping_Method $object     Current class object.
+				 *
+				 * @return string
+				 */
+				$label = apply_filters( 'woongkir_shipping_rate_label', $label, $result, $package, $this );
 
-					if ( ! in_array( $result['service'], $allowed_services[ $courier_data ], true ) ) {
-						continue;
-					}
-
-					$rate_label = wp_sprintf( '%s - %s', strtoupper( $courier_data ), $result['service'] );
-
-					if ( 'yes' === $this->show_eta && $result['etd'] ) {
-						$rate_label = wp_sprintf( '%1$s (%2$s)', $rate_label, $result['etd'] );
-					}
-
-					/**
-					 * Filter the shipping rate label.
-					 *
-					 * @since 1.2.12
-					 *
-					 * @param string                   $rate_label The default shipping rate label.
-					 * @param bool                     $result     Shipping rate result data.
-					 * @param array                    $package    Current order package data.
-					 * @param Woongkir_Shipping_Method $object     Current class object.
-					 *
-					 * @return string
-					 */
-					$rate_label = apply_filters( 'woongkir_shipping_rate_label', $rate_label, $result, $package, $this );
-
-					$this->add_rate(
-						array(
-							'id'        => $this->get_rate_id( $courier_data . ':' . $result['service'] ),
-							'label'     => $rate_label,
-							'cost'      => $result['cost'],
-							'meta_data' => array(
-								'_woongkir_data' => $result,
-							),
-						)
-					);
-				}
+				$this->add_rate(
+					array(
+						'id'        => $this->get_rate_id( $result['courier'] . ':' . $result['service'] ),
+						'label'     => $label,
+						'cost'      => $result['cost'],
+						'meta_data' => array(
+							'_woongkir_data' => $result,
+						),
+					)
+				);
 			}
 		} catch ( Exception $e ) {
 			$this->show_debug( $e->getMessage() );
 		}
+	}
+
+	/**
+	 * Get selected couriers setting.
+	 *
+	 * @param string $zone Couriers zone ID.
+	 *
+	 * @return array
+	 */
+	private function get_selected_couriers( $zone ) {
+		$selected_couriers = $this->get_option( 'selected_couriers' );
+
+		if ( $selected_couriers && isset( $selected_couriers[ $zone ] ) ) {
+			return $selected_couriers[ $zone ];
+		}
+
+		return array();
 	}
 
 	/**
@@ -924,24 +1002,55 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			return false;
 		}
 
-		$domestic = 'ID' === $shipping_address['country'];
+		$origin_location_city = woongkir_get_json_data(
+			'city',
+			array(
+				'value' => $this->get_option( 'origin_location_city' ),
+			)
+		);
 
-		if ( $domestic ) {
-			$account = $this->api->get_account( $this->account_type );
+		if ( ! $origin_location_city ) {
+			return false;
+		}
+
+		$account = $this->api->get_account( $this->get_option( 'account_type' ) );
+
+		if ( ! $account ) {
+			return false;
+		}
+
+		if ( 'ID' === $shipping_address['country'] ) {
+			if ( $account->feature_enable( 'subdistrict' ) ) {
+				$origin_location_address_2 = woongkir_get_json_data(
+					'address_2',
+					array(
+						'value' => $this->get_option( 'origin_location_address_2' ),
+					)
+				);
+
+				if ( ! $origin_location_address_2 ) {
+					return false;
+				}
+
+				return array(
+					'origin'     => $origin_location_address_2['id'],
+					'originType' => 'subdistrict',
+				);
+			}
 
 			return array(
-				'origin'     => $account && $account->feature_enable( 'subdistrict' ) ? $this->origin_subdistrict : $this->origin_city,
-				'originType' => $account && $account->feature_enable( 'subdistrict' ) ? 'subdistrict' : 'city',
+				'origin'     => $origin_location_city['id'],
+				'originType' => 'city',
 			);
 		}
 
 		return array(
-			'origin' => $this->origin_city,
+			'origin' => $origin_location_city['id'],
 		);
 	}
 
 	/**
-	 * Populate API request parameters.
+	 * Populate API request data.
 	 *
 	 * @since 1.2.12
 	 *
@@ -951,104 +1060,77 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 *
 	 * @return array|WP_Error
 	 */
-	private function calculate_shipping_api_request_params( $package = array() ) {
+	private function calculate_shipping_api_request_data( $package = array() ) {
 		try {
-			$domestic = isset( $package['destination']['country'] ) && 'ID' === $package['destination']['country'];
+			if ( ! isset( $package['destination']['country'] ) ) {
+				throw new Exception( __( 'Shipping destination country is empty.', 'woongkir' ) );
+			}
 
 			/**
-			 * Shipping origin info.
+			 * Shipping origin info .
 			 *
 			 * @since 1.2.9
 			 *
-			 * @param array $origin_info Original origin info.
-			 * @param array $package Current order package data.
+			 * @param array $origin_info Original origin info .
+			 * @param array $package Current order package data .
 			 *
 			 * @return array
 			 */
 			$origin_info = apply_filters( 'woongkir_shipping_origin_info', $this->get_origin_info( $package['destination'] ), $package );
-
-			$this->show_debug(
-				wp_json_encode(
-					array(
-						'api_request_params.$origin_info' => $origin_info,
-					)
-				)
-			);
 
 			if ( empty( $origin_info ) ) {
 				throw new Exception( __( 'Shipping origin info is empty or invalid', 'woongkir' ) );
 			}
 
 			/**
-			 * Shipping destination info.
+			 * Shipping destination info .
 			 *
 			 * @since 1.2.9
 			 *
-			 * @param array $destination_info Original destination info.
-			 * @param array $package Current order package data.
+			 * @param array $destination_info Original destination info .
+			 * @param array $package Current order package data .
 			 *
 			 * @return array
 			 */
 			$destination_info = apply_filters( 'woongkir_shipping_destination_info', $this->get_destination_info( $package['destination'] ), $package );
-
-			$this->show_debug(
-				wp_json_encode(
-					array(
-						'api_request_params.$destination_info' => $destination_info,
-					)
-				)
-			);
 
 			if ( ! $destination_info || ! array_filter( $destination_info ) ) {
 				throw new Exception( __( 'Shipping destination info is empty or invalid', 'woongkir' ) );
 			}
 
 			/**
-			 * Shipping dimension & weight info.
+			 * Shipping dimension & weight info .
 			 *
 			 * @since 1.2.9
 			 *
-			 * @param array $dimension_weight Original dimension & weight info.
-			 * @param array $package Current order package data.
+			 * @param array $dimension_weight Original dimension & weight info .
+			 * @param array $package Current order package data .
 			 *
 			 * @return array
 			 */
 			$dimension_weight = apply_filters( 'woongkir_shipping_dimension_weight', $this->get_dimension_weight( $package['contents'] ), $package );
 
-			$this->show_debug(
-				wp_json_encode(
-					array(
-						'api_request_params.$dimension_weight' => $dimension_weight,
-					)
-				)
-			);
-
 			if ( ! $dimension_weight || ! array_filter( $dimension_weight ) ) {
 				throw new Exception( __( 'Cart weight or dimension is empty or invalid', 'woongkir' ) );
 			}
 
-			$courier_data = $domestic ? array_keys( (array) $this->domestic ) : array_keys( (array) $this->international );
+			$zone    = $this->api->get_zone_by_country( $package['destination']['country'] );
+			$courier = $this->get_selected_couriers( $zone );
 
-			$this->show_debug(
-				wp_json_encode(
-					array(
-						'api_request_params.$courier_data' => $courier_data,
-					)
-				)
-			);
-
-			if ( ! $courier_data || ! array_filter( $courier_data ) ) {
+			if ( ! $courier || ! array_filter( $courier ) ) {
 				throw new Exception( __( 'No couriers selected', 'woongkir' ) );
 			}
 
-			return array_merge(
-				$origin_info,
-				$destination_info,
-				$dimension_weight,
-				array(
-					'courier_data' => $courier_data,
-					'zone'         => $domestic ? 'domestic' : 'international',
-				)
+			return array(
+				'zone'   => $zone,
+				'params' => array_merge(
+					$origin_info,
+					$destination_info,
+					$dimension_weight,
+					array(
+						'courier' => array_keys( $courier ),
+					)
+				),
 			);
 		} catch ( Exception $e ) {
 			return new WP_Error( 'api_request_params_error', $e->getMessage() );
@@ -1065,17 +1147,18 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return array
 	 */
 	private function get_destination_info( $shipping_address = array() ) {
+		// Bail early when the shipping destination country is empty.
 		if ( empty( $shipping_address['country'] ) ) {
 			return false;
 		}
 
-		$domestic = 'ID' === $shipping_address['country'];
+		$zone = $this->api->get_zone_by_country( $shipping_address['country'] );
 
-		if ( ! $domestic ) {
+		if ( 'international' === $zone ) {
 			$country = woongkir_get_json_data(
 				'country',
 				array(
-					'country_code' => $shipping_address['country'],
+					'value' => $shipping_address['country'],
 				)
 			);
 
@@ -1084,69 +1167,67 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			}
 
 			return array(
-				'destination' => $country['country_id'],
+				'destination' => $country['id'],
 			);
 		}
 
-		// Bail early when the state or city info is empty.
-		if ( empty( $shipping_address['country'] ) || empty( $shipping_address['city'] ) ) {
+		// Bail early when the shipping destination state is empty.
+		if ( empty( $shipping_address['city'] ) ) {
 			return false;
 		}
 
 		// Get province ID data.
-		$province = woongkir_get_json_data(
-			'province',
+		$state = woongkir_get_json_data(
+			'state',
 			array(
-				'code' => $shipping_address['state'],
+				'value' => $shipping_address['state'],
 			)
 		);
 
-		if ( ! $province || ! isset( $province['province_id'] ) ) {
+		if ( ! $state ) {
 			return false;
 		}
 
-		// Get city ID data.
-		$city_parts = explode( ' ', $shipping_address['city'] );
-		$city_type  = $city_parts[0];
-		$city_name  = implode( ' ', array_slice( $city_parts, 1 ) );
+		// Bail early when the shipping destination city is empty.
+		if ( empty( $shipping_address['city'] ) ) {
+			return false;
+		}
 
 		$city = woongkir_get_json_data(
 			'city',
 			array(
-				'type'        => $city_type,
-				'city_name'   => $city_name,
-				'province_id' => $province['province_id'],
+				'value'    => $shipping_address['city'],
+				'state_id' => $state['id'],
 			)
 		);
 
-		if ( ! $city || ! isset( $city['city_id'] ) ) {
+		if ( ! $city ) {
 			return false;
 		}
 
 		// Get current API account.
-		$account = $this->api->get_account( $this->account_type );
+		$account = $this->api->get_account( $this->get_option( 'account_type' ) );
 
 		if ( $account && $account->feature_enable( 'subdistrict' ) && ! empty( $shipping_address['address_2'] ) ) {
-			// Get subdistrict ID data.
-			$subdistrict = woongkir_get_json_data(
-				'subdistrict',
+			$address_2 = woongkir_get_json_data(
+				'address_2',
 				array(
-					'subdistrict_name' => $shipping_address['address_2'],
-					'city_id'          => $city['city_id'],
-					'province_id'      => $province['province_id'],
+					'value'    => $shipping_address['address_2'],
+					'city_id'  => $city['id'],
+					'state_id' => $state['id'],
 				)
 			);
 
-			if ( $subdistrict && isset( $subdistrict['subdistrict_id'] ) ) {
+			if ( $address_2 ) {
 				return array(
-					'destination'     => $subdistrict['subdistrict_id'],
+					'destination'     => $address_2['id'],
 					'destinationType' => 'subdistrict',
 				);
 			}
 		}
 
 		return array(
-			'destination'     => $city['city_id'],
+			'destination'     => $city['id'],
 			'destinationType' => 'city',
 		);
 	}
@@ -1202,7 +1283,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		$data['weight'] = wc_get_weight( array_sum( $weight ), 'g' );
 
 		// Convert the volumetric to weight.
-		$account = $this->api->get_account( $this->account_type );
+		$account = $this->api->get_account( $this->get_option( 'account_type' ) );
 
 		if ( $account && $account->feature_enable( 'volumetric' ) ) {
 			$width  = wc_get_dimension( max( $width ), 'cm' );
@@ -1213,14 +1294,16 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$data['length'] = $length;
 			$data['height'] = $height;
 
-			if ( 'yes' === $this->volumetric_calculator && $this->volumetric_divider ) {
+			if ( 'yes' === $this->get_option( 'volumetric_calculator' ) && $this->get_option( 'volumetric_divider' ) ) {
 				$data['weight'] = max( $data['weight'], $this->convert_volumetric( $width, $length, $height ) );
 			}
 		}
 
 		// Set the package weight to based on base_weight setting value.
-		if ( absint( $this->base_weight ) && $data['weight'] < absint( $this->base_weight ) ) {
-			$data['weight'] = absint( $this->base_weight );
+		$base_weight = absint( $this->get_option( 'base_weight' ) );
+
+		if ( $base_weight && $data['weight'] < $base_weight ) {
+			$data['weight'] = $base_weight;
 		}
 
 		return $data;
@@ -1238,17 +1321,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return int Weight in gram units.
 	 */
 	public function convert_volumetric( $width, $length, $height ) {
-		return ceil( ( ( $width * $length * $height ) / $this->volumetric_divider ) * 1000 );
-	}
-
-	/**
-	 * Check wether api response to be cached
-	 *
-	 * @return boolean
-	 * @since 1.2.12
-	 */
-	private function is_enable_cache() {
-		return defined( 'WOONGKIR_ENABLE_CACHE' ) ? WOONGKIR_ENABLE_CACHE : true;
+		return ceil( ( ( $width * $length * $height ) / $this->get_option( 'volumetric_divider' ) ) * 1000 );
 	}
 
 	/**
@@ -1261,13 +1334,19 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return boolean
 	 */
 	private function generate_cache_key( $api_request_params = array() ) {
-		$cache_keys = array();
+		$cache_keys = array(
+			'cart_hash' => WC()->cart->get_cart_hash(),
+		);
 
 		foreach ( array_keys( $this->instance_form_fields ) as $cache_key ) {
+			if ( isset( $cache_keys[ $cache_key ] ) ) {
+				continue;
+			}
+
 			$cache_keys[ $cache_key ] = $this->get_option( $cache_key );
 		}
 
-		return $this->id . '_' . $this->instance_id . '_' . WC()->cart->get_cart_hash() . '_' . md5(
+		return $this->id . '_' . $this->instance_id . '_' . md5(
 			wp_json_encode(
 				array_merge(
 					$api_request_params,
@@ -1275,78 +1354,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				)
 			)
 		);
-	}
-
-	/**
-	 * Sort domestic couriers list.
-	 *
-	 * @param array $a Value to compare.
-	 * @param array $b Value to compare.
-	 * @return bool
-	 */
-	protected function sort_couriers_list_domestic( $a, $b ) {
-		$priority = array();
-
-		$letter_index = range( 'a', 'z' );
-		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index, true ) + 10 );
-		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index, true ) + 10 );
-
-		if ( empty( $this->domestic ) ) {
-			if ( $a_code_index === $b_code_index ) {
-				return 0;
-			}
-
-			return ( $a_code_index > $b_code_index ) ? 1 : -1;
-		}
-
-		foreach ( array_keys( $this->domestic ) as $index => $courier_data ) {
-			$priority[ $courier_data ] = $index;
-		}
-
-		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : ( count( $this->domestic ) + $a_code_index );
-		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : ( count( $this->domestic ) + $b_code_index );
-
-		if ( $al === $bl ) {
-			return 0;
-		}
-
-		return ( $al > $bl ) ? 1 : -1;
-	}
-
-	/**
-	 * Sort international couriers list
-	 *
-	 * @param array $a Value to compare.
-	 * @param array $b Value to compare.
-	 * @return bool
-	 */
-	protected function sort_couriers_list_international( $a, $b ) {
-		$priority = array();
-
-		$letter_index = range( 'a', 'z' );
-		$a_code_index = is_numeric( $a['code'][0] ) ? $a['code'][0] : ( array_search( strtolower( $a['code'][0] ), $letter_index, true ) + 10 );
-		$b_code_index = is_numeric( $b['code'][0] ) ? $b['code'][0] : ( array_search( strtolower( $b['code'][0] ), $letter_index, true ) + 10 );
-
-		if ( empty( $this->international ) ) {
-			if ( $a_code_index === $b_code_index ) {
-				return 0;
-			}
-
-			return ( $a_code_index > $b_code_index ) ? 1 : -1;
-		}
-
-		foreach ( array_keys( $this->international ) as $index => $courier_data ) {
-			$priority[ $courier_data ] = $index;
-		}
-
-		$al = isset( $priority[ $a['code'] ] ) ? $priority[ $a['code'] ] : ( count( $this->international ) + $a_code_index );
-		$bl = isset( $priority[ $b['code'] ] ) ? $priority[ $b['code'] ] : ( count( $this->international ) + $b_code_index );
-
-		if ( $al === $bl ) {
-			return 0;
-		}
-
-		return ( $al > $bl ) ? 1 : -1;
 	}
 
 	/**
@@ -1393,8 +1400,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return int
 	 */
 	protected function sort_results_by_name( $a, $b ) {
-		$a_name = isset( $a['courier_data'] ) ? strtolower( $a['courier_data'] ) : '';
-		$b_name = isset( $b['courier_data'] ) ? strtolower( $b['courier_data'] ) : '';
+		$a_name = strtoupper( $a['courier'] ) . ' - ' . $a['service'];
+		$b_name = strtoupper( $b['courier'] ) . ' - ' . $b['service'];
 
 		if ( $a_name === $b_name ) {
 			return 0;
@@ -1411,8 +1418,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return int
 	 */
 	protected function sort_results_by_name_desc( $a, $b ) {
-		$a_name = isset( $a['courier_data'] ) ? strtolower( $a['courier_data'] ) : '';
-		$b_name = isset( $b['courier_data'] ) ? strtolower( $b['courier_data'] ) : '';
+		$a_name = strtoupper( $a['courier'] ) . ' - ' . $a['service'];
+		$b_name = strtoupper( $b['courier'] ) . ' - ' . $b['service'];
 
 		if ( $a_name === $b_name ) {
 			return 0;
@@ -1448,19 +1455,12 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return void
 	 */
 	private function show_debug( $message, $notice_type = 'notice' ) {
-		if ( defined( 'WC_DOING_AJAX' ) && WC_DOING_AJAX ) {
-			return;
-		}
-
-		if ( 'yes' !== get_option( 'woocommerce_shipping_debug_mode', 'no' ) ) {
-			return;
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		if ( wc_has_notice( $message ) ) {
+		if (
+			defined( 'WC_DOING_AJAX' ) && WC_DOING_AJAX
+			|| 'yes' !== get_option( 'woocommerce_shipping_debug_mode', 'no' )
+			|| ! current_user_can( 'manage_options' )
+			|| wc_has_notice( $message )
+		) {
 			return;
 		}
 

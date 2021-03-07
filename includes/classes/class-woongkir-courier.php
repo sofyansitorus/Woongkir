@@ -258,6 +258,10 @@ abstract class Woongkir_Courier {
 			return;
 		}
 
+		if ( ! $label ) {
+			$label = $id;
+		}
+
 		$services[ $id ] = $label;
 
 		return update_option( $this->get_services_data_key( $zone ), $services, true );

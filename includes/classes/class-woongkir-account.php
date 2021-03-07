@@ -229,6 +229,19 @@ abstract class Woongkir_Account {
 	}
 
 	/**
+	 * Check is feature enabled
+	 *
+	 * @since 1.2.12
+	 *
+	 * @param string $feature_key Feature key.
+	 *
+	 * @return bool
+	 */
+	public function can_do( $feature_key ) {
+		return $this->feature_enable( $feature_key );
+	}
+
+	/**
 	 * Parse API request parameters.
 	 *
 	 * @since 1.2.12

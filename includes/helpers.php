@@ -59,7 +59,8 @@ if ( ! function_exists( 'woongkir_get_json_path' ) ) :
 	 * Generate relative path to JSON file.
 	 *
 	 * @param string $file_name JSON file name.
-	 * @return void
+	 *
+	 * @return array
 	 */
 	function woongkir_get_json_path( $file_name ) {
 		return apply_filters( 'woongkir_get_json_path', 'data/woongkir-' . sanitize_file_name( $file_name ) . '.json', $file_name );
@@ -311,5 +312,52 @@ if ( ! function_exists( 'woongkir_instances' ) ) :
 		}
 
 		return apply_filters( 'woongkir_instances', $instances );
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_is_enable_cache' ) ) :
+	/**
+	 * Check wether api response should be cached
+	 *
+	 * @return boolean
+	 */
+	function woongkir_is_enable_cache() {
+		return defined( 'WOONGKIR_ENABLE_CACHE' ) ? WOONGKIR_ENABLE_CACHE : true;
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_parse_etd' ) ) :
+	/**
+	 * Parse API response ETD data.
+	 *
+	 * @since 1.3
+	 *
+	 * @param string $etd API response ETD data.
+	 *
+	 * @return string
+	 */
+	function woongkir_parse_etd( $etd ) {
+		if ( ! $etd ) {
+			return '';
+		}
+
+		$etd = strtolower( $etd );
+		$etd = preg_replace( '/([0-9]+) - ([0-9]+)/', '$1-$2', $etd );
+		$etd = str_replace( '1-1', '1', $etd );
+		$etd = str_replace( '0-0', '0', $etd );
+
+		if ( false !== strpos( $etd, 'jam' ) ) {
+			$etd = trim( str_replace( 'jam', '', $etd ) );
+
+			// translators: %s is number of hours.
+			$etd = is_numeric( $etd ) && intval( $etd ) === 1 ? __( '1 hour', 'woongkir' ) : sprintf( __( '%s hours', 'woongkir' ), $etd );
+		} else {
+			$etd = trim( str_replace( 'hari', '', $etd ) );
+
+			// translators: %s is number of days.
+			$etd = is_numeric( $etd ) && intval( $etd ) === 1 ? __( '1 day', 'woongkir' ) : sprintf( __( '%s days', 'woongkir' ), $etd );
+		}
+
+		return $etd;
 	}
 endif;
