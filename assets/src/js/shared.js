@@ -1,9 +1,144 @@
-var woongkirLocation = {
+var woongkirShared = {
+	updateCheckoutTimeoutId: null,
+	onChangeField: function (fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange, callback) {
+		if ($('#' + fieldPrefix + '_country').length && 'ID' !== $('#' + fieldPrefix + '_country').val()) {
+			return;
+		}
+
+		$.each(woongkirShared.getFields(), function (fieldSuffix, fieldData) {
+			if (!fieldSuffixIncludes || fieldSuffixIncludes.indexOf(fieldSuffix) === -1) {
+				return;
+			}
+
+			var fieldId = fieldPrefix + '_' + fieldSuffix;
+
+			woongkirShared.getLocationData(fieldSuffix).then(function (results) {
+				var options = woongkirShared.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData);
+
+				$('#' + fieldId).selectWoo({
+					data: options,
+					width: '100%',
+				});
+
+				var optionSelected = options.find(function (option) {
+					return option.selected;
+				});
+
+				var optionSelectedValue = optionSelected ? optionSelected.id : null;
+
+				if (fieldSuffixTriggerChange || fieldSuffixTriggerChange.indexOf(fieldSuffix) !== -1) {
+					$('#' + fieldId).val(optionSelectedValue).trigger('change');
+				}
+			});
+		});
+
+		if ('function' === typeof callback) {
+			callback();
+		}
+	},
+	onChangeFieldState: function (event) {
+		var fieldPrefix = $(event.target).attr('id').replace('_state', '');
+		var fieldSuffixIncludes = ['city', 'address_2'];
+		var fieldSuffixTriggerChange = ['city'];
+
+		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange);
+	},
+	onChangeFieldCity: function (event) {
+		var fieldPrefix = $(event.target).attr('id').replace('_city', '');
+		var fieldSuffixIncludes = ['address_2'];
+		var fieldSuffixTriggerChange = ['address_2'];
+
+		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange);
+	},
+	onChangeFieldAddress2: function (event) {
+		var fieldPrefix = $(event.target).attr('id').replace('_address_2', '');
+		var fieldSuffixIncludes = false;
+		var fieldSuffixTriggerChange = false;
+
+		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange, function () {
+			var $shipToDifferentAddress = $('#ship-to-different-address-checkbox');
+
+			if (!$shipToDifferentAddress.length) {
+				return;
+			}
+
+			var isChecked = $shipToDifferentAddress.is(':checked');
+
+			if ((isChecked && 'shipping' === fieldPrefix) || !isChecked && 'billing' === fieldPrefix) {
+				if (woongkirShared.updateCheckoutTimeoutId) {
+					clearTimeout(woongkirShared.updateCheckoutTimeoutId);
+				}
+
+				woongkirShared.updateCheckoutTimeoutId = setTimeout(function () {
+					$(document.body).trigger('update_checkout');
+				}, 200);
+			}
+		});
+	},
+	getFields: function () {
+		return {
+			state: {
+				onChange: woongkirShared.onChangeFieldState,
+				convert: false,
+				restore: false,
+			},
+			city: {
+				onChange: woongkirShared.onChangeFieldCity,
+				convert: true,
+				restore: true,
+				fieldFilters: ['state'],
+			},
+			address_2: {
+				onChange: woongkirShared.onChangeFieldAddress2,
+				convert: true,
+				restore: true,
+				fieldFilters: ['state', 'city'],
+			},
+		};
+	},
+	getLocationDataCountry: function () {
+		return woongkirShared.getLocationData('country');
+	},
+	getLocationDataState: function () {
+		return woongkirShared.getLocationData('state');
+	},
+	getLocationDataCity: function () {
+		return woongkirShared.getLocationData('city');
+	},
+	getLocationDataAddress2: function () {
+		return woongkirShared.getLocationData('address_2');
+	},
+	getLocationData: function (locationType) {
+		var dfd = new $.Deferred();
+		var dataKey = woongkir_params.json[locationType].key;
+		var dataUrl = woongkir_params.json[locationType].url;
+
+		var items = Lockr.get(dataKey);
+
+		if (null === items || typeof items === 'undefined') {
+			var randomKey = Math.random().toString(36).substring(7);
+			$.getJSON(dataUrl, { [randomKey]: new Date().getTime() }, function (data) {
+				data.sort(function (a, b) {
+					return (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0);
+				});
+
+				Lockr.set(dataKey, data);
+
+				dfd.resolve(data);
+			});
+		} else {
+			dfd.resolve(items);
+		}
+
+		return dfd.promise();
+	},
 	filterLocationData: function (results, fieldPrefix, fieldSuffix, fieldData) {
 		var getLocationDataFilter = [];
 
-		if (fieldData.convertInputToSelect && fieldData.convertInputToSelect.fieldFilters) {
-			getLocationDataFilter = fieldData.convertInputToSelect.fieldFilters.map(function (item) {
+		if (fieldData.fieldFilters) {
+			getLocationDataFilter = fieldData.fieldFilters.filter(function (item) {
+				return $('#' + fieldPrefix + '_' + item).length > 0;
+			}).map(function (item) {
 				return {
 					key: item,
 					value: $('#' + fieldPrefix + '_' + item).val(),
@@ -11,7 +146,7 @@ var woongkirLocation = {
 			});
 		}
 
-		var options = results.filter(function (result) {
+		return results.filter(function (result) {
 			if (!getLocationDataFilter || !getLocationDataFilter.length) {
 				return true;
 			}
@@ -26,131 +161,5 @@ var woongkirLocation = {
 				selected: $('#' + fieldPrefix + '_' + fieldSuffix).val() === item.value,
 			};
 		});
-
-		return options;
 	},
-	onChangeFieldState: function (event) {
-		var fieldPrefix = $(event.target).attr('id').replace('_state', '');
-		var $fieldCountry = $('#' + fieldPrefix + '_country');
-
-		if ($fieldCountry && $fieldCountry.length && 'ID' !== $fieldCountry.val()) {
-			return;
-		}
-
-		$.each(woongkirLocation.getFields(['state'], 'omit'), function (fieldSuffix, fieldData) {
-			woongkirLocation.getLocationData(fieldSuffix).then(function (results) {
-				var options = woongkirLocation.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData);
-
-				$('#' + fieldPrefix + '_' + fieldSuffix).selectWoo({
-					data: options,
-					placeholder: fieldData.placeholder || '',
-				});
-			});
-		});
-	},
-	onChangeFieldCity: function (event) {
-		var fieldPrefix = $(event.target).attr('id').replace('_city', '');
-		var $fieldCountry = $('#' + fieldPrefix + '_country');
-
-		if ($fieldCountry && $fieldCountry.length && 'ID' !== $fieldCountry.val()) {
-			return;
-		}
-
-		$.each(woongkirLocation.getFields(['city', 'state'], 'omit'), function (fieldSuffix, fieldData) {
-			woongkirLocation.getLocationData(fieldSuffix).then(function (results) {
-				var options = woongkirLocation.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData);
-
-				$('#' + fieldPrefix + '_' + fieldSuffix).selectWoo({
-					data: options,
-					placeholder: fieldData.placeholder || '',
-				});
-			});
-		});
-	},
-	onChangeFieldAddress2: function () {
-
-	},
-	getFields: function (filterBy, filterType) {
-		var fields = {
-			state: {
-				onChange: woongkirLocation.onChangeFieldState,
-				settingSuffix: 'province',
-			},
-			city: {
-				onChange: woongkirLocation.onChangeFieldCity,
-				placeholder: woongkir_params.text.placeholder.city,
-				convertInputToSelect: {
-					fieldPrefix: true,
-					fieldFilters: ['state'],
-				},
-			},
-			address_2: {
-				onChange: woongkirLocation.onChangeFieldAddress2,
-				placeholder: woongkir_params.text.placeholder.address_2,
-				convertInputToSelect: {
-					fieldPrefix: true,
-					fieldFilters: ['state', 'city'],
-				},
-				cloneIfNotExist: {
-					fieldPrefix: 'calc_shipping',
-					fieldFrom: 'postcode',
-				},
-			},
-		};
-
-		if (filterBy) {
-			var filtered = {};
-
-			$.each(fields, function (key, fieldData) {
-				if ('omit' === filterType && -1 !== filterBy.indexOf(key)) {
-					return;
-				}
-
-				if ('includes' === filterType && -1 === filterBy.indexOf(key)) {
-					return;
-				}
-
-				filtered[key] = fieldData;
-			});
-
-			return filtered;
-		}
-
-		return fields;
-	},
-	getLocationDataCountry: function () {
-		return woongkirLocation.getLocationData('country');
-	},
-	getLocationDataState: function () {
-		return woongkirLocation.getLocationData('state');
-	},
-	getLocationDataCity: function () {
-		return woongkirLocation.getLocationData('city');
-	},
-	getLocationDataAddress2: function () {
-		return woongkirLocation.getLocationData('address_2');
-	},
-	getLocationData: function (locationType) {
-		var dfd = new $.Deferred();
-		var dataKey = woongkir_params.json[locationType].key;
-		var dataUrl = woongkir_params.json[locationType].url;
-
-		var items = Lockr.get(dataKey);
-
-		if (null === items || typeof items === 'undefined') {
-			$.getJSON(dataUrl, { _: new Date().getTime() }, function (data) {
-				data.sort(function (a, b) {
-					return (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0);
-				});
-
-				Lockr.set(dataKey, data);
-
-				dfd.resolve(data);
-			});
-		} else {
-			dfd.resolve(items);
-		}
-
-		return dfd.promise();
-	}
 };

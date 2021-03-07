@@ -154,24 +154,8 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 		return wp_parse_args(
 			$params,
 			array(
-				'ajax_url'      => admin_url( 'ajax.php' ),
-				'json'          => $json_data,
-				'text'          => array(
-					'placeholder' => array(
-						'state'     => __( 'Province', 'woongkir' ),
-						'city'      => __( 'Town / City', 'woongkir' ),
-						'address_2' => __( 'Subdistrict', 'woongkir' ),
-					),
-					'label'       => array(
-						'state'     => __( 'Province', 'woongkir' ),
-						'city'      => __( 'Town / City', 'woongkir' ),
-						'address_2' => __( 'Subdistrict', 'woongkir' ),
-					),
-				),
-				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
-				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			'method_id'         => WOONGKIR_METHOD_ID,
-			'method_title'      => woongkir_get_plugin_data( 'Name' ),
+				'json'   => $json_data,
+				'locale' => WC()->countries->get_country_locale(),
 			)
 		);
 	}
@@ -359,5 +343,36 @@ if ( ! function_exists( 'woongkir_parse_etd' ) ) :
 		}
 
 		return $etd;
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_custom_address_fields' ) ) :
+	/**
+	 * Get custom address fields data.
+	 *
+	 * @since 1.3
+	 *
+	 * @return array
+	 */
+	function woongkir_custom_address_fields() {
+		$custom_address_fields = array(
+			'state'     => array(
+				'label'       => __( 'Province', 'woongkir' ),
+				'placeholder' => __( 'Province', 'woongkir' ),
+				'priority'    => 41,
+			),
+			'city'      => array(
+				'label'       => __( 'Town / City', 'woongkir' ),
+				'placeholder' => __( 'Town / City', 'woongkir' ),
+				'priority'    => 42,
+			),
+			'address_2' => array(
+				'label'       => __( 'Subdistrict', 'woongkir' ),
+				'placeholder' => __( 'Subdistrict', 'woongkir' ),
+				'priority'    => 43,
+			),
+		);
+
+		return apply_filters( 'woongkir_custom_address_fields', $custom_address_fields );
 	}
 endif;

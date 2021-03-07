@@ -1,7 +1,22 @@
 var openSettingsModalTimeout;
 
+function woongkirBackendGetUrlParams(url) {
+	var params = {};
+	var parser = document.createElement('a');
+	parser.href = url;
+	var query = parser.search.substring(1);
+	var vars = query.split('&');
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split('=');
+		params[pair[0]] = decodeURIComponent(pair[1]);
+	}
+	return params;
+};
+
 function woongkirBackendOpenSettingsModal() {
-	if (!woongkir_params.show_settings) {
+	var urlParams = woongkirBackendGetUrlParams(window.location.search);
+
+	if (!urlParams.woongkir_settings) {
 		return;
 	}
 
@@ -26,7 +41,9 @@ function woongkirBackendOpenSettingsModal() {
 function woongkirBackendRenderOriginLocations() {
 	var fieldPrefix = 'woocommerce_woongkir_origin_location';
 
-	$.each(woongkirLocation.getFields(), function (fieldSuffix, fieldData) {
+	var localeData = $.extend(true, {}, woongkir_params.locale.default, woongkir_params.locale.ID);
+
+	$.each(woongkirShared.getFields(), function (fieldSuffix, fieldData) {
 		var $field = $('#' + fieldPrefix + '_' + fieldSuffix);
 
 		if (!$field || !$field.length) {
@@ -35,10 +52,17 @@ function woongkirBackendRenderOriginLocations() {
 
 		$field.off('change', fieldData.onChange);
 
-		woongkirLocation.getLocationData(fieldSuffix).then(function (results) {
-			$field.selectWoo({
-				data: woongkirLocation.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData),
-				placeholder: fieldData.placeholder || '',
+		woongkirShared.getLocationData(fieldSuffix).then(function (results) {
+			var options = woongkirShared.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData);
+			var placeholder = localeData[fieldSuffix] && localeData[fieldSuffix].placeholder || '';
+
+			$field.attr({
+				placeholder: placeholder,
+			}).data({
+				placeholder: placeholder,
+			}).selectWoo({
+				data: options,
+				width: '100%',
 			});
 
 			$field.on('change', fieldData.onChange);
