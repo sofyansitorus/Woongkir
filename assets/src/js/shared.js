@@ -15,19 +15,21 @@ var woongkirShared = {
 			woongkirShared.getLocationData(fieldSuffix).then(function (results) {
 				var options = woongkirShared.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData);
 
-				$('#' + fieldId).selectWoo({
-					data: options,
-					width: '100%',
-				});
-
 				var optionSelected = options.find(function (option) {
 					return option.selected;
 				});
 
-				var optionSelectedValue = optionSelected ? optionSelected.id : null;
+				var optionSelectedValue = optionSelected ? optionSelected.id : '';
+
+				$('#' + fieldId).attr({
+					value: optionSelectedValue,
+				}).selectWoo({
+					data: options,
+					width: '100%',
+				});
 
 				if (fieldSuffixTriggerChange || fieldSuffixTriggerChange.indexOf(fieldSuffix) !== -1) {
-					$('#' + fieldId).val(optionSelectedValue).trigger('change');
+					$('#' + fieldId).trigger('change');
 				}
 			});
 		});
