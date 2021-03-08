@@ -91,20 +91,17 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 		// Define user set variables.
 		foreach ( $this->instance_form_fields as $field_id => $field ) {
-			$default = isset( $field['default'] ) ? $field['default'] : null;
-			$type    = isset( $field['type'] ) ? $field['type'] : false;
-
-			if ( ! $type || in_array( $type, array( 'title' ), true ) ) {
-				continue;
-			}
-
-			$option = $this->get_option( $field_id, $default );
+			$option = $this->get_option( $field_id );
 
 			if ( $option && in_array( $field_id, array( 'api_key', 'account_type' ), true ) ) {
 				$this->api->set_option( $field_id, $option );
 			}
 
-			$this->restore_instance_settings[ $field_id ] = $option;
+			$restore = isset( $field['restore'] ) ? $field['restore'] : false;
+
+			if ( $restore ) {
+				$this->restore_instance_settings[ $field_id ] = $option;
+			}
 		}
 	}
 
@@ -178,10 +175,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			),
 			'api_key'                   => array(
 				'title'       => __( 'RajaOngkir API Key', 'woongkir' ),
-				'type'        => 'text',
+				'type'        => 'api_key',
 				'placeholder' => '',
 				'description' => __( '<a href="http://www.rajaongkir.com?utm_source=woongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
 				'default'     => '',
+				'restore'     => true,
 			),
 			'account_type'              => array(
 				'title'             => __( 'RajaOngkir Account Type', 'woongkir' ),
@@ -197,16 +195,19 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 						)
 					),
 				),
+				'restore'           => true,
 			),
 			'selected_couriers'         => array(
-				'title' => __( 'Couriers', 'woongkir' ),
-				'type'  => 'selected_couriers',
+				'title'   => __( 'Couriers', 'woongkir' ),
+				'type'    => 'selected_couriers',
+				'restore' => true,
 			),
 			'volumetric_calculator'     => array(
 				'title'       => __( 'Volumetric Converter', 'woongkir' ),
 				'label'       => __( 'Enable', 'woongkir' ),
 				'type'        => 'checkbox',
 				'description' => __( 'Convert volumetric to weight before send request to API server.', 'woongkir' ),
+				'restore'     => true,
 			),
 			'volumetric_divider'        => array(
 				'title'             => __( 'Volumetric Converter Divider', 'woongkir' ),
@@ -217,6 +218,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 					'step' => '100',
 				),
 				'default'           => '6000',
+				'restore'           => true,
 			),
 		);
 
@@ -258,7 +260,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
-	 * Filter option value to mapping new setting value.
+	 * Filter option value mapping.
 	 *
 	 * @param mixed                    $option Original setting value.
 	 * @param string                   $key Setting key.
@@ -267,59 +269,59 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return mixed
 	 */
 	public function instance_option_mapping( $option, $key, $instance ) {
-		if ( $option || $instance->instance_id !== $this->instance_id ) {
+		if ( $instance->instance_id !== $this->instance_id ) {
 			return $option;
 		}
 
 		switch ( $key ) {
 			case 'origin_location_state':
-				$state_id = $this->get_instance_option( 'origin_province' );
-
-				if ( $state_id ) {
-					$state = woongkir_get_json_data( 'state', array( 'id' => (int) $state_id ) );
-
-					if ( $state ) {
-						return $state['value'];
-					}
-				}
-				break;
 			case 'origin_location_city':
-				$city_id = $this->get_instance_option( 'origin_city' );
-
-				if ( $city_id ) {
-					$city = woongkir_get_json_data( 'city', array( 'id' => (int) $city_id ) );
-
-					if ( $city ) {
-						return $city['value'];
-					}
-				}
-				break;
-
 			case 'origin_location_address_2':
-				$address_2_id = $this->get_instance_option( 'origin_subdistrict' );
+				if ( ! $option ) {
+					$origin_mapping = array(
+						'state'     => 'origin_province',
+						'city'      => 'origin_city',
+						'address_2' => 'origin_subdistrict',
+					);
 
-				if ( $address_2_id ) {
-					$address_2 = woongkir_get_json_data( 'address_2', array( 'id' => (int) $address_2_id ) );
+					$key_short = str_replace( 'origin_location_', '', $key );
+					$key_old   = $origin_mapping[ $key_short ];
 
-					if ( $address_2 ) {
-						return $address_2['value'];
+					$origin_id = isset( $this->instance_settings[ $key_old ] ) ? $this->instance_settings[ $key_old ] : false;
+
+					if ( $origin_id ) {
+						$match = woongkir_get_json_data( $key_short, array( 'id' => (int) $origin_id ) );
+
+						if ( $match ) {
+							return $match['value'];
+						}
 					}
 				}
 				break;
 
 			case 'selected_couriers':
-				$selected_couriers = array();
+				if ( ! $option ) {
+					$selected_couriers = array();
 
-				foreach ( array_keys( $this->api->get_zones() ) as $zone_id ) {
-					$couriers = $this->get_instance_option( $zone_id );
+					foreach ( array_keys( $this->api->get_zones() ) as $zone_id ) {
+						$match = isset( $this->instance_settings[ $zone_id ] ) ? $this->instance_settings[ $zone_id ] : false;
 
-					if ( $couriers ) {
-						$selected_couriers[ $zone_id ] = $couriers;
+						if ( $match ) {
+							$selected_couriers[ $zone_id ] = $match;
+						}
+					}
+
+					if ( $selected_couriers ) {
+						return $selected_couriers;
 					}
 				}
+				break;
 
-				if ( $selected_couriers ) {
-					return $selected_couriers;
+			case 'api_key':
+				$api_key_hardcoded = apply_filters( 'woongkir_api_key_hardcoded', false );
+
+				if ( false !== $api_key_hardcoded ) {
+					return $api_key_hardcoded;
 				}
 				break;
 		}
@@ -340,7 +342,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			return $instance_settings;
 		}
 
-		return $this->restore_instance_settings;
+		foreach ( $this->restore_instance_settings as $key => $value ) {
+			$instance_settings[ $key ] = $value;
+		}
+
+		return $instance_settings;
 	}
 
 	/**
@@ -415,7 +421,29 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	}
 
 	/**
-	 * Generate Select HTML.
+	 * Generate API Key HTML.
+	 *
+	 * @param string $key Field key.
+	 * @param array  $data Field data.
+	 * @since  1.3.1
+	 * @return string
+	 */
+	public function generate_api_key_html( $key, $data ) {
+		$api_key_hardcoded = apply_filters( 'woongkir_api_key_hardcoded', false );
+
+		if ( false !== $api_key_hardcoded ) {
+			return;
+		}
+
+		if ( isset( $data['type'] ) ) {
+			$data['type'] = 'text';
+		}
+
+		return $this->generate_text_html( $key, $data );
+	}
+
+	/**
+	 * Generate Account Type HTML.
 	 *
 	 * @param string $key Field key.
 	 * @param array  $data Field data.
@@ -691,9 +719,11 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @throws Exception Error message.
 	 */
 	public function validate_api_key_field( $key, $value ) {
-		$field_label = $this->get_instance_form_field_data( $key, 'title', $key );
+		$field_label       = $this->get_instance_form_field_data( $key, 'title', $key );
+		$api_key_hardcoded = apply_filters( 'woongkir_api_key_hardcoded', false );
+		$api_key           = false !== $api_key_hardcoded ? $api_key_hardcoded : $value;
 
-		if ( empty( $value ) ) {
+		if ( empty( $api_key ) ) {
 			// translators: %s is setting field label.
 			throw new Exception( wp_sprintf( __( '%s is required.', 'woongkir' ), $field_label ) );
 		}
@@ -701,7 +731,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 		$account_type = $this->validate_account_type_field( 'account_type', $this->posted_field_value( 'account_type' ) );
 
 		if ( $account_type ) {
-			$this->api->set_option( 'api_key', $value );
+			$this->api->set_option( 'api_key', $api_key );
 			$this->api->set_option( 'account_type', $account_type );
 
 			$results = $this->api->validate_account();
@@ -709,6 +739,10 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			if ( is_wp_error( $results ) ) {
 				throw new Exception( $results->get_error_message() );
 			}
+		}
+
+		if ( false !== $api_key_hardcoded && isset( $this->instance_settings[ $key ] ) ) {
+			return $this->instance_settings[ $key ];
 		}
 
 		return $value;

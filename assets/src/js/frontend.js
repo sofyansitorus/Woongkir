@@ -3,6 +3,7 @@ function woongkirFrontendModifyForm(fieldPrefix) {
 
 	$.each(woongkirShared.getFields(), function (fieldSuffix, fieldData) {
 		var fieldId = fieldPrefix + '_' + fieldSuffix;
+		var fieldLocale = localeData[fieldSuffix] || {};
 
 		if ($('#' + fieldId).length < 1) {
 			if ('calc_shipping' === fieldPrefix && 'address_2' === fieldSuffix) {
@@ -22,9 +23,8 @@ function woongkirFrontendModifyForm(fieldPrefix) {
 						id: fieldId,
 						name: fieldId,
 						placeholder: placeholder,
+						'data-placeholder': placeholder,
 						value: $('#woongkir_' + fieldPrefix + '_' + fieldSuffix).val(),
-					}).data({
-						placeholder: placeholder,
 					});
 				}
 			} else {
@@ -45,7 +45,7 @@ function woongkirFrontendModifyForm(fieldPrefix) {
 
 				$('#' + fieldId).on('change', fieldData.onChange);
 
-				if ('address_2' === fieldSuffix) {
+				if ('address_2' === fieldSuffix && fieldLocale.label) {
 					$('label[for="' + fieldId + '"]').removeClass('screen-reader-text');
 				}
 			});
@@ -56,8 +56,11 @@ function woongkirFrontendModifyForm(fieldPrefix) {
 }
 
 function woongkirFrontendRestoreForm(fieldPrefix, countryCode) {
+	var localeData = $.extend(true, {}, woongkir_params.locale.default, woongkir_params.locale[countryCode]);
+
 	$.each(woongkirShared.getFields(), function (fieldSuffix, fieldData) {
 		var fieldId = fieldPrefix + '_' + fieldSuffix;
+		var fieldLocale = localeData[fieldSuffix] || {};
 
 		if ($('#' + fieldId).length < 1) {
 			return;
@@ -73,12 +76,16 @@ function woongkirFrontendRestoreForm(fieldPrefix, countryCode) {
 			return;
 		}
 
-		if ('address_2' === fieldSuffix) {
+		if ('address_2' === fieldSuffix && !fieldLocale.label) {
 			$('label[for="' + fieldId + '"]').addClass('screen-reader-text');
 		}
 
 		if ($('#' + fieldId).data('select2')) {
 			$('#' + fieldId).select2('destroy');
+		}
+
+		if ('calc_shipping' === fieldPrefix && 'address_2' === fieldSuffix) {
+			$('#' + fieldId + '_field').remove();
 		}
 	});
 }
