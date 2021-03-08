@@ -33,7 +33,7 @@ before_script:
   - composer global require "wp-coding-standards/wpcs=*"
   - composer global require "phpcompatibility/phpcompatibility-wp=*"
   - composer global require "dealerdirect/phpcodesniffer-composer-installer=*"
-  - composer global require "sirbrillig/phpcs-variable-analysis*"
+  - composer global require "sirbrillig/phpcs-variable-analysis=*"
 
 script:
   - phpcs
