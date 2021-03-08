@@ -23,7 +23,7 @@
         "sirbrillig/phpcs-variable-analysis": "^2.7"
     },
     "scripts": {
-        "phpcs": "vendor/bin/phpcs",
-        "phpcbf": "vendor/bin/phpcbf"
+        "run-phpcs": "./vendor/bin/phpcs",
+        "run-phpcbf": "./vendor/bin/phpcbf"
     }
 }
