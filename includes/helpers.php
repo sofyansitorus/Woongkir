@@ -54,6 +54,19 @@ if ( ! function_exists( 'woongkir_autoload' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'woongkir_get_json_path' ) ) :
+	/**
+	 * Generate relative path to JSON file.
+	 *
+	 * @param string $file_name JSON file name.
+	 *
+	 * @return array
+	 */
+	function woongkir_get_json_path( $file_name ) {
+		return apply_filters( 'woongkir_get_json_path', 'data/woongkir-' . sanitize_file_name( $file_name ) . '.json', $file_name );
+	}
+endif;
+
 if ( ! function_exists( 'woongkir_get_json_data' ) ) :
 	/**
 	 * Get json file data.
@@ -67,8 +80,8 @@ if ( ! function_exists( 'woongkir_get_json_data' ) ) :
 	function woongkir_get_json_data( $file_name, $search = array() ) {
 		global $wp_filesystem;
 
-		$file_url  = WOONGKIR_URL . 'data/' . $file_name . '.json';
-		$file_path = WOONGKIR_PATH . 'data/' . $file_name . '.json';
+		$file_url  = WOONGKIR_URL . woongkir_get_json_path( $file_name );
+		$file_path = WOONGKIR_PATH . woongkir_get_json_path( $file_name );
 
 		try {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -128,36 +141,21 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 	 * @return array
 	 */
 	function woongkir_scripts_params( $params = array() ) {
+		$json_keys = array( 'country', 'state', 'city', 'address_2' );
+		$json_data = array();
+
+		foreach ( $json_keys as $json_key ) {
+			$json_data[ $json_key ] = array(
+				'url' => WOONGKIR_URL . woongkir_get_json_path( $json_key ),
+				'key' => 'woongkir_data_' . $json_key,
+			);
+		}
+
 		return wp_parse_args(
 			$params,
 			array(
-				'ajax_url'      => admin_url( 'ajax.php' ),
-				'json'          => array(
-					'country_url'     => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/country.json' ),
-					'country_key'     => 'woongkir_country_data',
-					'province_url'    => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/province.json' ),
-					'province_key'    => 'woongkir_province_data',
-					'city_url'        => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/city.json' ),
-					'city_key'        => 'woongkir_city_data',
-					'subdistrict_url' => add_query_arg( array( 't' => time() ), WOONGKIR_URL . 'data/subdistrict.json' ),
-					'subdistrict_key' => 'woongkir_subdistrict_data',
-				),
-				'text'          => array(
-					'placeholder' => array(
-						'state'     => __( 'Province', 'woongkir' ),
-						'city'      => __( 'Town / City', 'woongkir' ),
-						'address_2' => __( 'Subdistrict', 'woongkir' ),
-					),
-					'label'       => array(
-						'state'     => __( 'Province', 'woongkir' ),
-						'city'      => __( 'Town / City', 'woongkir' ),
-						'address_2' => __( 'Subdistrict', 'woongkir' ),
-					),
-				),
-				'debug'         => ( 'yes' === get_option( 'woocommerce_shipping_debug_mode', 'no' ) ),
-				'show_settings' => isset( $_GET['woongkir_settings'] ) && is_admin(), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			'method_id'         => WOONGKIR_METHOD_ID,
-			'method_title'      => woongkir_get_plugin_data( 'Name' ),
+				'json'   => $json_data,
+				'locale' => WC()->countries->get_country_locale(),
 			)
 		);
 	}
@@ -298,5 +296,83 @@ if ( ! function_exists( 'woongkir_instances' ) ) :
 		}
 
 		return apply_filters( 'woongkir_instances', $instances );
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_is_enable_cache' ) ) :
+	/**
+	 * Check wether api response should be cached
+	 *
+	 * @return boolean
+	 */
+	function woongkir_is_enable_cache() {
+		return defined( 'WOONGKIR_ENABLE_CACHE' ) ? WOONGKIR_ENABLE_CACHE : true;
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_parse_etd' ) ) :
+	/**
+	 * Parse API response ETD data.
+	 *
+	 * @since 1.3
+	 *
+	 * @param string $etd API response ETD data.
+	 *
+	 * @return string
+	 */
+	function woongkir_parse_etd( $etd ) {
+		if ( ! $etd ) {
+			return '';
+		}
+
+		$etd = strtolower( $etd );
+		$etd = preg_replace( '/([0-9]+) - ([0-9]+)/', '$1-$2', $etd );
+		$etd = str_replace( '1-1', '1', $etd );
+		$etd = str_replace( '0-0', '0', $etd );
+
+		if ( false !== strpos( $etd, 'jam' ) ) {
+			$etd = trim( str_replace( 'jam', '', $etd ) );
+
+			// translators: %s is number of hours.
+			$etd = is_numeric( $etd ) && intval( $etd ) === 1 ? __( '1 hour', 'woongkir' ) : sprintf( __( '%s hours', 'woongkir' ), $etd );
+		} else {
+			$etd = trim( str_replace( 'hari', '', $etd ) );
+
+			// translators: %s is number of days.
+			$etd = is_numeric( $etd ) && intval( $etd ) === 1 ? __( '1 day', 'woongkir' ) : sprintf( __( '%s days', 'woongkir' ), $etd );
+		}
+
+		return $etd;
+	}
+endif;
+
+if ( ! function_exists( 'woongkir_custom_address_fields' ) ) :
+	/**
+	 * Get custom address fields data.
+	 *
+	 * @since 1.3
+	 *
+	 * @return array
+	 */
+	function woongkir_custom_address_fields() {
+		$custom_address_fields = array(
+			'state'     => array(
+				'label'       => __( 'Province', 'woongkir' ),
+				'placeholder' => __( 'Province', 'woongkir' ),
+				'priority'    => 41,
+			),
+			'city'      => array(
+				'label'       => __( 'Town / City', 'woongkir' ),
+				'placeholder' => __( 'Town / City', 'woongkir' ),
+				'priority'    => 42,
+			),
+			'address_2' => array(
+				'label'       => __( 'Subdistrict', 'woongkir' ),
+				'placeholder' => __( 'Subdistrict', 'woongkir' ),
+				'priority'    => 43,
+			),
+		);
+
+		return apply_filters( 'woongkir_custom_address_fields', $custom_address_fields );
 	}
 endif;

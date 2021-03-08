@@ -3,9 +3,9 @@ Contributors: sofyansitorus
 Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX
 Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plugin_page&utm_medium=referral
 Requires at least: 4.8
-Tested up to: 5.4.2
+Tested up to: 5.6.2
 Requires PHP: 5.6
-Stable tag: 1.2.16
+Stable tag: 1.3.0
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -27,7 +27,7 @@ WooCommerce shipping rates calculator for Indonesia domestic and international s
 * Set shipping couriers priority.
 * Set base weight for cart content.
 * Show or hide the estimated time of arrival.
-* Real-time currency conversion to IDR for international shipping cost courier that uses USD.
+* Real-time currency conversion to IDR for international shipping cost courier that using USD currency.
 * Real-time API Key validation on settings update.
 
 = Demo =
@@ -118,6 +118,13 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.3 =
+
+* Fixed performance issue when many couriers is enabled.
+* Fixed unwanted JSON data loaded on first visit.
+* Fixed checkout fields label and priority.
+* Improved UI/UX admin settings area.
 
 = 1.2.16 =
 

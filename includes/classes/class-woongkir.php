@@ -76,29 +76,32 @@ class Woongkir {
 		// Hook to add plugin action links.
 		add_action( 'plugin_action_links_' . plugin_basename( WOONGKIR_FILE ), array( $this, 'plugin_action_links' ) );
 
-		// Hook to enqueue scripts & styles assets.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_backend_assets' ), 999 );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ), 999 );
-
-		// Hook to check if this shipping method is available for current order.
-		add_filter( 'woocommerce_shipping_' . WOONGKIR_METHOD_ID . '_is_available', array( $this, 'check_is_available' ), 10, 2 );
-
-		// Hook to modify billing and shipping address fields position priority.
-		add_filter( 'woocommerce_default_address_fields', array( $this, 'default_address_fields_priority' ) );
-		add_filter( 'woocommerce_billing_fields', array( $this, 'billing_fields_priority' ), 10, 2 );
-		add_filter( 'woocommerce_shipping_fields', array( $this, 'shipping_fields_priority' ), 10, 2 );
-
-		// Hook to woocommerce_cart_shipping_packages to inject field address_2.
-		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
-
-		// Hook to  print hidden element for the hidden address 2 field after the shipping calculator form.
-		add_action( 'woocommerce_after_shipping_calculator', array( $this, 'after_shipping_calculator' ) );
-
-		// Hook to enable city field in the shipping calculator form.
-		add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
-
 		// Hook to register the shipping method.
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'register_shipping_method' ) );
+
+		// Hook to enqueue scripts & styles assets in backend area.
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_backend_assets' ), 999 );
+
+		// Hooks that will be registered only when there is Woongkir instance enabled.
+		if ( woongkir_instances( true ) ) {
+			// Hook to enqueue scripts & styles assets in frontend area.
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ), 999 );
+
+			// Hook to check if this shipping method is available for current order.
+			add_filter( 'woocommerce_shipping_' . WOONGKIR_METHOD_ID . '_is_available', array( $this, 'check_is_available' ), 10, 2 );
+
+			// Hook to modify the default country selections after a country is chosen.
+			add_filter( 'woocommerce_get_country_locale', array( $this, 'get_country_locale' ) );
+
+			// Hook to woocommerce_cart_shipping_packages to inject field address_2.
+			add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
+
+			// Hook to  print hidden element for the hidden address 2 field after the shipping calculator form.
+			add_action( 'woocommerce_after_shipping_calculator', array( $this, 'after_shipping_calculator' ) );
+
+			// Hook to enable city field in the shipping calculator form.
+			add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
+		}
 	}
 
 	/**
@@ -241,7 +244,16 @@ class Woongkir {
 				true // Specify whether to put in footer (leave this true).
 			);
 
-			wp_localize_script( 'woongkir-backend', 'woongkir_params', woongkir_scripts_params() );
+			wp_localize_script(
+				'woongkir-backend',
+				'woongkir_params',
+				woongkir_scripts_params(
+					array(
+						'method_id'    => WOONGKIR_METHOD_ID,
+						'method_title' => woongkir_get_plugin_data( 'Name' ),
+					)
+				)
+			);
 		}
 	}
 
@@ -252,6 +264,12 @@ class Woongkir {
 	 */
 	public function enqueue_frontend_assets() {
 		if ( is_admin() || ! woongkir_instances() ) {
+			return;
+		}
+
+		$is_enqueue_assests = apply_filters( 'woongkir_enqueue_frontend_assets', ( is_cart() || is_checkout() || is_account_page() ) );
+
+		if ( ! $is_enqueue_assests ) {
 			return;
 		}
 
@@ -289,118 +307,30 @@ class Woongkir {
 	}
 
 	/**
-	 * Modify default address fields priority.
+	 * Modify the default country selections after a country is chosen.
 	 *
-	 * @param array $fields Address fields used by default.
-	 */
-	public function default_address_fields_priority( $fields ) {
-		if ( isset( $fields['state'] ) ) {
-			$fields['state']['priority'] = 41;
-		}
-
-		if ( isset( $fields['city'] ) ) {
-			$fields['city']['priority'] = 42;
-		}
-
-		return $fields;
-	}
-
-	/**
-	 * Modify billing fields priority.
+	 * @since 1.3
 	 *
-	 * @since 1.0.0
-	 * @param array  $fields Address fields used by default.
-	 * @param string $country Selected country.
-	 */
-	public function billing_fields_priority( $fields, $country ) {
-		if ( 'ID' !== $country ) {
-			return $fields;
-		}
-
-		$need_sort = false;
-
-		if ( isset( $fields['billing_state'] ) ) {
-			$fields['billing_state']['priority'] = 41;
-			$need_sort                           = true;
-		}
-
-		if ( isset( $fields['billing_city'] ) ) {
-			$fields['billing_city']['priority'] = 42;
-			$need_sort                          = true;
-		}
-
-		if ( ! $need_sort ) {
-			return $fields;
-		}
-
-		$priority_offset = count( $fields ) * 10;
-		$billing_fields  = array();
-
-		foreach ( $fields as $key => $value ) {
-			$billing_fields[ $key ] = isset( $value['priority'] ) ? $value['priority'] : $priority_offset;
-			$priority_offset       += 10;
-		}
-
-		// Sort fields by priority.
-		asort( $billing_fields );
-
-		$billing_field_keys = array_keys( $billing_fields );
-
-		foreach ( $billing_field_keys as $billing_field_key ) {
-			$billing_fields[ $billing_field_key ] = $fields[ $billing_field_key ];
-		}
-
-		return $billing_fields;
-	}
-
-	/**
-	 * Modify shipping fields priority.
+	 * @param array $locale Default locale data.
 	 *
-	 * @since 1.0.0
-	 * @param array  $fields Address fields used by default.
-	 * @param string $country Selected country.
+	 * @return array
 	 */
-	public function shipping_fields_priority( $fields, $country ) {
-		if ( 'ID' !== $country ) {
-			return $fields;
+	public function get_country_locale( $locale ) {
+		if ( ! isset( $locale['ID'] ) ) {
+			return $locale;
 		}
 
-		$need_sort = false;
+		$custom_fields = woongkir_custom_address_fields();
 
-		if ( isset( $fields['shipping_state'] ) ) {
-			$fields['shipping_state']['priority'] = 41;
-
-			$need_sort = true;
+		foreach ( $custom_fields as $key => $value ) {
+			if ( isset( $locale['ID'][ $key ] ) ) {
+				$locale['ID'][ $key ] = array_merge( $locale['ID'][ $key ], $value );
+			} else {
+				$locale['ID'][ $key ] = $value;
+			}
 		}
 
-		if ( isset( $fields['shipping_city'] ) ) {
-			$fields['shipping_city']['priority'] = 42;
-
-			$need_sort = true;
-		}
-
-		if ( ! $need_sort ) {
-			return $fields;
-		}
-
-		$priority_offset = count( $fields ) * 10;
-		$shipping_fields = array();
-
-		foreach ( $fields as $key => $value ) {
-			$shipping_fields[ $key ] = isset( $value['priority'] ) ? $value['priority'] : $priority_offset;
-			$priority_offset        += 10;
-		}
-
-		// Sort fields by priority.
-		asort( $shipping_fields );
-
-		$shipping_field_keys = array_keys( $shipping_fields );
-
-		foreach ( $shipping_field_keys as $shipping_field_key ) {
-			$shipping_fields[ $shipping_field_key ] = $fields[ $shipping_field_key ];
-		}
-
-		return $shipping_fields;
+		return $locale;
 	}
 
 	/**
