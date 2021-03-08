@@ -29,16 +29,9 @@ matrix:
     - php: 5.6
       env: WP_VERSION=4.8
 
-install:
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - composer global require "squizlabs/php_codesniffer=*"
-  - composer global require "wp-coding-standards/wpcs=*"
-  - composer global require "phpcompatibility/phpcompatibility-wp=*"
-  - composer global require "dealerdirect/phpcodesniffer-composer-installer=*"
-  - composer global require "sirbrillig/phpcs-variable-analysis=*"
-
 before_script:
-  - phpcs --version
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - composer install
 
 script:
-  - phpcs
+  - composer run-phpcs
