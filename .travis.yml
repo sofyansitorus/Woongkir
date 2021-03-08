@@ -29,10 +29,11 @@ matrix:
 
 before_script:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - composer global require wp-coding-standards/wpcs
-  - composer global require phpcompatibility/phpcompatibility-wp
-  - composer global require dealerdirect/phpcodesniffer-composer-installer
-  - composer global require sirbrillig/phpcs-variable-analysis
+  - composer global require "squizlabs/php_codesniffer=*"
+  - composer global require "wp-coding-standards/wpcs=*"
+  - composer global require "phpcompatibility/phpcompatibility-wp=*"
+  - composer global require "dealerdirect/phpcodesniffer-composer-installer=*"
+  - composer global require "sirbrillig/phpcs-variable-analysis*"
 
 script:
   - phpcs
