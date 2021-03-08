@@ -377,7 +377,7 @@ gulp.task('default', tasksListDefault, function () {
 
 gulp.task('bump', function () {
 	const versionCurrent = packageJSON.version;
-	const versionBump = semver.inc(packageJSON.version, (argv.type || 'patch'));
+	const versionBump = semver.inc(packageJSON.version, (argv.semver || 'patch'));
 
 	const assets = [
 		{
