@@ -311,7 +311,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 						}
 					}
 
-					if ( $selected_couriers && count( $selected_couriers ) === 2 ) {
+					if ( $selected_couriers ) {
 						return $selected_couriers;
 					}
 				}
