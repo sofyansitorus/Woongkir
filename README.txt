@@ -3,7 +3,7 @@ Contributors: sofyansitorus
 Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX
 Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plugin_page&utm_medium=referral
 Requires at least: 4.8
-Tested up to: 5.6.2
+Tested up to: 5.7
 Requires PHP: 5.6
 Stable tag: 1.3.3
 License: GPL-2.0+
