@@ -264,9 +264,9 @@ class Woongkir {
 			return;
 		}
 
-		$is_enqueue_assests = apply_filters( 'woongkir_enqueue_frontend_assets', ( is_cart() || is_checkout() || is_account_page() ) );
+		$is_enqueue_assets = apply_filters( 'woongkir_enqueue_frontend_assets', ( is_cart() || is_checkout() || is_account_page() ) );
 
-		if ( ! $is_enqueue_assests ) {
+		if ( ! $is_enqueue_assets ) {
 			return;
 		}
 
