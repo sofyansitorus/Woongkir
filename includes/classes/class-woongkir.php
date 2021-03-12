@@ -82,26 +82,23 @@ class Woongkir {
 		// Hook to enqueue scripts & styles assets in backend area.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_backend_assets' ), 999 );
 
-		// Hooks that will be registered only when there is Woongkir instance enabled.
-		if ( woongkir_instances( true ) ) {
-			// Hook to enqueue scripts & styles assets in frontend area.
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ), 999 );
+		// Hook to enqueue scripts & styles assets in frontend area.
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ), 999 );
 
-			// Hook to check if this shipping method is available for current order.
-			add_filter( 'woocommerce_shipping_' . WOONGKIR_METHOD_ID . '_is_available', array( $this, 'check_is_available' ), 10, 2 );
+		// Hook to check if this shipping method is available for current order.
+		add_filter( 'woocommerce_shipping_' . WOONGKIR_METHOD_ID . '_is_available', array( $this, 'check_is_available' ), 10, 2 );
 
-			// Hook to modify the default country selections after a country is chosen.
-			add_filter( 'woocommerce_get_country_locale', array( $this, 'get_country_locale' ) );
+		// Hook to modify the default country selections after a country is chosen.
+		add_filter( 'woocommerce_get_country_locale', array( $this, 'get_country_locale' ) );
 
-			// Hook to woocommerce_cart_shipping_packages to inject field address_2.
-			add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
+		// Hook to woocommerce_cart_shipping_packages to inject field address_2.
+		add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'inject_cart_shipping_packages' ), 10 );
 
-			// Hook to  print hidden element for the hidden address 2 field after the shipping calculator form.
-			add_action( 'woocommerce_after_shipping_calculator', array( $this, 'after_shipping_calculator' ) );
+		// Hook to  print hidden element for the hidden address 2 field after the shipping calculator form.
+		add_action( 'woocommerce_after_shipping_calculator', array( $this, 'after_shipping_calculator' ) );
 
-			// Hook to enable city field in the shipping calculator form.
-			add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
-		}
+		// Hook to enable city field in the shipping calculator form.
+		add_filter( 'woocommerce_shipping_calculator_enable_city', array( $this, 'shipping_calculator_enable_city' ), 10 );
 	}
 
 	/**
@@ -316,7 +313,7 @@ class Woongkir {
 	 * @return array
 	 */
 	public function get_country_locale( $locale ) {
-		if ( ! isset( $locale['ID'] ) ) {
+		if ( ! woongkir_instances() || ! isset( $locale['ID'] ) ) {
 			return $locale;
 		}
 
@@ -341,6 +338,10 @@ class Woongkir {
 	 * @return array
 	 */
 	public function inject_cart_shipping_packages( $packages ) {
+		if ( ! woongkir_instances() ) {
+			return $packages;
+		}
+
 		$nonce_action    = 'woocommerce-shipping-calculator';
 		$nonce_name      = 'woocommerce-shipping-calculator-nonce';
 		$address_2_field = 'calc_shipping_address_2';
@@ -360,6 +361,23 @@ class Woongkir {
 		}
 
 		return $packages;
+	}
+
+	/**
+	 * Hook to enable city field in the shipping calculator form.
+	 *
+	 * @since 1.3.2
+	 *
+	 * @param bool $is_enable Current status is city enabled.
+	 *
+	 * @return bool
+	 */
+	public function shipping_calculator_enable_city( $is_enable ) {
+		if ( ! woongkir_instances() ) {
+			return $is_enable;
+		}
+
+		return true;
 	}
 
 	/**
