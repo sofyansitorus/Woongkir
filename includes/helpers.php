@@ -141,13 +141,14 @@ if ( ! function_exists( 'woongkir_scripts_params' ) ) :
 	 * @return array
 	 */
 	function woongkir_scripts_params( $params = array() ) {
-		$json_keys = array( 'country', 'state', 'city', 'address_2' );
-		$json_data = array();
+		$json_version = str_replace( '.', '_', woongkir_get_plugin_data( 'Version' ) );
+		$json_keys    = array( 'country', 'state', 'city', 'address_2' );
+		$json_data    = array();
 
 		foreach ( $json_keys as $json_key ) {
 			$json_data[ $json_key ] = array(
 				'url' => WOONGKIR_URL . woongkir_get_json_path( $json_key ),
-				'key' => 'woongkir_data_' . $json_key,
+				'key' => 'woongkir_data_' . $json_key . '_v_' . $json_version,
 			);
 		}
 

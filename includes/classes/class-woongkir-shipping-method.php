@@ -435,11 +435,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			return;
 		}
 
-		if ( isset( $data['type'] ) ) {
-			$data['type'] = 'text';
-		}
-
-		return $this->generate_text_html( $key, $data );
+		return $this->generate_password_html( $key, $data );
 	}
 
 	/**
@@ -588,7 +584,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 						$courier,
 						array(
 							'website'         => $website,
-							'selected'        => $count_selected === $count_available,
+							'selected'        => $count_selected > 0,
 							'count_selected'  => $count_selected,
 							'count_available' => $count_available,
 						)
@@ -806,6 +802,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$value = array_map( 'trim', explode( ',', $value ) );
 		}
 
+		$field_label = $this->get_instance_form_field_data( $key, 'title', $key );
+
 		// Format the value as associative array courier_data => services.
 		if ( $value && is_array( $value ) ) {
 			$format_value = array();
@@ -820,8 +818,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 			$value = $format_value;
 		}
-
-		$field_label = $this->get_instance_form_field_data( $key, 'title', $key );
 
 		if ( ! $value ) {
 			// Translators: %1$s Setting field label.

@@ -3,13 +3,20 @@ var openSettingsModalTimeout;
 function woongkirBackendGetUrlParams(url) {
 	var params = {};
 	var parser = document.createElement('a');
+
 	parser.href = url;
+
 	var query = parser.search.substring(1);
 	var vars = query.split('&');
+
 	for (var i = 0; i < vars.length; i++) {
 		var pair = vars[i].split('=');
-		params[pair[0]] = decodeURIComponent(pair[1]);
+
+		if (pair.length === 2) {
+			params[pair[0]] = decodeURIComponent(pair[1]);
+		}
 	}
+
 	return params;
 };
 
@@ -71,6 +78,30 @@ function woongkirBackendRenderOriginLocations() {
 }
 
 function woongkirBackendInitCouriersSortable() {
+	$('#woocommerce_woongkir_api_key_toggle').remove();
+
+	$("#woocommerce_woongkir_api_key").each(function () {
+		$(this).after('<button id="woocommerce_woongkir_api_key_toggle" type="button" class="button button-secondary"><span class="dashicons dashicons-visibility" style="margin-top: 4px;"></span></button>');
+	});
+
+	$('#woocommerce_woongkir_api_key_toggle').off('click');
+
+	$('#woocommerce_woongkir_api_key_toggle').on('click', function (event) {
+		event.preventDefault();
+
+		var fieldType = $("#woocommerce_woongkir_api_key").attr('type');
+
+		if ('password' === fieldType) {
+			$("#woocommerce_woongkir_api_key").attr('type', 'text');
+		} else {
+			$("#woocommerce_woongkir_api_key").attr('type', 'password');
+		}
+
+		$(this).find('span').toggleClass('dashicons-visibility dashicons-hidden');
+	});
+}
+
+function woongkirBackendToggleApiKeyVisibility() {
 	$(".woongkir-couriers").sortable({
 		axis: 'y',
 		cursor: 'move',
@@ -194,7 +225,7 @@ function woongkirBackendSelectServicesSingle(event) {
 	$courierItem.find('.woongkir-couriers--selected').text(courierItemsSelected);
 	$courierItem.find('.woongkir-couriers--available').text(courierItemsAvailable);
 
-	var checkCheckboxBulk = courierItemsSelected && courierItemsAvailable && courierItemsSelected === courierItemsAvailable;
+	var checkCheckboxBulk = courierItemsSelected > 0;
 	var selectorCheckboxBulk = checkCheckboxBulk ? '.woongkir-service--bulk:not(:checked)' : '.woongkir-service--bulk:checked';
 
 	$courierItem.find(selectorCheckboxBulk).prop('checked', checkCheckboxBulk);
