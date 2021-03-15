@@ -121,7 +121,7 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 
 = 1.3.4 =
 
-* Added new courierL AnterAja.
+* Added new courier AnterAja.
 * Fixed update_checkout event not triggered when shipping destination forced to billing address.
 
 = 1.3.3 =
