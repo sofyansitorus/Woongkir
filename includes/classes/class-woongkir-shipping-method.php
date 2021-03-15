@@ -136,15 +136,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				'title' => __( 'Shipping Origin Subdistrict', 'woongkir' ),
 				'type'  => 'origin',
 			),
-			'tax_status'                => array(
-				'title'   => __( 'Tax Status', 'woongkir' ),
-				'type'    => 'select',
-				'default' => 'none',
-				'options' => array(
-					'taxable' => __( 'Taxable', 'woongkir' ),
-					'none'    => _x( 'None', 'Tax status', 'woongkir' ),
-				),
-			),
 			'sort_shipping'             => array(
 				'title'       => __( 'Sort Shipping', 'woongkir' ),
 				'type'        => 'select',
@@ -219,6 +210,15 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				),
 				'default'           => '6000',
 				'restore'           => true,
+			),
+			'tax_status'                => array(
+				'title'   => __( 'Tax Status', 'woongkir' ),
+				'type'    => 'select',
+				'default' => 'none',
+				'options' => array(
+					'taxable' => __( 'Taxable', 'woongkir' ),
+					'none'    => _x( 'None', 'Tax status', 'woongkir' ),
+				),
 			),
 		);
 
@@ -671,7 +671,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 									</label>
 									<?php if ( $courier['website'] ) : ?>
 									<div class="woongkir-couriers-item-info-link">
-										<a href="<?php echo esc_url( $courier['website'] ); ?>" target="blank" title="<?php esc_attr_e( 'Visit courier_data\'s website', 'woongkir' ); ?>">
+										<a href="<?php echo esc_url( $courier['website'] ); ?>" target="blank" title="<?php esc_attr_e( 'Visit courier\'s website', 'woongkir' ); ?>">
 											<span class="dashicons dashicons-admin-links"></span>
 										</a>
 									</div>
@@ -890,14 +890,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 
 			if ( woongkir_is_enable_cache() ) {
 				$results = get_transient( $cache_key );
-
-				$this->show_debug(
-					wp_json_encode(
-						array(
-							'calculate_shipping.$results.cached' => $results,
-						)
-					)
-				);
 			}
 
 			if ( false === $results ) {
@@ -937,7 +929,15 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			$this->show_debug(
 				wp_json_encode(
 					array(
-						'calculate_shipping.$results' => $results,
+						'calculate_shipping.$results.parsed' => $results['parsed'],
+					)
+				)
+			);
+
+			$this->show_debug(
+				wp_json_encode(
+					array(
+						'calculate_shipping.$results.raw' => $results['raw'],
 					)
 				)
 			);
@@ -1485,6 +1485,8 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 	 * @return void
 	 */
 	private function show_debug( $message, $notice_type = 'notice' ) {
+		$message = $this->id . '_' . $this->instance_id . ' : ' . $message;
+
 		if (
 			defined( 'WC_DOING_AJAX' ) && WC_DOING_AJAX
 			|| 'yes' !== get_option( 'woocommerce_shipping_debug_mode', 'no' )
@@ -1494,6 +1496,6 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 			return;
 		}
 
-		wc_add_notice( ( $this->id . ' : ' . $message ), $notice_type );
+		wc_add_notice( $message, $notice_type );
 	}
 }
