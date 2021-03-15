@@ -1,16 +1,20 @@
 var woongkirShared = {
 	updateCheckoutTimeoutId: null,
-	onChangeField: function (fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange, callback) {
-		if ($('#' + fieldPrefix + '_country').length && 'ID' !== $('#' + fieldPrefix + '_country').val()) {
-			return;
-		}
+	renderLocationFields: function (fieldPrefix, fieldSuffixes) {
+		var dfd = new $.Deferred();
+
+		var renderCounter = 0;
 
 		$.each(woongkirShared.getFields(), function (fieldSuffix, fieldData) {
-			if (!fieldSuffixIncludes || fieldSuffixIncludes.indexOf(fieldSuffix) === -1) {
+			if (!fieldSuffixes || fieldSuffixes.indexOf(fieldSuffix) === -1) {
 				return;
 			}
 
 			var fieldId = fieldPrefix + '_' + fieldSuffix;
+
+			if (!$('#' + fieldId) || !$('#' + fieldId).length) {
+				return;
+			}
 
 			woongkirShared.getLocationData(fieldSuffix).then(function (results) {
 				var options = woongkirShared.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData);
@@ -19,69 +23,57 @@ var woongkirShared = {
 					return option.selected;
 				});
 
-				var optionSelectedValue = optionSelected ? optionSelected.id : '';
+				var optionSelectedValue = optionSelected ? optionSelected.id : null;
 
-				$('#' + fieldId).attr({
-					value: optionSelectedValue,
-				}).selectWoo({
+				$('#' + fieldId).selectWoo({
 					data: options,
 					width: '100%',
-				});
+				}).val(optionSelectedValue);
 
-				if (fieldSuffixTriggerChange || fieldSuffixTriggerChange.indexOf(fieldSuffix) !== -1) {
-					$('#' + fieldId).trigger('change');
+				renderCounter++;
+
+				if (renderCounter === fieldSuffixes.length) {
+					dfd.resolve();
 				}
 			});
 		});
 
-		if ('function' === typeof callback) {
-			callback();
-		}
+		return dfd.promise();
 	},
 	onChangeFieldState: function (event) {
 		var fieldPrefix = $(event.target).attr('id').replace('_state', '');
-		var fieldSuffixIncludes = ['city', 'address_2'];
-		var fieldSuffixTriggerChange = ['city'];
 
-		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange);
+		woongkirShared.renderLocationFields(fieldPrefix, ['city', 'address_2']).then(function () {
+			$('#' + fieldPrefix + '_city').trigger('change');
+		});
 	},
 	onChangeFieldCity: function (event) {
 		var fieldPrefix = $(event.target).attr('id').replace('_city', '');
-		var fieldSuffixIncludes = ['address_2'];
-		var fieldSuffixTriggerChange = ['address_2'];
 
-		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange, function () {
-			var isCheckout = wc_checkout_params && wc_checkout_params.is_checkout;
-
-			if (isCheckout) {
-				if (woongkirShared.updateCheckoutTimeoutId) {
-					clearTimeout(woongkirShared.updateCheckoutTimeoutId);
-				}
-
-				woongkirShared.updateCheckoutTimeoutId = setTimeout(function () {
-					$(document.body).trigger('update_checkout');
-				}, 600);
-			}
+		woongkirShared.renderLocationFields(fieldPrefix, ['address_2']).then(function () {
+			$('#' + fieldPrefix + '_address_2').trigger('change');
 		});
 	},
 	onChangeFieldAddress2: function (event) {
 		var fieldPrefix = $(event.target).attr('id').replace('_address_2', '');
-		var fieldSuffixIncludes = false;
-		var fieldSuffixTriggerChange = false;
+		var isShipDifferentAddress = $('#ship-to-different-address-checkbox').is(':checked');
+		var isCheckout = wc_checkout_params && wc_checkout_params.is_checkout;
 
-		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange, function () {
-			var isCheckout = wc_checkout_params && wc_checkout_params.is_checkout;
+		if (!isCheckout) {
+			return;
+		}
 
-			if (isCheckout) {
-				if (woongkirShared.updateCheckoutTimeoutId) {
-					clearTimeout(woongkirShared.updateCheckoutTimeoutId);
-				}
+		if (isShipDifferentAddress && 'billing' === fieldPrefix) {
+			return;
+		}
 
-				woongkirShared.updateCheckoutTimeoutId = setTimeout(function () {
-					$(document.body).trigger('update_checkout');
-				}, 400);
-			}
-		});
+		if (woongkirShared.updateCheckoutTimeoutId) {
+			clearTimeout(woongkirShared.updateCheckoutTimeoutId);
+		}
+
+		woongkirShared.updateCheckoutTimeoutId = setTimeout(function () {
+			$(document.body).trigger('update_checkout');
+		}, 200);
 	},
 	getFields: function () {
 		return {

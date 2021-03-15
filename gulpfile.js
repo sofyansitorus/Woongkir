@@ -127,8 +127,8 @@ const scriptsHandler = function (asset, isMinify) {
 			trimCode: true,
 			prependSemicolon: false,
 			bindThis: false,
-			params: ['$'],
-			args: ['jQuery']
+			params: ['$', 'wc_checkout_params'],
+			args: ['jQuery', 'window.wc_checkout_params']
 		})))
 		.pipe(gulpIf(asset.isPrefixed, gulpRename({
 			prefix: prefix + '-',

@@ -5,36 +5,44 @@ function woongkirFrontendModifyForm(fieldPrefix) {
 		var fieldId = fieldPrefix + '_' + fieldSuffix;
 		var fieldLocale = localeData[fieldSuffix] || {};
 
-		if ($('#' + fieldId).length < 1) {
-			if ('calc_shipping' === fieldPrefix && 'address_2' === fieldSuffix) {
-				var $postCodeField = $('#' + fieldPrefix + '_postcode_field');
+		if ($('#' + fieldId).length < 1 && 'calc_shipping' === fieldPrefix && 'address_2' === fieldSuffix) {
+			var $postCodeField = $('#' + fieldPrefix + '_postcode_field');
 
-				if ($postCodeField && $postCodeField.length) {
-					$postCodeField
-						.clone()
-						.attr({
-							id: fieldId + '_field',
-						})
-						.insertBefore($postCodeField);
+			if ($postCodeField && $postCodeField.length) {
+				$postCodeField
+					.clone()
+					.attr({
+						id: fieldId + '_field',
+					})
+					.insertBefore($postCodeField);
 
-					var placeholder = localeData[fieldSuffix] && localeData[fieldSuffix].placeholder || '';
+				var placeholder = localeData[fieldSuffix] && localeData[fieldSuffix].placeholder || '';
 
-					$('#' + fieldId + '_field').find('input').attr({
-						id: fieldId,
-						name: fieldId,
-						placeholder: placeholder,
-						'data-placeholder': placeholder,
-						value: $('#woongkir_' + fieldPrefix + '_' + fieldSuffix).val(),
-					});
-				}
-			} else {
-				return;
+				$('#' + fieldId + '_field').find('input').attr({
+					id: fieldId,
+					name: fieldId,
+					placeholder: placeholder,
+					'data-placeholder': placeholder,
+					value: $('#woongkir_' + fieldPrefix + '_' + fieldSuffix).val(),
+				});
 			}
 		}
 
-		$('#' + fieldId).off('change', fieldData.onChange);
+		if ($('#' + fieldId).length < 1) {
+			return;
+		}
 
-		if (true === fieldData.convert || (Array.isArray(fieldData.convert) && fieldData.convert.indexOf(fieldPrefix) !== -1)) {
+		if ('address_2' === fieldSuffix && fieldLocale.label) {
+			$('label[for="' + fieldId + '"]').removeClass('screen-reader-text');
+		}
+
+		if (fieldData.onChange) {
+			$('#' + fieldId).off('change', fieldData.onChange);
+		}
+
+		var isConvert = true === fieldData.convert || (Array.isArray(fieldData.convert) && fieldData.convert.indexOf(fieldPrefix) !== -1);
+
+		if (!$('#' + fieldId).data('select2') && isConvert) {
 			woongkirShared.getLocationData(fieldSuffix).then(function (results) {
 				var options = woongkirShared.filterLocationData(results, fieldPrefix, fieldSuffix, fieldData);
 
@@ -43,14 +51,14 @@ function woongkirFrontendModifyForm(fieldPrefix) {
 					width: '100%',
 				});
 
-				$('#' + fieldId).on('change', fieldData.onChange);
-
-				if ('address_2' === fieldSuffix && fieldLocale.label) {
-					$('label[for="' + fieldId + '"]').removeClass('screen-reader-text');
+				if (fieldData.onChange) {
+					$('#' + fieldId).on('change', fieldData.onChange);
 				}
 			});
 		} else {
-			$('#' + fieldId).on('change', fieldData.onChange);
+			if (fieldData.onChange) {
+				$('#' + fieldId).on('change', fieldData.onChange);
+			}
 		}
 	});
 }
