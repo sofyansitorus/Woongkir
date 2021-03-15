@@ -50,7 +50,19 @@ var woongkirShared = {
 		var fieldSuffixIncludes = ['address_2'];
 		var fieldSuffixTriggerChange = ['address_2'];
 
-		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange);
+		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange, function () {
+			var isCheckout = wc_checkout_params && wc_checkout_params.is_checkout;
+
+			if (isCheckout) {
+				if (woongkirShared.updateCheckoutTimeoutId) {
+					clearTimeout(woongkirShared.updateCheckoutTimeoutId);
+				}
+
+				woongkirShared.updateCheckoutTimeoutId = setTimeout(function () {
+					$(document.body).trigger('update_checkout');
+				}, 600);
+			}
+		});
 	},
 	onChangeFieldAddress2: function (event) {
 		var fieldPrefix = $(event.target).attr('id').replace('_address_2', '');
@@ -58,22 +70,16 @@ var woongkirShared = {
 		var fieldSuffixTriggerChange = false;
 
 		woongkirShared.onChangeField(fieldPrefix, fieldSuffixIncludes, fieldSuffixTriggerChange, function () {
-			var $shipToDifferentAddress = $('#ship-to-different-address-checkbox');
+			var isCheckout = wc_checkout_params && wc_checkout_params.is_checkout;
 
-			if (!$shipToDifferentAddress.length) {
-				return;
-			}
-
-			var isChecked = $shipToDifferentAddress.is(':checked');
-
-			if ((isChecked && 'shipping' === fieldPrefix) || !isChecked && 'billing' === fieldPrefix) {
+			if (isCheckout) {
 				if (woongkirShared.updateCheckoutTimeoutId) {
 					clearTimeout(woongkirShared.updateCheckoutTimeoutId);
 				}
 
 				woongkirShared.updateCheckoutTimeoutId = setTimeout(function () {
 					$(document.body).trigger('update_checkout');
-				}, 200);
+				}, 400);
 			}
 		});
 	},
