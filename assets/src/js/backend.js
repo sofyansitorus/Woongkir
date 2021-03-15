@@ -77,7 +77,7 @@ function woongkirBackendRenderOriginLocations() {
 	});
 }
 
-function woongkirBackendInitCouriersSortable() {
+function woongkirBackendToggleApiKeyVisibility() {
 	$('#woocommerce_woongkir_api_key_toggle').remove();
 
 	$("#woocommerce_woongkir_api_key").each(function () {
@@ -101,7 +101,7 @@ function woongkirBackendInitCouriersSortable() {
 	});
 }
 
-function woongkirBackendToggleApiKeyVisibility() {
+function woongkirBackendInitCouriersSortable() {
 	$(".woongkir-couriers").sortable({
 		axis: 'y',
 		cursor: 'move',
@@ -273,6 +273,7 @@ function woongkirBackendHandleWcBackboneModalLoaded(event, target) {
 
 	woongkirBackendRenderOriginLocations();
 	woongkirBackendInitCouriersSortable();
+	woongkirBackendToggleApiKeyVisibility();
 
 	$(document.body).off('change', '.woongkir-account-type', woongkirBackendHandleChangeAccountType);
 	$(document.body).on('change', '.woongkir-account-type', woongkirBackendHandleChangeAccountType);
