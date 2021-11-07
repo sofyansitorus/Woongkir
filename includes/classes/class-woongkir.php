@@ -141,29 +141,32 @@ class Woongkir {
 	 * @return array         List of modified plugin action links.
 	 */
 	public function plugin_action_links( $links ) {
-		$zone_id = 0;
-
 		if ( ! class_exists( 'WC_Shipping_Zones' ) ) {
 			return $links;
 		}
 
-		$woongkir_links = array(
-			'<a href="' . esc_url(
-				add_query_arg(
-					array(
-						'page'              => 'wc-settings',
-						'tab'               => 'shipping',
-						'zone_id'           => $zone_id,
-						'woongkir_settings' => true,
-					),
-					admin_url( 'admin.php' )
-				)
-			) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
-		);
+		$link_default_zone = '<a href="' . esc_url(
+			add_query_arg(
+				array(
+					'page'              => 'wc-settings',
+					'tab'               => 'shipping',
+					'zone_id'           => 0,
+					'woongkir_settings' => true,
+				),
+				admin_url( 'admin.php' )
+			)
+		) . '">' . __( 'Settings', 'woongkir' ) . '</a>';
 
-		$shipping_zones = WC_Shipping_Zones::get_zones();
+		$woongkir_links = array();
 
-		foreach ( $shipping_zones as $zone ) {
+		foreach ( WC_Shipping_Zones::get_zone_by()->get_shipping_methods() as $zone_shipping_method ) {
+			if ( $zone_shipping_method instanceof Woongkir_Shipping_Method ) {
+				$woongkir_links[] = $link_default_zone;
+				break;
+			}
+		}
+
+		foreach ( WC_Shipping_Zones::get_zones() as $zone ) {
 			if ( empty( $zone['shipping_methods'] ) || empty( $zone['zone_id'] ) ) {
 				continue;
 			}
@@ -180,12 +183,22 @@ class Woongkir {
 						admin_url( 'admin.php' )
 					);
 
-					$woongkir_links[] = '<a href="' . esc_url(
+					$woongkir_links[ $zone['zone_id'] ] = '<a href="' . esc_url(
 						$link
 						// translators: %s is Shipping zone name.
 					) . '">' . sprintf( __( 'Settings: %s', 'woongkir' ), $zone['zone_name'] ) . '</a>';
+
+					break;
 				}
 			}
+
+			if ( ! empty( $woongkir_links[ $zone['zone_id'] ] ) ) {
+				break;
+			}
+		}
+
+		if ( ! $woongkir_links ) {
+			$woongkir_links[] = $link_default_zone;
 		}
 
 		return array_merge( $woongkir_links, $links );
