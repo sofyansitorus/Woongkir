@@ -147,41 +147,48 @@ class Woongkir {
 			return $links;
 		}
 
-		foreach ( WC_Shipping_Zones::get_zones() as $zone ) {
+		$woongkir_links = array(
+			'<a href="' . esc_url(
+				add_query_arg(
+					array(
+						'page'              => 'wc-settings',
+						'tab'               => 'shipping',
+						'zone_id'           => $zone_id,
+						'woongkir_settings' => true,
+					),
+					admin_url( 'admin.php' )
+				)
+			) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
+		);
+
+		$shipping_zones = WC_Shipping_Zones::get_zones();
+
+		foreach ( $shipping_zones as $zone ) {
 			if ( empty( $zone['shipping_methods'] ) || empty( $zone['zone_id'] ) ) {
 				continue;
 			}
 
 			foreach ( $zone['shipping_methods'] as $zone_shipping_method ) {
-				if ( $zone_shipping_method instanceof Woongkir ) {
-					$zone_id = $zone['zone_id'];
-					break;
-				}
-			}
-
-			if ( $zone_id ) {
-				break;
-			}
-		}
-
-		$links = array_merge(
-			array(
-				'<a href="' . esc_url(
-					add_query_arg(
+				if ( $zone_shipping_method instanceof Woongkir_Shipping_Method ) {
+					$link = add_query_arg(
 						array(
 							'page'              => 'wc-settings',
 							'tab'               => 'shipping',
-							'zone_id'           => $zone_id,
+							'zone_id'           => $zone['zone_id'],
 							'woongkir_settings' => true,
 						),
 						admin_url( 'admin.php' )
-					)
-				) . '">' . __( 'Settings', 'woongkir' ) . '</a>',
-			),
-			$links
-		);
+					);
 
-		return $links;
+					$woongkir_links[] = '<a href="' . esc_url(
+						$link
+						// translators: %s is Shipping zone name.
+					) . '">' . sprintf( __( 'Settings: %s', 'woongkir' ), $zone['zone_name'] ) . '</a>';
+				}
+			}
+		}
+
+		return array_merge( $woongkir_links, $links );
 	}
 
 	/**
