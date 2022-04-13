@@ -1054,6 +1054,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				$origin_location_address_2 = woongkir_get_json_data(
 					'address_2',
 					array(
+						'city'  => $this->get_option( 'origin_location_city' ),
 						'value' => $this->get_option( 'origin_location_address_2' ),
 					)
 				);
