@@ -435,8 +435,9 @@ gulp.task('dist', ['build'], function () {
 		'!composer.lock',
 		'!composer.json',
 		'!yarn.lock',
-		'!phpcs.xml'
+		'!phpcs.xml',
+		'!phpunit.xml',
+		'!deploy-wp.sh',
 	])
-		.pipe(gulp.dest('./dist/trunk'))
-		.pipe(gulp.dest('./dist/tags/' + packageJSON.version));
+		.pipe(gulp.dest('./dist'));
 });
