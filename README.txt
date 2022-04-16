@@ -3,9 +3,9 @@ Contributors: sofyansitorus
 Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX
 Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plugin_page&utm_medium=referral
 Requires at least: 4.8
-Tested up to: 5.7
+Tested up to: 5.9.3
 Requires PHP: 5.6
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -118,6 +118,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.3.6 =
+
+* Fix origin sub-district with the same name but having different city causing incorrect origin info.
 
 = 1.3.5 =
 
