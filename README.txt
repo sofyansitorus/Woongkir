@@ -5,7 +5,7 @@ Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plug
 Requires at least: 4.8
 Tested up to: 6.0
 Requires PHP: 5.6
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -118,6 +118,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.3.7 =
+
+* Improved API requests by enabling retry on failed requests.
 
 = 1.3.6 =
 
