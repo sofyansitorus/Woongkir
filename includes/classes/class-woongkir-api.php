@@ -649,12 +649,13 @@ class Woongkir_API {
 		 * @param array        $params      API request parameters.
 		 * @param Woongkir_API $object      API class object.
 		 *
-		 * @return bool
+		 * @return integer
 		 */
 		$chunk_count = apply_filters( 'woongkir_api_courier_chunk_count', 7, $zone, $params, $this );
 
 		$raw                = array();
 		$api_request_errors = new WP_Error();
+		$retry_requests     = array();
 
 		foreach ( array_chunk( $courier, $chunk_count ) as $chunk ) {
 			try {
@@ -675,6 +676,10 @@ class Woongkir_API {
 						$api_request_errors->add( $api_response->get_error_code(), $api_response->get_error_message() );
 					}
 
+					if ( 1 < count( $chunk ) ) {
+						$retry_requests = array_merge( $retry_requests, $chunk );
+					}
+
 					throw new Exception( $api_response->get_error_message() );
 				}
 
@@ -693,6 +698,39 @@ class Woongkir_API {
 				}
 			} catch ( Exception $e ) {
 				wc_get_logger()->log( 'error', wp_strip_all_tags( $e->getMessage(), true ), array( 'source' => 'woongkir_api_error' ) );
+			}
+		}
+
+		// Retry failed chunk requests as single courier per request.
+		if ( $retry_requests ) {
+			foreach ( $retry_requests as $chunk ) {
+				$api_response = $this->api_response_parser(
+					$this->api_request_post(
+						$endpoint,
+						array_merge(
+							$params,
+							array(
+								'courier' => $chunk,
+							)
+						)
+					)
+				);
+
+				if ( ! is_wp_error( $api_response ) ) {
+					foreach ( $api_response as $key => $value ) {
+						if ( 'results' === $key ) {
+							if ( ! isset( $raw[ $key ] ) ) {
+								$raw[ $key ] = array();
+							}
+
+							foreach ( $value as $result ) {
+								$raw[ $key ][] = $result;
+							}
+						} else {
+							$raw[ $key ] = $value;
+						}
+					}
+				}
 			}
 		}
 
