@@ -846,6 +846,10 @@ class Woongkir_API {
 				if ( 'IDR' !== $rate_normalized['currency'] ) {
 					$exchange_rate = ! empty( $raw['currency']['value'] ) ? $raw['currency']['value'] : $this->get_exchange_rate();
 
+					if ( 0 === intval( $exchange_rate ) ) {
+						continue;
+					}
+
 					$cost_conversion = array(
 						'currency'      => $rate_normalized['currency'],
 						'cost'          => $rate_normalized['cost'],
