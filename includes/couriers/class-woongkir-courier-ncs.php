@@ -60,6 +60,10 @@ class Woongkir_Courier_NCS extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
+			'DRT' => 'Regular Darat',
+			'JMR' => 'Jawa Murah',
+			'NFO' => 'Food-One Night Service',
+			'NFO' => 'Food-One Night Service',
 			'NRS' => 'REGULAR SERVICE',
 			'ONS' => 'OVERNIGHT SERVICE',
 			'SDS' => 'SAME DAY SERVICE',
