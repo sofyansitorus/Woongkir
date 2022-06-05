@@ -60,9 +60,10 @@ class Woongkir_Courier_SAP extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'REG' => 'Regular Service',
-			'SDS' => 'Same Day Service',
-			'ODS' => 'One Day Service',
+			'CARGO DARAT' => 'REGULAR DARAT',
+			'ODS'         => 'One Day Service',
+			'REG'         => 'Regular Service',
+			'SDS'         => 'Same Day Service',
 		);
 	}
 
