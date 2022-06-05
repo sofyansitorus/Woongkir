@@ -60,14 +60,18 @@ class Woongkir_Courier_EXPEDITO extends Woongkir_Courier {
 	 */
 	public function get_services_international_default() {
 		return array(
-			'CityLink'         => 'CityLink',
-			'DPEX'             => 'DPEX',
-			'ARAMEX Indonesia' => 'ARAMEX Indonesia',
-			'DHL  JKT'         => 'DHL  JKT',
-			'DHL Singapore'    => 'DHL Singapore',
-			'SF EXPRESS'       => 'SF EXPRESS',
-			'SkyNet Worldwide' => 'SkyNet Worldwide',
-			'TNT | Fedex'      => 'TNT | Fedex',
+			'ARAMEX Indonesia'             => 'ARAMEX Indonesia',
+			'CityLink'                     => 'CityLink',
+			'CityLink Express'             => 'CityLink Express',
+			'DHL  JKT'                     => 'DHL JKT',
+			'DHL Singapore'                => 'DHL Singapore',
+			'DPEX'                         => 'DPEX',
+			'Moon Forwarder'               => 'Moon Forwarder',
+			'NetworkCourierSG'             => 'NetworkCourierSG',
+			'SF EXPRESS'                   => 'SF EXPRESS',
+			'SkyNet Worldwide'             => 'SkyNet Worldwide',
+			'SkySaver by Skynet Worldwide' => 'SkySaver by Skynet Worldwide',
+			'TNT | Fedex'                  => 'TNT | Fedex',
 		);
 	}
 
