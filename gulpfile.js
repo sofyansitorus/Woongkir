@@ -383,32 +383,32 @@ gulp.task('bump', function () {
 		{
 			src: ['./includes/**/*.php'],
 			dest: './includes/',
-			search: ' ??\n',
-			replaceWith: ' {versionBump}\n',
+			search: /\@since(\s+)\?\?/g,
+			replaceWith: `@since$1${versionBump}`,
 		},
 		{
 			src: ['./woongkir.php'],
 			dest: './',
-			search: '{versionCurrent}',
-			replaceWith: '{versionBump}',
+			search: `* Version:           ${versionCurrent}`,
+			replaceWith: `* Version:           ${versionBump}`,
 		},
 		{
 			src: ['./README.txt'],
 			dest: './',
-			search: 'Stable tag: {versionCurrent}',
-			replaceWith: 'Stable tag: {versionBump}',
+			search: `Stable tag: ${versionCurrent}`,
+			replaceWith: `Stable tag: ${versionBump}`,
 		},
 		{
 			src: ['./package.json'],
 			dest: './',
-			search: '{versionCurrent}',
-			replaceWith: '{versionBump}',
+			search: `"version": "${versionCurrent}"`,
+			replaceWith: `"version": "${versionBump}"`,
 		},
 	];
 
 	assets.forEach(function (asset) {
 		gulp.src(asset.src)
-			.pipe(gulpReplace(asset.search.replace('{versionCurrent}', versionCurrent), asset.replaceWith.replace('{versionBump}', versionBump)))
+			.pipe(gulpReplace(asset.search, asset.replaceWith))
 			.pipe(gulp.dest(asset.dest));
 	});
 });
