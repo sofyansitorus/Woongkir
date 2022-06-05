@@ -60,18 +60,18 @@ class Woongkir_Courier_POS extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'Surat Kilat Khusus'       => 'Surat Kilat Khusus',
-			'Paketpos Biasa'           => 'Paketpos Biasa',
-			'Paket Kilat Khusus'       => 'Paket Kilat Khusus',
-			'Express Sameday Barang'   => 'Express Sameday Barang',
-			'Express Sameday Dokumen'  => 'Express Sameday Dokumen',
 			'Express Next Day Barang'  => 'Express Next Day Barang',
 			'Express Next Day Dokumen' => 'Express Next Day Dokumen',
-			'Paketpos Dangerous Goods' => 'Paketpos Dangerous Goods',
-			'Paketpos Valuable Goods'  => 'Paketpos Valuable Goods',
+			'Express Sameday Barang'   => 'Express Sameday Barang',
+			'Express Sameday Dokumen'  => 'Express Sameday Dokumen',
 			'Kargopos Ritel Train'     => 'Kargopos Ritel Train',
 			'Kargopos Ritel Udara Dn'  => 'Kargopos Ritel Udara Dn',
 			'Paket Jumbo Ekonomi'      => 'Paket Jumbo Ekonomi',
+			'Paket Kilat Khusus'       => 'Paket Kilat Khusus',
+			'Paketpos Biasa'           => 'Paketpos Biasa',
+			'Paketpos Dangerous Goods' => 'Paketpos Dangerous Goods',
+			'Paketpos Valuable Goods'  => 'Paketpos Valuable Goods',
+			'Surat Kilat Khusus'       => 'Surat Kilat Khusus',
 		);
 	}
 
@@ -84,10 +84,12 @@ class Woongkir_Courier_POS extends Woongkir_Courier {
 	 */
 	public function get_services_international_default() {
 		return array(
-			'R LN'              => 'R LN',
 			'EMS BARANG'        => 'EMS BARANG',
-			'PAKETPOS CEPAT LN' => 'PAKETPOS CEPAT LN',
+			'ePacket LP APP'    => 'ePacket LP APP',
 			'PAKETPOS BIASA LN' => 'PAKETPOS BIASA LN',
+			'PAKETPOS CEPAT LN' => 'PAKETPOS CEPAT LN',
+			'POS EKSPOR'        => 'POS EKSPOR',
+			'R LN'              => 'R LN',
 		);
 	}
 
