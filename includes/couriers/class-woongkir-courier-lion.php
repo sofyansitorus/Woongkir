@@ -60,8 +60,11 @@ class Woongkir_Courier_LION extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'ONEPACK'  => 'One Day Service',
+			'BIGPACK'  => 'Big Package Service',
+			'JAGOPACK' => 'Economy Service',
+			'JAGOPACK' => 'Economy Service',
 			'LANDPACK' => 'Logistic Service',
+			'ONEPACK'  => 'One Day Service',
 			'REGPACK'  => 'Regular Service',
 		);
 	}
