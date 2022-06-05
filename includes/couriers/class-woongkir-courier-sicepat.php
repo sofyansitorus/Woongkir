@@ -60,9 +60,10 @@ class Woongkir_Courier_SICEPAT extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'REG'   => 'Layanan Reguler',
 			'BEST'  => 'Besok Sampai Tujuan',
-			'Cargo' => 'Cargo',
+			'GOKIL' => 'Cargo',
+			'REG'   => 'Layanan Reguler',
+			'SIUNT' => 'SiUntung',
 		);
 	}
 
