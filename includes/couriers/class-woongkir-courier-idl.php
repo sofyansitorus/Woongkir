@@ -60,11 +60,11 @@ class Woongkir_Courier_IDL extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'iSDS' => 'SAME DAY SERVICES',
-			'iONS' => 'OVERNIGHT SERVICES',
-			'iSCF' => 'SPECIAL FLEET',
-			'iREG' => 'REGULAR',
 			'iCon' => 'EKONOMIS',
+			'iONS' => 'OVERNIGHT SERVICES',
+			'iREG' => 'REGULAR',
+			'iSCF' => 'SPECIAL FLEET',
+			'iSDS' => 'SAME DAY SERVICES',
 		);
 	}
 

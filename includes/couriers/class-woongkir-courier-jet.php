@@ -60,10 +60,10 @@ class Woongkir_Courier_JET extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'PRI' => 'Priority',
-			'XPS' => 'Express',
-			'REG' => 'Regular',
 			'CRG' => 'Cargo',
+			'PRI' => 'Priority',
+			'REG' => 'Regular',
+			'XPS' => 'Express',
 		);
 	}
 

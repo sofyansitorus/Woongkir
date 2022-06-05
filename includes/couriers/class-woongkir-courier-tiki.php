@@ -60,11 +60,11 @@ class Woongkir_Courier_TIKI extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'REG' => 'Regular Service',
 			'ECO' => 'Economy Service',
-			'ONS' => 'Over Night Service',
-			'SDS' => 'Same Day Service',
 			'HDS' => 'Holiday Services',
+			'ONS' => 'Over Night Service',
+			'REG' => 'Regular Service',
+			'SDS' => 'Same Day Service',
 			'TRC' => 'Trucking Service',
 		);
 	}

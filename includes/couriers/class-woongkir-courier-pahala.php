@@ -61,12 +61,12 @@ class Woongkir_Courier_PAHALA extends Woongkir_Courier {
 	public function get_services_domestic_default() {
 		return array(
 			'EXPRESS'     => 'Express Service',
+			'MOTOR BEBEK' => 'Paket Motor Bebek',
+			'MOTOR BESAR' => 'Paket Motor Besar',
+			'MOTOR SPORT' => 'Paket Motor Sport',
 			'ONS'         => 'One Night Service',
 			'SDS'         => 'Same Day Service',
 			'SEPEDA'      => 'Paket Sepeda',
-			'MOTOR SPORT' => 'Paket Motor Sport',
-			'MOTOR BESAR' => 'Paket Motor Besar',
-			'MOTOR BEBEK' => 'Paket Motor Bebek',
 		);
 	}
 

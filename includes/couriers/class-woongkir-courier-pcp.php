@@ -60,11 +60,11 @@ class Woongkir_Courier_PCP extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'TREX' => 'Titipan Regular Express',
-			'JET'  => 'Jaminan Esok Tiba',
-			'HIT'  => 'Hari Ini Tiba',
 			'EXIS' => 'Express Ekonomi',
 			'GODA' => 'Kargo Darat',
+			'HIT'  => 'Hari Ini Tiba',
+			'JET'  => 'Jaminan Esok Tiba',
+			'TREX' => 'Titipan Regular Express',
 		);
 	}
 

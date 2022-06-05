@@ -60,12 +60,12 @@ class Woongkir_Courier_RPX extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'SDP' => 'SameDay Package',
 			'MDP' => 'MidDay Package',
 			'NDP' => 'Next Day Package',
-			'RGP' => 'Regular Package',
 			'PAS' => 'Paket Ambil Suka-Suka',
 			'PSR' => 'PAS Reguler',
+			'RGP' => 'Regular Package',
+			'SDP' => 'SameDay Package',
 		);
 	}
 

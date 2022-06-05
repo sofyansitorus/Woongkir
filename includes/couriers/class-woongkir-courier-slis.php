@@ -60,8 +60,8 @@ class Woongkir_Courier_SLIS extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'REGULAR' => 'Regular Service',
 			'EXPRESS' => 'Express Service',
+			'REGULAR' => 'Regular Service',
 		);
 	}
 

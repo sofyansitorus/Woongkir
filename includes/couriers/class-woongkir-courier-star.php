@@ -60,11 +60,11 @@ class Woongkir_Courier_STAR extends Woongkir_Courier {
 	 */
 	public function get_services_domestic_default() {
 		return array(
-			'Express'            => 'Express',
-			'Reguler'            => 'Reguler',
 			'Dokumen'            => 'Dokumen',
-			'MOTOR'              => 'MOTOR',
+			'Express'            => 'Express',
 			'MOTOR 150 - 250 CC' => 'MOTOR 150 - 250 CC',
+			'MOTOR'              => 'MOTOR',
+			'Reguler'            => 'Reguler',
 		);
 	}
 

@@ -61,8 +61,8 @@ class Woongkir_Courier_EXPEDITO extends Woongkir_Courier {
 	public function get_services_international_default() {
 		return array(
 			'ARAMEX Indonesia'             => 'ARAMEX Indonesia',
-			'CityLink'                     => 'CityLink',
 			'CityLink Express'             => 'CityLink Express',
+			'CityLink'                     => 'CityLink',
 			'DHL  JKT'                     => 'DHL JKT',
 			'DHL Singapore'                => 'DHL Singapore',
 			'DPEX'                         => 'DPEX',
