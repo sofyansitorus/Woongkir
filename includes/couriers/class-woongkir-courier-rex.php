@@ -61,9 +61,10 @@ class Woongkir_Courier_REX extends Woongkir_Courier {
 	public function get_services_domestic_default() {
 		return array(
 			'EXP'    => 'EXPRESS',
+			'REG'    => 'REGULAR',
 			'REX-1'  => 'REX-1',
-			'REX-5'  => 'REX-5',
 			'REX-10' => 'REX-10',
+			'REX-5'  => 'REX-5',
 		);
 	}
 
