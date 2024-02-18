@@ -1,7 +1,7 @@
 {
 	"name": "woongkir",
 	"title": "Woongkir",
-	"version": "1.3.8",
+	"version": "1.3.9",
 	"homepage": "https://github.com/sofyansitorus/",
 	"repository": {
 		"type": "git",
@@ -38,6 +38,7 @@
 		"start": "./node_modules/.bin/gulp",
 		"build": "./node_modules/.bin/gulp build",
 		"bump": "./node_modules/.bin/gulp bump",
-		"dist": "./node_modules/.bin/gulp dist"
+		"dist": "./node_modules/.bin/gulp dist",
+		"deploy": "yarn dist && ./deploy-wp.sh"
 	}
 }

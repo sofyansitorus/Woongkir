@@ -3,9 +3,9 @@ Contributors: sofyansitorus
 Tags: JNE, POS Indonesia, TIKI, PCP Express, RPX
 Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plugin_page&utm_medium=referral
 Requires at least: 4.8
-Tested up to: 6.0
-Requires PHP: 5.6
-Stable tag: 1.3.8
+Tested up to: 6.4.3
+Requires PHP: 7.4
+Stable tag: 1.3.9
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -118,6 +118,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.3.9 =
+
+* Fix - Fixed compatibility with High-Performance Order Storage.
 
 = 1.3.8 =
 
