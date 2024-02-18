@@ -171,6 +171,7 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				'description' => __( '<a href="http://www.rajaongkir.com?utm_source=woongkir.com" target="_blank">Click here</a> to get RajaOngkir.com API Key. It is FREE.', 'woongkir' ),
 				'default'     => '',
 				'restore'     => true,
+				'class'       => 'woongkir-api-key-input',
 			),
 			'account_type'              => array(
 				'title'             => __( 'RajaOngkir Account Type', 'woongkir' ),
@@ -473,56 +474,16 @@ class Woongkir_Shipping_Method extends WC_Shipping_Method {
 				</label>
 			</th>
 			<td class="forminp">
-				<div class="woongkir-account-features-wrap">
-					<table id="woongkir-account-features" class="woongkir-account-features form-table">
-						<thead>
-							<tr>
-								<th><?php esc_html_e( 'Features', 'woongkir' ); ?></th>
-								<?php foreach ( $this->api->get_accounts() as $account ) { ?>
-									<th class="woongkir-account-features-col-<?php echo esc_attr( $account->get_type() ); ?>">
-										<a href="https://rajaongkir.com/dokumentasi?utm_source=woongkir.com" target="_blank">
-											<?php echo esc_html( $account->get_label() ); ?>
-										</a>
-									</th>
-								<?php } ?>
-							</tr>
-						</thead>
-						<tbody>
-							<?php foreach ( (array) $data['features'] as $feature ) : ?>
-							<tr>
-								<th><?php echo esc_html( $feature['label'] ); ?></th>
-								<?php foreach ( $feature['value'] as $account_type => $feature_value ) : ?>
-									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>">
-									<?php
-									if ( 'yes' === strtolower( $feature_value ) ) {
-										?>
-									<span class="dashicons dashicons-yes"></span>
-										<?php
-									} elseif ( 'no' === strtolower( $feature_value ) ) {
-										?>
-									<span class="dashicons dashicons-no-alt"></span>
-										<?php
-									} else {
-										echo esc_html( $feature_value );
-									}
-									?>
-								</td>
-								<?php endforeach; ?>
-							</tr>
-							<?php endforeach; ?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<th></th>
-								<?php foreach ( array_keys( $feature['value'] ) as $account_type ) : ?>
-									<td class="woongkir-account-features-col-<?php echo esc_attr( $account_type ); ?>" data-title="<?php echo esc_attr( $this->api->get_account( $account_type )->get_label() ); ?>">
-										<input type="radio" name="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $account_type ); ?>" id="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account_type ); ?>" class="woongkir-account-type" <?php checked( $account_type, $this->get_option( $key ) ); ?> <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-									</td>
-								<?php endforeach; ?>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
+				<ul class="woongkir-account">
+					<?php foreach ( $this->api->get_accounts() as $account ) { ?>
+					<li class="woongkir-account-item">
+						<label for="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account->get_type() ); ?>" class="woongkir-account-item-label woongkir-account-item-label--<?php echo esc_attr( $account->get_type() ); ?>">
+							<?php echo esc_html( $account->get_label() ); ?>
+						</label>
+						<input type="radio" name="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $account->get_type() ); ?>" id="<?php echo esc_attr( $field_key ); ?>--<?php echo esc_attr( $account->get_type() ); ?>" class="woongkir-account-type" <?php checked( $account->get_type(), $this->get_option( $key ) ); ?> <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+					</li>
+					<?php } ?>
+				</ul>
 			</td>
 		</tr>
 		<?php

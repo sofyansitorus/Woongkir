@@ -5,7 +5,7 @@ Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plug
 Requires at least: 4.8
 Tested up to: 6.4.3
 Requires PHP: 7.4
-Stable tag: 1.3.9
+Stable tag: 1.3.10
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -29,6 +29,10 @@ WooCommerce shipping rates calculator for Indonesia domestic and international s
 * Show or hide the estimated time of arrival.
 * Real-time currency conversion to IDR for international shipping cost courier that using USD currency.
 * Real-time API Key validation on settings update.
+
+= Compatibility =
+This plugin is not compatible with WooCommerce blocks. You MUST use [WooCommerce shortcode](https://woo.com/document/woocommerce-shortcodes) to build your cart and checkout page.
+
 
 = Demo =
 
@@ -118,6 +122,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.3.10 =
+
+* Fix - Fixed broken in setting modal in WooCommerce 8.4.0 or later.
 
 = 1.3.9 =
 
