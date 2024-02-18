@@ -30,14 +30,15 @@ $bg-color-hover: lighten($bg-color, 1%);
 				}
 			}
 
-			th + th,
-			th + td,
-			td + th,
-			td + td {
+			th+th,
+			th+td,
+			td+th,
+			td+td {
 				border-left: 1px solid $border-color;
 			}
 
 			thead {
+
 				td,
 				th {
 					border-top: 1px solid $border-color;
@@ -61,6 +62,7 @@ $bg-color-hover: lighten($bg-color, 1%);
 			tbody {
 				tr {
 					&:nth-child(even) {
+
 						td,
 						th {
 							background-color: $bg-color;
@@ -68,6 +70,7 @@ $bg-color-hover: lighten($bg-color, 1%);
 					}
 
 					&:hover {
+
 						td,
 						th {
 							background-color: $bg-color-hover;
@@ -76,6 +79,7 @@ $bg-color-hover: lighten($bg-color, 1%);
 				}
 
 				tr:last-child {
+
 					td,
 					th {
 						border-bottom: 1px solid $border-color;
@@ -93,6 +97,7 @@ $bg-color-hover: lighten($bg-color, 1%);
 			}
 
 			tfoot {
+
 				td,
 				th {
 					border-bottom: 1px solid $border-color;
@@ -101,12 +106,6 @@ $bg-color-hover: lighten($bg-color, 1%);
 
 				td {
 					text-align: center;
-
-					input.woongkir-account-type {
-						min-width: unset;
-						width: 16px;
-						height: 16px;
-					}
 				}
 			}
 		}
@@ -223,6 +222,7 @@ $bg-color-hover: lighten($bg-color, 1%);
 		&-tab {
 			&-container {
 				border-radius: 0;
+				margin-bottom: 24px;
 			}
 
 			&-nav {
@@ -250,7 +250,7 @@ $bg-color-hover: lighten($bg-color, 1%);
 					border-right: 1px solid $border-color;
 					border-left: 1px solid $border-color;
 
-					& + li {
+					&+li {
 						border-left: none;
 					}
 
@@ -301,6 +301,64 @@ $bg-color-hover: lighten($bg-color, 1%);
 				&:not(.active) {
 					display: none;
 				}
+			}
+		}
+
+		&-api-key-input {
+			max-width: calc(100% - 42px);
+			border-top-right-radius: 0px !important;
+			border-bottom-right-radius: 0px !important;
+		}
+
+		&-api-key-view {
+			border-top-left-radius: 0px !important;
+			border-bottom-left-radius: 0px !important;
+			margin-left: -2px;
+		}
+
+		&-account {
+			display: flex;
+			justify-content: space-between;
+			list-style-type: none;
+			padding: 0;
+
+			&-item {
+				flex-grow: 1;
+				text-align: center;
+				border: 1px solid #ccd0d4;
+				padding: 10px;
+
+				&-label {
+					display: block;
+					text-decoration: none;
+					font-weight: bold;
+					margin-bottom: 6px;
+				}
+			}
+
+			&-type {
+				min-width: unset !important;
+				width: 16px !important;
+				height: 16px !important;
+			}
+		}
+	}
+}
+
+/**
+ * Style for WooCommerce 8.4.0 and later
+ */
+.wc-shipping-zone-method-fields {
+	.woongkir {
+		&-api-key {
+			&-input {
+				width: calc(100% - 42px) !important;
+			}
+
+			&-view {
+				margin-top: 6px !important;
+				padding-top: 6px !important;
+				padding-bottom: 6px !important;
 			}
 		}
 	}

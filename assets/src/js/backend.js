@@ -81,7 +81,7 @@ function woongkirBackendToggleApiKeyVisibility() {
 	$('#woocommerce_woongkir_api_key_toggle').remove();
 
 	$("#woocommerce_woongkir_api_key").each(function () {
-		$(this).after('<button id="woocommerce_woongkir_api_key_toggle" type="button" class="button button-secondary"><span class="dashicons dashicons-visibility" style="margin-top: 4px;"></span></button>');
+		$(this).after('<button id="woocommerce_woongkir_api_key_toggle" type="button" class="button button-secondary woongkir-api-key-view"><span class="dashicons dashicons-visibility" style="margin-top: 4px;"></span></button>');
 	});
 
 	$('#woocommerce_woongkir_api_key_toggle').off('click');
@@ -127,9 +127,19 @@ function woongkirBackendHandleChangeAccountType(event) {
 	var $volumetricCalculator = $('#woocommerce_woongkir_volumetric_calculator');
 
 	if (accountSelected.volumetric) {
-		$volumetricCalculator.closest('tr').show();
+		if ($volumetricCalculator.closest('tr').length) {
+			$volumetricCalculator.closest('tr').show();
+		} else {
+			$("label[for='woocommerce_woongkir_volumetric_calculator']").show().next('fieldset').show();
+		}
 	} else {
-		$volumetricCalculator.prop('checked', false).closest('tr').hide();
+		$volumetricCalculator.prop('checked', false);
+
+		if ($volumetricCalculator.closest('tr').length) {
+			$volumetricCalculator.closest('tr').hide();
+		} else {
+			$("label[for='woocommerce_woongkir_volumetric_calculator']").hide().next('fieldset').hide();
+		}
 	}
 
 	$volumetricCalculator.trigger('change');
@@ -170,10 +180,20 @@ function woongkirBackendHandleChangeAccountType(event) {
 }
 
 function woongkirBackendHandleChangeVolumetricCalculator(event) {
+	var $volumetricDivider = $('#woocommerce_woongkir_volumetric_divider');
+
 	if ($(event.target).is(':checked')) {
-		$('#woocommerce_woongkir_volumetric_divider').closest('tr').show();
+		if ($volumetricDivider.closest('tr').length) {
+			$volumetricDivider.closest('tr').show();
+		} else {
+			$("label[for='woocommerce_woongkir_volumetric_divider']").show().next('fieldset').show();
+		}
 	} else {
-		$('#woocommerce_woongkir_volumetric_divider').closest('tr').hide();
+		if ($volumetricDivider.closest('tr').length) {
+			$volumetricDivider.closest('tr').hide();
+		} else {
+			$("label[for='woocommerce_woongkir_volumetric_divider']").hide().next('fieldset').hide();
+		}
 	}
 }
 
