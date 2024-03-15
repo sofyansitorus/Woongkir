@@ -5,11 +5,11 @@ Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plug
 Requires at least: 4.8
 Tested up to: 6.4.3
 Requires PHP: 7.4
-Stable tag: 1.3.10
+Stable tag: 1.3.11
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-WooCommerce shipping rates calculator for Indonesia domestic and international shipment: AnterAja, 21 Express, Expedito, IDexpress Service Solution, Indotama Domestik Lestari, Indah Logistic, JET Express, Jalur Nugraha Ekakurir (JNE), J&T Express, JTL Express, Lion Parcel, Ninja Xpress, Pahala Express, Pandu Logistics, PCP, POS Indonesia, Royal Express Indonesia, RPX, SAP Express, Sentral Cargo, SiCepat Express, Solusi Ekspres, Star Cargo, TIKI, Wahana Express.
+WooCommerce shipping rates calculator for Indonesia domestic and international shipment: JNE, J&T, TIKI, Pos Indonesia, SiCepat, and more.
 
 == Description ==
 
@@ -122,6 +122,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.3.11 =
+
+* Fix - Declare incompatibility with the Cart and Checkout Blocks.
 
 = 1.3.10 =
 
