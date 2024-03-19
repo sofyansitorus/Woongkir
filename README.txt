@@ -5,7 +5,7 @@ Donate link: https://www.buymeacoffee.com/sofyansitorus?utm_source=woongkir_plug
 Requires at least: 4.8
 Tested up to: 6.4.3
 Requires PHP: 7.4
-Stable tag: 1.3.11
+Stable tag: 1.3.12
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -122,6 +122,10 @@ I always welcome and encourage contributions to this plugin. Please visit the pl
 5. Shipping Calculator Preview: International Shipping
 
 == Changelog ==
+
+= 1.3.12 =
+
+* Fix - Fix incorrect plugin file when declaring incompatibility with the Cart and Checkout Blocks.
 
 = 1.3.11 =
 
